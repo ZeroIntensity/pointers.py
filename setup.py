@@ -12,7 +12,7 @@ if __name__ == "__main__":
         description = "Bringing the hell of pointers to Python.",
         long_description_content_type = "text/markdown",
         long_description = long_desc,
-        py_modules = ['templates'],
+        py_modules = ['pointers'],
         keywords = ['python', 'pointers'],
         classifiers = [
             "Programming Language :: Python :: 3.6",
