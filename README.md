@@ -53,8 +53,11 @@ To dereference a pointer, use the `Pointer.dereference()` function:
 ```py
 def some_function(ptr: Pointer[test_class]):
     my_instance: test_class = ptr.dereference() # dereferences the pointer
+
+instance = test_class()
+some_function(to_ptr(instance))
 ```
 
-If the pointer no longer exists, `pointers.DereferenceError` is raised.
+If the address no longer exists, `pointers.DereferenceError` is raised.
 
 You can add `safe = False` to the `Pointer.dereference()` function to use C when dereferencing. **A segmentation fault will occur if the address does not exist, so only use if you are sure the pointer is valid.**
