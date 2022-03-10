@@ -6,7 +6,7 @@ with open('./README.md') as f:
 if __name__ == "__main__":
     setup(
         name = "pointers.py",
-        version = "1.0.1",
+        version = "1.0.2",
         author = "ZeroIntensity",
         author_email = "<zintensitydev@gmail.com>",
         description = "Bringing the hell of pointers to Python.",
@@ -14,6 +14,7 @@ if __name__ == "__main__":
         long_description = long_desc,
         py_modules = ['pointers'],
         keywords = ['python', 'pointers'],
+        install_requires = ['typing_extensions'],
         classifiers = [
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
@@ -24,6 +25,6 @@ if __name__ == "__main__":
         ],
         license = "MIT",
         urls = {
-            "Repo": "https://github.com/ZeroIntensity/pointers.py"
+            "Homepage": "https://github.com/ZeroIntensity/pointers.py"
         }
     )
