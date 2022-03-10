@@ -58,7 +58,7 @@ instance = test_class()
 some_function(to_ptr(instance))
 ```
 
-Alternatively, you can use the \* and >> operators to dereference the pointer:
+Alternatively, you can use the \* operators to dereference the pointer:
 
 ```py
 def some_function(ptr: Pointer[str]):
