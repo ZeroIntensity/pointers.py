@@ -74,6 +74,13 @@ deref = *ptr
 print(deref)
 ```
 
+For this scenario you can use the dereferencing assignment operator, `,=`
+
+```py
+deref ,= ptr # works correctly
+print(deref)
+```
+
 **A segmentation fault will occur if the address does not exist, so make sure the pointer is valid.**
 
 If you would like to automatically decay values to a pointer, use the `pointers.decay` decorator, like this:

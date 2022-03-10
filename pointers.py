@@ -1,5 +1,14 @@
 import ctypes
-from typing import Generic, TypeVar, Any, Type, get_type_hints, Callable, Iterator
+from typing import (
+    Generic, 
+    TypeVar, 
+    Any, 
+    Type, 
+    get_type_hints, 
+    Callable, 
+    Iterator
+)
+
 from typing_extensions import ParamSpec
 import inspect
 from functools import wraps
@@ -15,6 +24,7 @@ __all__ = (
 T = TypeVar("T")
 A = TypeVar("A")
 P = ParamSpec("P")
+
 
 def dereference_address(address: int) -> Any:
     """Dereference an address. Will cause a segmentation fault if the address is invalid."""
