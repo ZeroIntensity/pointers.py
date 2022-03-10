@@ -58,6 +58,16 @@ instance = test_class()
 some_function(to_ptr(instance))
 ```
 
-If the address no longer exists, `pointers.DereferenceError` is raised.
+**A segmentation fault will occur if the address does not exist, so make sure the pointer is valid.**
 
-You can add `safe = False` to the `Pointer.dereference()` function to use C when dereferencing. **A segmentation fault will occur if the address does not exist, so only use if you are sure the pointer is valid.**
+If you would like to automatically decay values to a pointer, use the `pointers.decay` decorator, like this:
+
+```py
+@decay
+def some_function(ptr: Pointer[str], b: str): # converts "ptr" to a pointer since its hinted as Pointer[str]
+    print(ptr.dereference(), b) # a b
+
+some_function("a", "b") # converts "a" to a pointer, and leaves b as it is
+```
+
+Make sure you annotate the argument with `Pointer` or else decay won't convert it.

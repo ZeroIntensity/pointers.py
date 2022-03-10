@@ -1,50 +1,30 @@
 import ctypes
-from typing import Generic, TypeVar, Any, Type
-import gc
+from typing import Generic, TypeVar, Any, Type, get_type_hints, Callable
+from typing_extensions import ParamSpec
+import inspect
+from functools import wraps
+from contextlib import suppress
 
 __all__ = (
-    "DereferenceError",
     "dereference_address",
-    "dereference_safe",
     "Pointer",
     "to_ptr",
-    "NoAddressError"
+    "decay"
 )
 
 T = TypeVar("T")
 A = TypeVar("A")
-
-class DereferenceError(Exception):
-    """Raised when trying to dereference an address that does not exist."""
-    pass
-
-class NoAddressError(Exception):
-    """Raised when trying to create a pointer to a value that has no address."""
-    pass
+P = ParamSpec("P")
 
 def dereference_address(address: int) -> Any:
-    """Dereference an address. Can cause a segmentation fault (to prevent, use `dereference_safe`)."""
+    """Dereference an address. Will cause a segmentation fault if the address is invalid."""
     return ctypes.cast(address, ctypes.py_object).value
-
-def dereference_safe(address: int) -> Any:
-    """Safely dereference an address. Will not cause a segmentation fault."""
-    for obj in gc.get_objects():
-        if id(obj) == address:
-            return obj
-    raise DereferenceError(
-        "address does not exist"
-    )
 
 class Pointer(Generic[T]):
     """Base class representing a pointer."""
     def __init__(self, address: int, typ: Type[T]) -> None:
         self._address = address
         self._type = typ
-        
-        if address not in [id(i) for i in gc.get_objects()]:
-            raise NoAddressError(
-                "address has already been dropped (perhaps you passed in a literal and not a variable?)"
-            )
 
     @property
     def address(self):
@@ -62,12 +42,34 @@ class Pointer(Generic[T]):
     def __str__(self) -> str:
         return hex(self.address)
 
-    def dereference(self, safe: bool = True) -> T:
+    def dereference(self) -> T:
         """Dereference the pointer."""
-        target = dereference_safe if safe else dereference_address
-        return target(self.address)
+        return dereference_address(self.address)
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
-
     return Pointer(id(val), type(val))
+
+def decay(func: Callable[P, T]) -> Callable[..., T]:
+    """Automatically convert values to pointers when called."""
+    @wraps(func)
+    def inner(*args: P.args, **kwargs: P.kwargs) -> T:
+        hints = get_type_hints(func)
+        actual: dict = {}
+        params = inspect.signature(func).parameters
+
+        for index, key in enumerate(params):
+            if key in kwargs:
+                actual[key] = kwargs[key]
+            else:
+                with suppress(IndexError):
+                    actual[params[key].name] = args[index]
+            
+        for key, value in hints.items():
+            if (hasattr(value, "__origin__")) and (value.__origin__ == Pointer):
+                actual[key] = to_ptr(actual[key])
+
+        return func(**actual)
+
+        
+    return inner
