@@ -27,12 +27,12 @@ class Pointer(Generic[T]):
         self._type = typ
 
     @property
-    def address(self):
+    def address(self) -> int:
         """Address of the pointer."""
         return self._address
 
     @property
-    def type(self):
+    def type(self) -> Type[T]:
         """Type of the pointer."""
         return self._type
 

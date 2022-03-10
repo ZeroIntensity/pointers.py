@@ -6,7 +6,7 @@ with open('./README.md') as f:
 if __name__ == "__main__":
     setup(
         name = "pointers.py",
-        version = "1.0.4",
+        version = "1.0.5",
         author = "ZeroIntensity",
         author_email = "<zintensitydev@gmail.com>",
         description = "Bringing the hell of pointers to Python.",
@@ -24,7 +24,7 @@ if __name__ == "__main__":
             "Programming Language :: Python :: 3.11"
         ],
         license = "MIT",
-        urls = {
-            "Homepage": "https://github.com/ZeroIntensity/pointers.py"
+        project_urls = {
+            "Source": "https://github.com/ZeroIntensity/pointers.py"
         }
     )
