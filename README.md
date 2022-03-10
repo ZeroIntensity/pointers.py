@@ -58,6 +58,22 @@ instance = test_class()
 some_function(to_ptr(instance))
 ```
 
+Alternatively, you can use the \* and >> operators to dereference the pointer:
+
+```py
+def some_function(ptr: Pointer[str]):
+    print(*ptr) # a
+
+some_function(to_ptr("a"))
+```
+
+Note that when using the \* operator, the following syntax will not work properly:
+
+```py
+deref = *ptr
+print(deref)
+```
+
 **A segmentation fault will occur if the address does not exist, so make sure the pointer is valid.**
 
 If you would like to automatically decay values to a pointer, use the `pointers.decay` decorator, like this:

@@ -1,5 +1,5 @@
 import ctypes
-from typing import Generic, TypeVar, Any, Type, get_type_hints, Callable
+from typing import Generic, TypeVar, Any, Type, get_type_hints, Callable, Iterator
 from typing_extensions import ParamSpec
 import inspect
 from functools import wraps
@@ -45,6 +45,10 @@ class Pointer(Generic[T]):
     def dereference(self) -> T:
         """Dereference the pointer."""
         return dereference_address(self.address)
+
+    def __iter__(self) -> Iterator[T]:
+        """Dereference the pointer."""
+        return iter({self.dereference()})
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
