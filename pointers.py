@@ -13,6 +13,13 @@ from typing_extensions import ParamSpec
 import inspect
 from functools import wraps
 from contextlib import suppress
+import faulthandler
+from io import UnsupportedOperation
+from contextlib import suppress
+
+with suppress(UnsupportedOperation): # in case its running in idle or something like that
+    faulthandler.enable()
+
 
 __all__ = (
     "dereference_address",
@@ -60,6 +67,17 @@ class Pointer(Generic[T]):
         """Dereference the pointer."""
         return iter({self.dereference()})
 
+    def __invert__(self) -> T:
+        """Dereference the pointer."""
+        return self.dereference()
+
+    def assign(self, new: "Pointer[T]") -> None:
+        """Point to a different address."""
+        if new.type is not self.type:
+            raise ValueError("new pointer must be the same type")
+
+        self._address = new.address
+
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
     return Pointer(id(val), type(val))
@@ -80,7 +98,7 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
                     actual[params[key].name] = args[index]
             
         for key, value in hints.items():
-            if (hasattr(value, "__origin__")) and (value.__origin__ == Pointer):
+            if (hasattr(value, "__origin__")) and (value.__origin__ is Pointer):
                 actual[key] = to_ptr(actual[key])
 
         return func(**actual)

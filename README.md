@@ -34,6 +34,8 @@ py -3 -m pip install -U pointers.py
 
 ### Usage
 
+#### Creation
+
 To convert something to a pointer, use the `pointers.to_ptr()` function. Then, when annotating function types use the `pointers.Pointer` class, like so:
 
 ```py
@@ -48,6 +50,8 @@ def some_function(ptr: Pointer[test_class]): # can be any data type (str, tuple,
 some_function(to_ptr(test_class())) # converts the instance to a pointer object
 ```
 
+#### Dereferencing
+
 To dereference a pointer, use the `Pointer.dereference()` function:
 
 ```py
@@ -58,7 +62,7 @@ instance = test_class()
 some_function(to_ptr(instance))
 ```
 
-Alternatively, you can use the \* operators to dereference the pointer:
+Alternatively, you can use the \* operator to dereference the pointer:
 
 ```py
 def some_function(ptr: Pointer[str]):
@@ -74,14 +78,29 @@ deref = *ptr
 print(deref)
 ```
 
-For this scenario you can use the dereferencing assignment operator, `,=`
+For the above scenario you can use the dereferencing assignment operator, `,=`, or the `~` operator:
 
 ```py
 deref ,= ptr # works correctly
 print(deref)
+
+deref = ~ptr # also works correctly
+print(deref)
 ```
 
 **A segmentation fault will occur if the address does not exist, so make sure the pointer is valid.**
+
+To assign the pointer to a different address, use the `assign()` method:
+
+```py
+ptr = to_ptr("abc")
+ptr2 = to_ptr("test") # must be same type
+
+ptr.assign(ptr2)
+print(*ptr) # test
+```
+
+#### Decaying
 
 If you would like to automatically decay values to a pointer, use the `pointers.decay` decorator, like this:
 
