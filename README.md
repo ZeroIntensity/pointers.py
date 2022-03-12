@@ -111,6 +111,37 @@ ptr >> "test" # does not need to_ptr
 print(*ptr) # test
 ```
 
+#### Movement
+
+Pointers.py supports data movement, but it is very dangerous to use. For example:
+
+```py
+a = '123'
+b = 'abc'
+
+ptr_a = to_ptr(a)
+ptr_b = to_ptr(b)
+
+ptr_a.move(ptr_b) # uou can also use the <<
+print(a) # abc
+```
+
+Movement works with any data type, but can break things internally when the pointer points to a literal:
+
+```py
+a = 1
+b = 2
+
+ptr_a = to_ptr(a)
+ptr_b = to_ptr(b)
+
+ptr_a << ptr_b # moves 2 into 1
+print(1) # 2
+# literal 1 has now become 2
+
+# segmentation fault occurs on interpreter shutoff
+```
+
 #### Decaying
 
 If you would like to automatically decay values to a pointer, use the `pointers.decay` decorator, like this:

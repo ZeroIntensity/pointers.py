@@ -83,6 +83,16 @@ class Pointer(Generic[T]):
         """Point to a different address."""
         self.assign(to_ptr(value))
 
+    def move(self, data: "Pointer[T]") -> None:
+        """Move data from another pointer to this pointer. Very dangerous, use with caution."""
+        bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)).from_address(data.address)
+        bytes_b = (ctypes.c_ubyte * sys.getsizeof(~self)).from_address(self.address)
+
+        ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
+
+    def __lshift__(self, data: "Pointer[T]") -> None:
+        """Move data from another pointer to this pointer. Very dangerous, use with caution."""
+        self.move(data)
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
