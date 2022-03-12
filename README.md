@@ -124,11 +124,11 @@ b = 'abc'
 ptr_a = to_ptr(a)
 ptr_b = to_ptr(b)
 
-ptr_a.move(ptr_b) # uou can also use the <<
+ptr_a.move(ptr_b) # you can also use the << operator
 print(a) # abc
 ```
 
-Movement works with any data type, but can break things internally when the pointer points to a literal:
+Movement works with any data type, but can break things internally since it overwrites memory addresses:
 
 ```py
 a = 1
