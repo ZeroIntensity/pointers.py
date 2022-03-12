@@ -7,15 +7,17 @@ Why would you ever need this
 ### Example
 
 ```py
-from pointers import Pointer, to_ptr
+from pointers import to_ptr, Pointer, decay
 
-class test_class:
-    pass
+a: str = '123'
+b: str = 'abc'
 
-def some_function(ptr: Pointer[test_class]):
-    print(repr(ptr)) # <pointer to test_class object at [address]>"
+@decay
+def switch(ptr_a: Pointer[str], ptr_b: Pointer[str]):
+    ptr_a << ptr_b
 
-some_function(to_ptr(test_class()))
+switch(a, b)
+print(a, b) # abc abc
 ```
 
 ### Installation
