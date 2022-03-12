@@ -6,7 +6,7 @@ from typing import (
     Type, 
     get_type_hints, 
     Callable, 
-    Iterator
+    Iterator, Union
 )
 
 from typing_extensions import ParamSpec
@@ -79,20 +79,23 @@ class Pointer(Generic[T]):
 
         self._address = new.address
 
-    def __rshift__(self, value: T) -> None:
+    def __rshift__(self, value: Union["Pointer[T]", T]) -> None:
         """Point to a different address."""
-        self.assign(to_ptr(value))
+        self.assign(value if isinstance(value, Pointer) else to_ptr(value))
 
     def move(self, data: "Pointer[T]") -> None:
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""
+        if data.type is not self.type:
+            raise ValueError("pointer must be the same type")
+
         bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)).from_address(data.address)
         bytes_b = (ctypes.c_ubyte * sys.getsizeof(~self)).from_address(self.address)
 
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
-    def __lshift__(self, data: "Pointer[T]") -> None:
+    def __lshift__(self, data: Union["Pointer[T]", T]) -> None:
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""
-        self.move(data)
+        self.move(data if isinstance(data, Pointer) else to_ptr(data))
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
@@ -118,6 +121,5 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
                 actual[key] = to_ptr(actual[key])
 
         return func(**actual)
-
         
     return inner
