@@ -16,6 +16,7 @@ from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
 from contextlib import suppress
+import sys
 
 with suppress(UnsupportedOperation): # in case its running in idle or something like that
     faulthandler.enable()
@@ -77,6 +78,11 @@ class Pointer(Generic[T]):
             raise ValueError("new pointer must be the same type")
 
         self._address = new.address
+
+    def __rshift__(self, value: T) -> None:
+        """Point to a different address."""
+        self.assign(to_ptr(value))
+
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""

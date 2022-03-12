@@ -90,6 +90,8 @@ print(deref)
 
 **A segmentation fault will occur if the address does not exist, so make sure the pointer is valid.**
 
+#### Assignment
+
 To assign the pointer to a different address, use the `assign()` method:
 
 ```py
@@ -97,6 +99,15 @@ ptr = to_ptr("abc")
 ptr2 = to_ptr("test") # must be same type
 
 ptr.assign(ptr2)
+print(*ptr) # test
+```
+
+You can also use the `>>` operator instead, which gets rid of the need to pass in a pointer at all:
+
+```py
+ptr = to_ptr("abc")
+
+ptr >> "test" # does not need to_ptr
 print(*ptr) # test
 ```
 
