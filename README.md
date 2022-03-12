@@ -124,7 +124,7 @@ b = 'abc'
 ptr_a = to_ptr(a)
 ptr_b = to_ptr(b)
 
-ptr_a.move(ptr_b) # uou can also use the <<
+ptr_a.move(ptr_b) # you can also use the <<
 print(a) # abc
 ```
 
