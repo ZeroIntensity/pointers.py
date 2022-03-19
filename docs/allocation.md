@@ -2,7 +2,7 @@
 
 ## Malloc
 
-If you are familiar with C, then you be familiar with the `malloc` function.
+If you are familiar with C, then you should be familiar with the `malloc` function.
 
 You can use this in pointers.py, like so:
 
