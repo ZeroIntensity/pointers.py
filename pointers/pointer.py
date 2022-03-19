@@ -33,7 +33,6 @@ T = TypeVar("T")
 A = TypeVar("A")
 P = ParamSpec("P")
 
-
 def dereference_address(address: int) -> Any:
     """Dereference an address. Will cause a segmentation fault if the address is invalid."""
     return ctypes.cast(address, ctypes.py_object).value
@@ -123,3 +122,4 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
         return func(**actual)
         
     return inner
+

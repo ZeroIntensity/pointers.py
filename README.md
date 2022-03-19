@@ -13,10 +13,10 @@ a: str = '123'
 b: str = 'abc'
 
 @decay
-def switch(ptr_a: Pointer[str], ptr_b: Pointer[str]):
+def move(ptr_a: Pointer[str], ptr_b: Pointer[str]):
     ptr_a << ptr_b
 
-switch(a, b)
+move(a, b)
 print(a, b) # abc abc
 ```
 
@@ -157,3 +157,19 @@ some_function("a", "b") # converts "a" to a pointer, and leaves b as it is
 ```
 
 Make sure you annotate the argument with `Pointer` or else decay won't convert it.
+
+#### Allocation
+
+Pointers.py supports C's `malloc`/`free` API:
+
+```py
+from pointers import malloc, free, to_ptr, MallocPointer
+
+ptr: MallocPointer[str] = malloc(52)
+ptr << to_ptr("abc")
+print(~ptr) # abc
+free(ptr)
+print(~ptr) # memoryerror: memory has been freed
+```
+
+Note that methods `Pointer.assign` and `Pointer.type` are **not** supported in `MallocPointer` objects, and attempting to use them will raise `pointers.IsMallocPointerError`.

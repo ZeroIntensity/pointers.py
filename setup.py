@@ -6,13 +6,13 @@ with open('./README.md') as f:
 if __name__ == "__main__":
     setup(
         name = "pointers.py",
-        version = "1.1.1",
+        version = "1.1.2",
         author = "ZeroIntensity",
         author_email = "<zintensitydev@gmail.com>",
         description = "Bringing the hell of pointers to Python.",
         long_description_content_type = "text/markdown",
         long_description = long_desc,
-        py_modules = ['pointers'],
+        packages = ['pointers'],
         keywords = ['python', 'pointers'],
         install_requires = ['typing_extensions'],
         classifiers = [
