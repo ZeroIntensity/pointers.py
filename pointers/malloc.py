@@ -11,7 +11,7 @@ __all__ = (
     "free"
 )
 
-dll = ctypes.CDLL('msvcrt' if os.name == 'nt' else 'libc.so.6')
+dll = ctypes.CDLL('msvcrt' if os.name == 'nt' else "libc.dylib" if os.name == 'posix' else 'libc.so.6')
 
 # void* malloc(size_t size);
 dll.malloc.argtypes = ctypes.c_size_t,
