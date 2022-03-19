@@ -30,7 +30,7 @@ print("test") # prints "hello world"
 Like all other pointer operations, pointers.py has an operator for move:
 
 ```py
-ptr << ptr2 # same as above
+ptr <<= ptr2 # same as above
 print(~ptr)
 print("test")
 ```
@@ -45,7 +45,7 @@ from pointers import to_ptr
 a = "test"
 
 ptr = to_ptr(a)
-ptr << "hello world" # works just fine
+ptr <<= "hello world" # works just fine
 print(~ptr)
 ```
 
@@ -64,7 +64,7 @@ b = 2
 ptr = to_ptr(a)
 ptr2 = to_ptr(b)
 
-ptr << ptr2
+ptr <<= ptr2
 print(1, 2) # prints "2 2"
 ```
 

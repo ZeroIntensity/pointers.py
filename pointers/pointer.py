@@ -6,7 +6,8 @@ from typing import (
     Type, 
     get_type_hints, 
     Callable, 
-    Iterator, Union
+    Iterator, 
+    Union
 )
 
 from typing_extensions import ParamSpec
@@ -20,7 +21,6 @@ import sys
 
 with suppress(UnsupportedOperation): # in case its running in idle or something like that
     faulthandler.enable()
-
 
 __all__ = (
     "dereference_address",
@@ -78,9 +78,10 @@ class Pointer(Generic[T]):
 
         self._address = new.address
 
-    def __rshift__(self, value: Union["Pointer[T]", T]) -> None:
+    def __rshift__(self, value: Union["Pointer[T]", T]):
         """Point to a different address."""
         self.assign(value if isinstance(value, Pointer) else to_ptr(value))
+        return self
 
     def move(self, data: "Pointer[T]") -> None:
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""
@@ -92,9 +93,10 @@ class Pointer(Generic[T]):
 
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
-    def __lshift__(self, data: Union["Pointer[T]", T]) -> None:
+    def __lshift__(self, data: Union["Pointer[T]", T]):
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
+        return self
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""

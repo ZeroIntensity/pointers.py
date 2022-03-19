@@ -20,13 +20,13 @@ To assign data to the pointer, we have to use data movement:
 from pointers import malloc, MallocPointer
 
 ptr: MallocPointer[str] = malloc(52)
-ptr << "abc"
+ptr <<= "abc"
 print(~ptr)
 ```
 
 The size that we pass to `malloc` must match the data we move to the memory. In the example above, the string `"abc"` has a size of 52 bytes.
 
-If you give an invalid size, then a `ValueError` is raised.
+If you give an invalid size, then a `MemoryError` is raised.
 
 ## Free
 
@@ -38,7 +38,7 @@ To free the allocated memory from `malloc`, we must use `free`.
 from pointers import malloc, free
 
 ptr = malloc(52)
-ptr << "abc"
+ptr <<= "abc"
 free(ptr) # frees the memory
 ```
 

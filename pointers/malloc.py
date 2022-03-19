@@ -76,7 +76,13 @@ class MallocPointer(Pointer, Generic[T]):
 
         bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)).from_address(data.address)
         ptr = self.make_ct_pointer()
-        ptr.contents[:] = bytes(bytes_a)
+        byte_stream = bytes(bytes_a)
+
+        try:
+            ptr.contents[:] = byte_stream
+        except ValueError as e:
+            raise MemoryError(f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}") from e
+        
         self.assigned = True
 
     def make_ct_pointer(self):

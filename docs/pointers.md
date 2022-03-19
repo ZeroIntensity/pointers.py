@@ -88,7 +88,7 @@ from pointers import to_ptr
 a = to_ptr("a")
 b = to_ptr("b")
 
-a >> b # does the same thing as above
+a >>= b # does the same thing as above
 ```
 
 In fact, we don't even need to create a second pointer when using `>>`.
@@ -97,6 +97,5 @@ In fact, we don't even need to create a second pointer when using `>>`.
 from pointers import to_ptr
 
 a = to_ptr("a")
-
-a >> "b" # works just fine
+a >>= "b" # works just fine
 ```
