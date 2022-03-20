@@ -27,6 +27,19 @@ print(~ptr)
 print("test") # prints "hello world"
 ```
 
+### For C/C++ developers
+
+Data movement is equivalent to just assigning values to a dereferenced pointers. Example:
+
+```cpp
+int main() {
+    int a = 0; // using int instead of string
+    int* ptr = &a;
+
+    *ptr = 1; // unfortunately in python, this would overwrite 0 and not a
+}
+```
+
 Like all other pointer operations, pointers.py has an operator for move:
 
 ```py
@@ -98,7 +111,7 @@ Executing this code results in something like the following:
 Fatal Python error: Segmentation fault
 
 Current thread 0x00007fb99bffa740 (most recent call first):
-  File "/mnt/e/Projects/Python/pointers.py/pointers/pointer.py", line 38 in dereference_address
+  File "[omitted]", line 38 in dereference_address
 [1]    424 segmentation fault
 ```
 

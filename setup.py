@@ -6,7 +6,7 @@ with open("./README.md") as f:
 if __name__ == "__main__":
     setup(
         name="pointers.py",
-        version="1.1.5",
+        version="1.1.6",
         author="ZeroIntensity",
         author_email="<zintensitydev@gmail.com>",
         description="Bringing the hell of pointers to Python.",
@@ -28,7 +28,5 @@ if __name__ == "__main__":
             "Source": "https://github.com/ZeroIntensity/pointers.py",
             "Documentation": "https://pointerspy.netlify.app/",
         },
-        package_dir = {
-            "": "src"
-        }
+        package_dir={"": "src"},
     )

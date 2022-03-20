@@ -41,7 +41,17 @@ using std::string;
 
 int main() {
     string myVal { "hello world!" };
-    string* ptr { &myVal }
+    string* ptr { &myVal };
+    return 0;
+}
+```
+
+Or the following C code:
+
+```c
+int main() {
+    char* str = "hello world!";
+    char** ptr = &str;
     return 0;
 }
 ```
@@ -65,9 +75,6 @@ print(address_sum(to_ptr("abc"), to_ptr("123")) # this can get out of hand very 
 Luckily, there is a `decay` decorator, that automatically converts function arguments into pointers:
 
 ```py
-from pointers import Pointer, decay
-from typing import List, Any
-
 @decay
 def address_sum(first: Pointer[Any], second: Pointer[Any]) -> List[int]:
     return first.address + second.address
@@ -78,9 +85,6 @@ print(address_sum("abc", "123")) # much better
 The `decay` decorator will **only** decay arguments hinted as `Pointer`. For example:
 
 ```py
-from pointers import Pointer, decay
-from typing import List, Any
-
 @decay
 def address_sum(first, second) -> List[int]:
     return first.address + second.address # error: str has no attribute address

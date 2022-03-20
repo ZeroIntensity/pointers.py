@@ -44,6 +44,22 @@ free(ptr) # frees the memory
 
 A `MemoryError` is raised if you try to access the memory after it is freed.
 
+## Realloc
+
+If you need to change the size of the allocated memory, you can use `realloc`. Lets use the following code as an example:
+
+```py
+from pointers import malloc, free, realloc
+
+ptr = malloc(52)
+ptr <<= "abc"
+realloc(ptr, 53) # allocates one more byte
+ptr <<= "abcd" # works correctly
+free(ptr)
+```
+
+Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new memory. Instead, it simply allocates it and lets you use the old one.
+
 ## Malloc Pointer
 
 `MallocPointer` is extremely similar to `Pointer`, with a few differences:

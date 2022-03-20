@@ -1,39 +1,40 @@
 import ctypes
 import sys
 from .pointer import Pointer
-import os
+from ._cstd import c_malloc, c_free, c_realloc
 from typing import TypeVar, Generic, NoReturn
 
-__all__ = ("IsMallocPointerError", "MallocPointer", "malloc", "free")
-
-dll = ctypes.CDLL(
-    "msvcrt" if os.name == "nt" else "libc.dylib"
-    if os.name == "posix" else "libc.so.6"
+__all__ = (
+    "IsMallocPointerError",
+    "MallocPointer",
+    "malloc",
+    "free",
+    "realloc"
 )
 
-# void* malloc(size_t size);
-dll.malloc.argtypes = (ctypes.c_size_t,)
-dll.malloc.restype = ctypes.c_void_p
-# void free(void* ptr);
-dll.free.argtypes = (ctypes.c_void_p,)
-dll.free.restype = None
 
 T = TypeVar("T")
 
 
 class IsMallocPointerError(Exception):
-    """Raised when trying perform an operation on a malloc pointer that isn't supported.""" # noqa
+    """Raised when trying perform an operation on a malloc pointer that isn't supported."""  # noqa
+
     pass
 
 
 class MallocPointer(Pointer, Generic[T]):
     """Class representing a pointer created by malloc."""
 
-    def __init__(self, address: int, size: int) -> None:
+    def __init__(
+        self,
+        address: int,
+        size: int,
+        assigned: bool = False
+    ) -> None:
         self._address = address
         self._size = size
         self._freed = False
-        self._assigned = False
+        self._assigned = assigned
 
     @property
     def freed(self) -> bool:
@@ -63,6 +64,10 @@ class MallocPointer(Pointer, Generic[T]):
         """Size of the memory."""
         return self._size
 
+    @size.setter
+    def size(self, value: int) -> None:
+        self._size = value
+
     def assign(self, _) -> NoReturn:
         """Point to a different address."""
         raise IsMallocPointerError("cannot assign to malloc pointer")
@@ -85,14 +90,16 @@ class MallocPointer(Pointer, Generic[T]):
             ptr.contents[:] = byte_stream
         except ValueError as e:
             raise MemoryError(
-                f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}" # noqa
+                f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}"  # noqa
             ) from e
 
         self.assigned = True
 
     def make_ct_pointer(self):
-        return ctypes.cast(self.address, ctypes.POINTER(
-            ctypes.c_char * self.size))
+        return ctypes.cast(
+            self.address,
+            ctypes.POINTER(ctypes.c_char * self.size)
+        )
 
     def dereference(self):
         """Dereference the pointer."""
@@ -107,12 +114,19 @@ class MallocPointer(Pointer, Generic[T]):
 
 def malloc(size: int) -> MallocPointer:
     """Allocate memory for a given size."""
-    address = dll.malloc(size)
+    address = c_malloc(size)
     return MallocPointer(address, size)
 
 
 def free(target: MallocPointer):
     """Free allocated memory."""
     ct_ptr = target.make_ct_pointer()
-    dll.free(ct_ptr)
+    c_free(ct_ptr)
     target.freed = True
+
+
+def realloc(target: MallocPointer, size: int) -> None:
+    """Resize a memory block created by malloc."""
+    ct_ptr = target.make_ct_pointer()
+    c_realloc(ct_ptr, size)
+    target.size = size

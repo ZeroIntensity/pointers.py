@@ -31,7 +31,7 @@ P = ParamSpec("P")
 
 
 def dereference_address(address: int) -> Any:
-    """Dereference an address. Will cause a segmentation fault if the address is invalid.""" # noqa
+    """Dereference an address. Will cause a segmentation fault if the address is invalid."""  # noqa
     return ctypes.cast(address, ctypes.py_object).value
 
 
@@ -53,7 +53,9 @@ class Pointer(Generic[T]):
         return self._type
 
     def __repr__(self) -> str:
-        return f"<pointer to {self.type.__name__} object at {hex(self.address)}>" # noqa
+        return (
+            f"<pointer to {self.type.__name__} object at {hex(self.address)}>"  # noqa
+        )
 
     def __str__(self) -> str:
         return hex(self.address)
@@ -83,7 +85,7 @@ class Pointer(Generic[T]):
         return self
 
     def move(self, data: "Pointer[T]") -> None:
-        """Move data from another pointer to this pointer. Very dangerous, use with caution.""" # noqa
+        """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         if data.type is not self.type:
             raise ValueError("pointer must be the same type")
 
@@ -95,7 +97,7 @@ class Pointer(Generic[T]):
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
     def __lshift__(self, data: Union["Pointer[T]", T]):
-        """Move data from another pointer to this pointer. Very dangerous, use with caution.""" # noqa
+        """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
 
@@ -124,8 +126,7 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
                     actual[params[key].name] = args[index]  # type: ignore
 
         for key, value in hints.items():
-            if (hasattr(value, "__origin__")) and (
-                    value.__origin__ is Pointer):
+            if (hasattr(value, "__origin__")) and (value.__origin__ is Pointer): # noqa
                 actual[key] = to_ptr(actual[key])
 
         return func(**actual)

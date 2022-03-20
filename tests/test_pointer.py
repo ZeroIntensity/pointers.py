@@ -1,7 +1,9 @@
 from pointers import to_ptr, Pointer
 
+
 def test_to_ptr():
     assert type(to_ptr("a")) is Pointer
+
 
 def test_assign():
     a = to_ptr("a")
@@ -9,6 +11,7 @@ def test_assign():
 
     a >>= b
     assert b.address == a.address
+
 
 def test_move():
     num: int = 432154
@@ -20,4 +23,3 @@ def test_move():
 
     a <<= b
     assert num == target
-

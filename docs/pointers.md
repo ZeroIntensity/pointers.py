@@ -99,3 +99,18 @@ from pointers import to_ptr
 a = to_ptr("a")
 a >>= "b" # works just fine
 ```
+
+### For C/C++ developers
+
+Pointer assignment is simply just changing what a pointer is looking at. Example:
+
+```cpp
+int main() {
+    int a = 0; // using an int instead of string
+    int b = 0;
+
+    int* ptr = &a;
+    ptr = &b; // switches where the pointer is pointing to
+    return 0;
+}
+```

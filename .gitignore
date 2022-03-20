@@ -5,3 +5,4 @@ pointers.py.egg-info/
 site/
 .tox/
 .mypy_cache/
+.pytest_cache/
