@@ -40,6 +40,8 @@ int main() {
 }
 ```
 
+### Operator
+
 Like all other pointer operations, pointers.py has an operator for move:
 
 ```py

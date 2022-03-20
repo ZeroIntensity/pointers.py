@@ -80,6 +80,8 @@ Note that this **does not** change the original value, it only changes what the 
 
 If you would like to change the original value, please see [movement](movement.md).
 
+### Operator
+
 The `>>` operator can be used instead of calling `assign` manually as well:
 
 ```py

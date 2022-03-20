@@ -6,6 +6,12 @@ def test_malloc_pointer():
     mem = malloc(1)
     assert type(mem) is MallocPointer
 
+    with pytest.raises(MemoryError):
+        mem.dereference()
+
+    with pytest.raises(MemoryError):
+        mem <<= "abc"
+
     with pytest.raises(IsMallocPointerError):
         mem.type
 
