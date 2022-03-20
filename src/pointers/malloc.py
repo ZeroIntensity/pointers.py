@@ -2,14 +2,15 @@ import ctypes
 import sys
 from .pointer import Pointer
 from ._cstd import c_malloc, c_free, c_realloc
-from typing import TypeVar, Generic, NoReturn
+from typing import TypeVar, Generic, NoReturn, Optional
 
 __all__ = (
     "IsMallocPointerError",
     "MallocPointer",
     "malloc",
     "free",
-    "realloc"
+    "realloc",
+    "AllocationError"
 )
 
 
@@ -21,6 +22,10 @@ class IsMallocPointerError(Exception):
 
     pass
 
+class AllocationError(Exception):
+    """Raised when a memory allocation fails."""
+
+    pass
 
 class MallocPointer(Pointer, Generic[T]):
     """Class representing a pointer created by malloc."""
@@ -114,7 +119,11 @@ class MallocPointer(Pointer, Generic[T]):
 
 def malloc(size: int) -> MallocPointer:
     """Allocate memory for a given size."""
-    address = c_malloc(size)
+    address: Optional[int] = c_malloc(size)
+
+    if not address:
+        raise AllocationError("failed to allocate memory")
+
     return MallocPointer(address, size)
 
 
@@ -128,5 +137,9 @@ def free(target: MallocPointer):
 def realloc(target: MallocPointer, size: int) -> None:
     """Resize a memory block created by malloc."""
     ct_ptr = target.make_ct_pointer()
-    c_realloc(ct_ptr, size)
+    address: Optional[int] = c_realloc(ct_ptr, size)
+    
+    if not address:
+        raise AllocationError("failed to resize memory")
+
     target.size = size

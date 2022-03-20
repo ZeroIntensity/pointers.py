@@ -12,6 +12,8 @@ from pointers import malloc, MallocPointer
 ptr: MallocPointer[str] = malloc(52) # we have to specify type manually
 ```
 
+**Note:** If the memory allocation fails, a `pointers.AllocationError` is raised.
+
 Instead of returning a `Pointer` object, `malloc` returns a `pointers.MallocPointer` object.
 
 To assign data to the pointer, we have to use data movement:
@@ -57,6 +59,8 @@ realloc(ptr, 53) # allocates one more byte
 ptr <<= "abcd" # works correctly
 free(ptr)
 ```
+
+**Note:** Like `malloc`, if the resize fails, `pointers.AllocationError` is raised.
 
 Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new memory. Instead, it simply allocates it and lets you use the old one.
 
