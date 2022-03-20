@@ -1,8 +1,9 @@
 # pointers.py
 
+![Tests](https://github.com/ZeroIntensity/pointers.py/actions/workflows/tests.yml/badge.svg)
+
 ## Bringing the hell of pointers to Python
 
-![Tests](https://github.com/ZeroIntensity/pointers.py/actions/workflows/tests.yml/badge.svg)
 Why would you ever need this
 
 - [Documentation](https://pointerspy.netlify.app/)
