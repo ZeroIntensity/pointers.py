@@ -29,6 +29,6 @@ if __name__ == "__main__":
             "Documentation": "https://pointerspy.netlify.app/",
         },
         package_dir = {
-            "pointers": "src"
+            "": "src"
         }
     )
