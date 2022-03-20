@@ -3,3 +3,5 @@ dist/
 build/
 pointers.py.egg-info/
 site/
+.tox/
+.mypy_cache/

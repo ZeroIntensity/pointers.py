@@ -1,31 +1,34 @@
 from setuptools import setup
 
-with open('./README.md') as f:
+with open("./README.md") as f:
     long_desc: str = f.read()
 
 if __name__ == "__main__":
     setup(
-        name = "pointers.py",
-        version = "1.1.4",
-        author = "ZeroIntensity",
-        author_email = "<zintensitydev@gmail.com>",
-        description = "Bringing the hell of pointers to Python.",
-        long_description_content_type = "text/markdown",
-        long_description = long_desc,
-        packages = ['pointers'],
-        keywords = ['python', 'pointers'],
-        install_requires = ['typing_extensions'],
-        classifiers = [
+        name="pointers.py",
+        version="1.1.5",
+        author="ZeroIntensity",
+        author_email="<zintensitydev@gmail.com>",
+        description="Bringing the hell of pointers to Python.",
+        long_description_content_type="text/markdown",
+        long_description=long_desc,
+        packages=["pointers"],
+        keywords=["python", "pointers"],
+        install_requires=["typing_extensions"],
+        classifiers=[
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
-            "Programming Language :: Python :: 3.11"
+            "Programming Language :: Python :: 3.11",
         ],
-        license = "MIT",
-        project_urls = {
+        license="MIT",
+        project_urls={
             "Source": "https://github.com/ZeroIntensity/pointers.py",
-            "Documentation": "https://pointerspy.netlify.app/"
+            "Documentation": "https://pointerspy.netlify.app/",
+        },
+        package_dir = {
+            "pointers": "src"
         }
     )

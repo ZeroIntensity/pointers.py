@@ -1,13 +1,13 @@
 import ctypes
 from typing import (
-    Generic, 
-    TypeVar, 
-    Any, 
-    Type, 
-    get_type_hints, 
-    Callable, 
-    Iterator, 
-    Union
+    Generic,
+    TypeVar,
+    Any,
+    Type,
+    get_type_hints,
+    Callable,
+    Iterator,
+    Union,
 )
 
 from typing_extensions import ParamSpec
@@ -16,29 +16,28 @@ from functools import wraps
 from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
-from contextlib import suppress
 import sys
 
-with suppress(UnsupportedOperation): # in case its running in idle or something like that
+with suppress(
+    UnsupportedOperation
+):  # in case its running in idle or something like that
     faulthandler.enable()
 
-__all__ = (
-    "dereference_address",
-    "Pointer",
-    "to_ptr",
-    "decay"
-)
+__all__ = ("dereference_address", "Pointer", "to_ptr", "decay")
 
 T = TypeVar("T")
 A = TypeVar("A")
 P = ParamSpec("P")
 
+
 def dereference_address(address: int) -> Any:
-    """Dereference an address. Will cause a segmentation fault if the address is invalid."""
+    """Dereference an address. Will cause a segmentation fault if the address is invalid.""" # noqa
     return ctypes.cast(address, ctypes.py_object).value
+
 
 class Pointer(Generic[T]):
     """Base class representing a pointer."""
+
     def __init__(self, address: int, typ: Type[T]) -> None:
         self._address = address
         self._type = typ
@@ -54,7 +53,7 @@ class Pointer(Generic[T]):
         return self._type
 
     def __repr__(self) -> str:
-        return f"<pointer to {self.type.__name__} object at {hex(self.address)}>"
+        return f"<pointer to {self.type.__name__} object at {hex(self.address)}>" # noqa
 
     def __str__(self) -> str:
         return hex(self.address)
@@ -84,44 +83,51 @@ class Pointer(Generic[T]):
         return self
 
     def move(self, data: "Pointer[T]") -> None:
-        """Move data from another pointer to this pointer. Very dangerous, use with caution."""
+        """Move data from another pointer to this pointer. Very dangerous, use with caution.""" # noqa
         if data.type is not self.type:
             raise ValueError("pointer must be the same type")
 
-        bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)).from_address(data.address)
-        bytes_b = (ctypes.c_ubyte * sys.getsizeof(~self)).from_address(self.address)
+        bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)) \
+            .from_address(data.address)
+        bytes_b = (ctypes.c_ubyte * sys.getsizeof(~self)) \
+            .from_address(self.address)
 
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
     def __lshift__(self, data: Union["Pointer[T]", T]):
-        """Move data from another pointer to this pointer. Very dangerous, use with caution."""
+        """Move data from another pointer to this pointer. Very dangerous, use with caution.""" # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
+
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
     return Pointer(id(val), type(val))
 
+
 def decay(func: Callable[P, T]) -> Callable[..., T]:
     """Automatically convert values to pointers when called."""
+
     @wraps(func)
     def inner(*args: P.args, **kwargs: P.kwargs) -> T:
         hints = get_type_hints(func)
         actual: dict = {}
         params = inspect.signature(func).parameters
 
+        # mypy is giving false positives here since it doesn't know how to
+        # handle paramspec
         for index, key in enumerate(params):
-            if key in kwargs:
-                actual[key] = kwargs[key]
+            if key in kwargs:  # type: ignore
+                actual[key] = kwargs[key]  # type: ignore
             else:
                 with suppress(IndexError):
-                    actual[params[key].name] = args[index]
-            
+                    actual[params[key].name] = args[index]  # type: ignore
+
         for key, value in hints.items():
-            if (hasattr(value, "__origin__")) and (value.__origin__ is Pointer):
+            if (hasattr(value, "__origin__")) and (
+                    value.__origin__ is Pointer):
                 actual[key] = to_ptr(actual[key])
 
         return func(**actual)
-        
-    return inner
 
+    return inner
