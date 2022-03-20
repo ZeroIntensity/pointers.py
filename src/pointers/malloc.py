@@ -22,10 +22,12 @@ class IsMallocPointerError(Exception):
 
     pass
 
+
 class AllocationError(Exception):
     """Raised when a memory allocation fails."""
 
     pass
+
 
 class MallocPointer(Pointer, Generic[T]):
     """Class representing a pointer created by malloc."""
@@ -138,7 +140,7 @@ def realloc(target: MallocPointer, size: int) -> None:
     """Resize a memory block created by malloc."""
     ct_ptr = target.make_ct_pointer()
     address: Optional[int] = c_realloc(ct_ptr, size)
-    
+
     if not address:
         raise AllocationError("failed to resize memory")
 
