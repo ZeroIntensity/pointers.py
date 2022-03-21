@@ -21,6 +21,8 @@ This is extremely dangerous, since we are overwriting the string `"test"` with `
 
 That means that if we try to use the string `"test"` anywhere else, then it will be switched with `"hello world"`
 
+**Note:** Data movement will only change the literal on cached types (such as `int` and `str`)
+
 ```py
 ptr.move(ptr2)
 print(~ptr)
@@ -66,7 +68,7 @@ print(~ptr)
 
 ## Consequences
 
-After you are finished crying after accidentally overwriting your newborn child using this library, what actually happens when we break something with overwriting?
+After you are finished crying from accidentally overwriting your newborn child using this library, what actually happens when we break something with overwriting?
 
 Lets use the following code as an example:
 
@@ -97,9 +99,48 @@ This is **not** a Python exception, it's how Python is handling `SIGABRT`. **You
 
 It's an internal Python error, and it's occuring because we overwrote `1` with `2` (so `1 == 2` would evalute to `True`!)
 
-### Other Issues
+### Other dangers of overwriting
 
-You are less likely to run into problems with other methods, but it is definetly possible:
+If your code runs successfully, and you are updating a non-cached type, then everything should be ok, right? Unfortunately, this is not the case.
+
+Lets use the code below as an example:
+
+```py
+from pointers import to_ptr
+
+class a:
+    def __init__(self, a: str) -> None:
+        self.a = a
+
+instance = a("a")
+second_instance = a("b")
+ptr = to_ptr(instance)
+
+ptr <<= second_instance
+print(ptr.a) # b
+```
+
+This will execute just fine, and since `a` isn't a cached type, then it isn't changed for the entire interpreter.
+
+Now lets look at the code pointers.py uses for data movement:
+
+```py
+bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)) \
+    .from_address(data.address)
+bytes_b = (ctypes.c_ubyte * sys.getsizeof(~self)) \
+    .from_address(self.address)
+
+ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
+```
+
+Both pointers get turned into a byte stream, and then we use C to change the original stream.
+
+**Why is this an issue?**
+Python objects have internal data like reference counts, type, length that will be corrupted by blindly copying over them.
+
+### Segmentation Faults
+
+You are less likely to run into problems with other methods in pointers.py, but it is definetly possible:
 
 ```py
 from pointers import dereference_address # internal function used by pointers.py
