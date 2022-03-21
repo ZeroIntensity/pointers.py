@@ -102,12 +102,10 @@ class Pointer(Generic[T]):
         return self
 
     def __add__(self, amount: int):
-        self._address += amount
-        return self
+        return Pointer(self.address + amount, self.type)
 
     def __sub__(self, amount: int):
-        self._address -= amount
-        return self
+        return Pointer(self.address - amount, self.type)
 
 
 def to_ptr(val: T) -> Pointer[T]:

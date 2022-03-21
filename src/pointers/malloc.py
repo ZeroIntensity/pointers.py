@@ -112,12 +112,18 @@ class MallocPointer(Pointer, Generic[T]):
     def dereference(self):
         """Dereference the pointer."""
         if self.freed:
-            raise MemoryError("memory has been freed")
+            raise MemoryError("cannot dereference memory that has been freed")
 
         if not self.assigned:
-            raise MemoryError("pointer has no value")
+            raise MemoryError("cannot dereference pointer that has no value")
 
         return super().dereference()
+
+    def __add__(self, amount: int):
+        return MallocPointer(self.address + amount, self.type, self.assigned)
+
+    def __sub__(self, amount: int):
+        return MallocPointer(self.address - amount, self.type, self.assigned)
 
 
 def malloc(size: int) -> MallocPointer:
