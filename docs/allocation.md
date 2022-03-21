@@ -71,7 +71,7 @@ Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new m
 Basic usage:
 
 ```py
-from src.pointers import calloc
+from pointers import calloc
 
 memory = calloc(3, 28)
 memory <<= i
@@ -84,7 +84,7 @@ print(~memory)
 To access the other chunks, we can use pointer arithmetic:
 
 ```py
-from src.pointers import calloc
+from pointers import calloc
 
 memory = calloc(3, 28)
 
@@ -102,7 +102,3 @@ print(~memory)
 - `freed` and `assigned` property are present.
 - Attempting to read property `type` results in a `IsMallocPointerError`
 - Pointer assignment unsupported (also results in a `IsMallocPointerError`)
-
-```
-
-```
