@@ -66,7 +66,7 @@ print(~ptr)
 
 ## Consequences
 
-After you are finishing crying after accidentally overwriting your newborn child using this library, what actually happens when we break something with overwriting?
+After you are finished crying after accidentally overwriting your newborn child using this library, what actually happens when we break something with overwriting?
 
 Lets use the following code as an example:
 

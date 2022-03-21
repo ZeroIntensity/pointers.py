@@ -1,7 +1,7 @@
 import ctypes
 import sys
 from .pointer import Pointer
-from ._cstd import c_malloc, c_free, c_realloc
+from ._cstd import c_malloc, c_free, c_realloc, c_calloc
 from typing import TypeVar, Generic, NoReturn, Optional
 
 __all__ = (
@@ -10,7 +10,8 @@ __all__ = (
     "malloc",
     "free",
     "realloc",
-    "AllocationError"
+    "AllocationError",
+    "calloc"
 )
 
 
@@ -145,3 +146,8 @@ def realloc(target: MallocPointer, size: int) -> None:
         raise AllocationError("failed to resize memory")
 
     target.size = size
+
+
+def calloc(num: int, size: int) -> MallocPointer:
+    """Allocate a number of blocks with a given size."""
+    return MallocPointer(c_calloc(num, size), size)

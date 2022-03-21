@@ -64,6 +64,37 @@ free(ptr)
 
 Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new memory. Instead, it simply allocates it and lets you use the old one.
 
+## Calloc
+
+`calloc` is a bit more complicated than `malloc` and `realloc`. Instead of allocating one block of memory, it allocates multiple blocks of a specified size.
+
+Basic usage:
+
+```py
+from src.pointers import calloc
+
+memory = calloc(3, 28)
+memory <<= i
+
+print(~memory)
+```
+
+`calloc` isn't very useful opposed to `malloc` if we aren't gonna use the other chunks.
+
+To access the other chunks, we can use pointer arithmetic:
+
+```py
+from src.pointers import calloc
+
+memory = calloc(3, 28)
+
+for i in range(1, 4):
+    memory += 1 # go to next value
+    memory <<= i
+
+print(~memory)
+```
+
 ## Malloc Pointer
 
 `MallocPointer` is extremely similar to `Pointer`, with a few differences:
@@ -71,3 +102,7 @@ Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new m
 - `freed` and `assigned` property are present.
 - Attempting to read property `type` results in a `IsMallocPointerError`
 - Pointer assignment unsupported (also results in a `IsMallocPointerError`)
+
+```
+
+```

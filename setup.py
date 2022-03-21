@@ -6,7 +6,7 @@ with open("./README.md") as f:
 if __name__ == "__main__":
     setup(
         name="pointers.py",
-        version="1.1.7",
+        version="1.1.8",
         author="ZeroIntensity",
         author_email="<zintensitydev@gmail.com>",
         description="Bringing the hell of pointers to Python.",

@@ -101,6 +101,14 @@ class Pointer(Generic[T]):
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
 
+    def __add__(self, amount: int):
+        self._address += amount
+        return self
+
+    def __sub__(self, amount: int):
+        self._address -= amount
+        return self
+
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
