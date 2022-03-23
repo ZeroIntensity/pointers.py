@@ -27,10 +27,11 @@ Start with importing `to_ptr`, and then calling it on a value:
 ```py
 from pointers import to_ptr
 
-a = to_ptr("hello world!") # <pointer to str object at [address]>
+val = "hello world!"
+ptr = to_ptr(v) # <pointer to str object at [address]>
 ```
 
-Variable `a` gets assigned to type `pointers.Pointer[str]`.
+Variable `ptr` gets assigned to type `pointers.Pointer[str]`.
 
 This is equivalent to the following C++ code:
 
@@ -40,8 +41,8 @@ This is equivalent to the following C++ code:
 using std::string;
 
 int main() {
-    string myVal { "hello world!" };
-    string* ptr { &myVal };
+    string val { "hello world!" };
+    string* ptr { &val };
     return 0;
 }
 ```
@@ -50,8 +51,8 @@ Or the following C code:
 
 ```c
 int main() {
-    char* str = "hello world!";
-    char** ptr = &str;
+    char* val = "hello world!";
+    char** ptr = &val;
     return 0;
 }
 ```
