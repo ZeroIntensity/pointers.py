@@ -84,7 +84,7 @@ class CallocPointer(MallocPointer, Generic[T]):
 
     @size.setter
     def size(self, value: int) -> None:
-        self._chunk_size = value # this might break things but idk
+        self._chunk_size = value  # this might break things but idk
 
     @property
     def safe(self) -> bool:
