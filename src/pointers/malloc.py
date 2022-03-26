@@ -1,33 +1,14 @@
 import ctypes
 import sys
 from .pointer import Pointer
-from ._cstd import c_malloc, c_free, c_realloc, c_calloc
+from ._cstd import c_malloc, c_free, c_realloc
 from typing import TypeVar, Generic, NoReturn, Optional
+from .exceptions import IsMallocPointerError, AllocationError
 
-__all__ = (
-    "IsMallocPointerError",
-    "MallocPointer",
-    "malloc",
-    "free",
-    "realloc",
-    "AllocationError",
-    "calloc"
-)
+__all__ = ("MallocPointer", "malloc", "free", "realloc")
 
 
 T = TypeVar("T")
-
-
-class IsMallocPointerError(Exception):
-    """Raised when trying perform an operation on a malloc pointer that isn't supported."""  # noqa
-
-    pass
-
-
-class AllocationError(Exception):
-    """Raised when a memory allocation fails."""
-
-    pass
 
 
 class MallocPointer(Pointer, Generic[T]):
@@ -81,7 +62,7 @@ class MallocPointer(Pointer, Generic[T]):
         raise IsMallocPointerError("cannot assign to malloc pointer")
 
     def __repr__(self) -> str:
-        return f"<pointer to allocated memory at {hex(self.address)}>"
+        return f"<pointer to {self.size} bytes of memory at {hex(self.address)}>" # noqa
 
     def move(self, data: Pointer[T]) -> None:
         """Move data to the allocated memory."""
@@ -120,10 +101,10 @@ class MallocPointer(Pointer, Generic[T]):
         return super().dereference()
 
     def __add__(self, amount: int):
-        return MallocPointer(self.address + amount, self.type, self.assigned)
+        return MallocPointer(self.address + amount, self.size, self.assigned)
 
     def __sub__(self, amount: int):
-        return MallocPointer(self.address - amount, self.type, self.assigned)
+        return MallocPointer(self.address - amount, self.size, self.assigned)
 
 
 def malloc(size: int) -> MallocPointer:
@@ -152,8 +133,3 @@ def realloc(target: MallocPointer, size: int) -> None:
         raise AllocationError("failed to resize memory")
 
     target.size = size
-
-
-def calloc(num: int, size: int) -> MallocPointer:
-    """Allocate a number of blocks with a given size."""
-    return MallocPointer(c_calloc(num, size), size)

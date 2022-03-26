@@ -132,7 +132,7 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
                     actual[params[key].name] = args[index]  # type: ignore
 
         for key, value in hints.items():
-            if (hasattr(value, "__origin__")) and (value.__origin__ is Pointer): # noqa
+            if (hasattr(value, "__origin__")) and (value.__origin__ is Pointer):  # noqa
                 actual[key] = to_ptr(actual[key])
 
         return func(**actual)

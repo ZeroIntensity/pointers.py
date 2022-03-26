@@ -33,11 +33,12 @@ def test_free():
     with pytest.raises(MemoryError):
         print(~mem)
 
+
 def test_realloc():
     mem = malloc(52)
     mem <<= "abc"
     realloc(mem, 53)
-    
+
     assert mem.size == 53
 
     with pytest.raises(MemoryError):
@@ -45,4 +46,3 @@ def test_realloc():
 
     mem <<= "abcd"
     assert ~mem == "abcd"
-    

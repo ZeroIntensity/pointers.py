@@ -1,12 +1,7 @@
 import ctypes
 import os
 
-__all__ = (
-    "c_malloc",
-    "c_free",
-    "c_realloc",
-    "c_calloc"
-)
+__all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc")
 
 dll = ctypes.CDLL(
     "msvcrt" if os.name == "nt" else "libc.so.6"

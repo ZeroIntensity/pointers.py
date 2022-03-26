@@ -30,6 +30,14 @@ The size that we pass to `malloc` must match the data we move to the memory. In 
 
 If you give an invalid size, then a `MemoryError` is raised.
 
+## Malloc Pointer
+
+`MallocPointer` is extremely similar to `Pointer`, with a few differences:
+
+- `freed` and `assigned` property are present.
+- Attempting to read property `type` results in a `IsMallocPointerError`
+- Pointer assignment unsupported (also results in a `IsMallocPointerError`)
+
 ## Free
 
 To free the allocated memory from `malloc`, we must use `free`.
@@ -74,31 +82,78 @@ Basic usage:
 from pointers import calloc
 
 memory = calloc(3, 28)
-memory <<= i
+memory <<= 5
 
 print(~memory)
 ```
 
-`calloc` isn't very useful opposed to `malloc` if we aren't gonna use the other chunks.
+`calloc` also **does not** return a `MallocPointer` object. Instead, it returns its own `CallocPointer` object.
 
-To access the other chunks, we can use pointer arithmetic:
+Now, to use the other allocated chunks, we can use pointer arithmetic.
+
+```py
+memory = calloc(4, 28)
+memory <<= 1 # assigns first chunk to 1
+memory += 1 # access next chunk
+memory <<= 2 # assigns this chunk to 2
+print(~memory)
+```
+
+If you attempt to skip more chunks than are allocated, a `NotEnoughChunks` error is raised:
+
+```py
+memory = calloc(1, 28)
+memory += 2 # NotEnoughChunks: chunk index is 2, while allocation is 1
+```
+
+### Safe Mode
+
+Due to garbage collection, segmentation faults are extremely common when using `calloc`. For example:
 
 ```py
 from pointers import calloc
 
-memory = calloc(3, 28)
+memory = calloc(4, 28)
 
-for i in range(1, 4):
-    memory += 1 # go to next value
-    memory <<= i
+for index, ptr in enumerate(memory):
+    ptr <<= index + 1
 
-print(~memory)
+for i in memory:
+    print(~i) # segmentation fault occurs
 ```
 
-## Malloc Pointer
+Luckily, pointers.py has a fix for this. Pass `safe = True` when calling `calloc`:
 
-`MallocPointer` is extremely similar to `Pointer`, with a few differences:
+```py
+from pointers import calloc
 
-- `freed` and `assigned` property are present.
-- Attempting to read property `type` results in a `IsMallocPointerError`
-- Pointer assignment unsupported (also results in a `IsMallocPointerError`)
+memory = calloc(4, 28, safe = True)
+memory <<= 1
+memory += 1
+memory <<= 2
+memory -= 1
+print(~memory) # this would normally cause a segmentation fault
+```
+
+Alternatively, you can use `calloc_safe`:
+
+```py
+from pointers import calloc_safe
+
+memory = calloc_safe(4, 28) # same thing as passing safe = True
+```
+
+### What does safe do?
+
+Safety with `calloc` enables value caching internally.
+
+When safe is disabled, dereferencing the pointer will lookup the memory address stored in the pointer, so when it doesn't exist, a segmentation fault occurs.
+
+Safe fixes this by storing the value in the pointer itself. While this breaks the "legacy" of this awful library, it's really the only way to allow `calloc` to work at all.
+
+### Calloc Pointer
+
+`CallocPointer` inherits from `MallocPointer`, so it's mostly the same, but has a few different features:
+
+- `safe`, `chunks`, `chunk_size`, and `current_index` properties are present.
+- Dereferencing using `*` is not supported

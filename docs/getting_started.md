@@ -28,7 +28,7 @@ Start with importing `to_ptr`, and then calling it on a value:
 from pointers import to_ptr
 
 val = "hello world!"
-ptr = to_ptr(v) # <pointer to str object at [address]>
+ptr = to_ptr(val) # <pointer to str object at [address]>
 ```
 
 Variable `ptr` gets assigned to type `pointers.Pointer[str]`.
