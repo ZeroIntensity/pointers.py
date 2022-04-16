@@ -117,7 +117,7 @@ int main() {
 }
 ```
 
-### Frozen Pointers
+## Frozen Pointers
 
 If you don't want your pointer to ever change, you can use `FrozenPointer` and `to_const_ptr`:
 
