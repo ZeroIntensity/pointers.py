@@ -63,8 +63,8 @@ from pointers import malloc, free, realloc
 
 ptr = malloc(52)
 ptr <<= "abc"
-realloc(ptr, 53) # allocates one more byte
-ptr <<= "abcd" # works correctly
+realloc(ptr, 53)  # allocates one more byte
+ptr <<= "abcd"  # works correctly
 free(ptr)
 ```
 
@@ -93,9 +93,9 @@ Now, to use the other allocated chunks, we can use pointer arithmetic.
 
 ```py
 memory = calloc(4, 28)
-memory <<= 1 # assigns first chunk to 1
-memory += 1 # access next chunk
-memory <<= 2 # assigns this chunk to 2
+memory <<= 1  # assigns first chunk to 1
+memory += 1  # access next chunk
+memory <<= 2  # assigns this chunk to 2
 print(~memory)
 ```
 
@@ -103,7 +103,7 @@ If you attempt to skip more chunks than are allocated, a `NotEnoughChunks` error
 
 ```py
 memory = calloc(1, 28)
-memory += 2 # NotEnoughChunks: chunk index is 2, while allocation is 1
+memory += 2  # NotEnoughChunks: chunk index is 2, while allocation is 1
 ```
 
 ### Safe Mode
@@ -119,7 +119,7 @@ for index, ptr in enumerate(memory):
     ptr <<= index + 1
 
 for i in memory:
-    print(~i) # segmentation fault occurs
+    print(~i)  # segmentation fault occurs
 ```
 
 Luckily, pointers.py has a fix for this. Pass `safe = True` when calling `calloc`:
@@ -132,7 +132,7 @@ memory <<= 1
 memory += 1
 memory <<= 2
 memory -= 1
-print(~memory) # this would normally cause a segmentation fault
+print(~memory)  # this would normally cause a segmentation fault
 ```
 
 Alternatively, you can use `calloc_safe`:
@@ -140,7 +140,7 @@ Alternatively, you can use `calloc_safe`:
 ```py
 from pointers import calloc_safe
 
-memory = calloc_safe(4, 28) # same thing as passing safe = True
+memory = calloc_safe(4, 28)  # same thing as passing safe = True
 ```
 
 ### What does safe do?

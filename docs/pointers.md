@@ -11,7 +11,7 @@ from pointers import Pointer, decay
 
 @decay
 def test(ptr: Pointer[str])
-    print(ptr.dereference()) # prints "abc"
+    print(ptr.dereference())  # prints "abc"
 
 test("abc")
 ```
@@ -23,7 +23,7 @@ The recommended way to dereference a pointer object is to use the `~` operator, 
 ```py
 @decay
 def test(ptr: Pointer[str])
-    print(~ptr) # much shorter and easier to type
+    print(~ptr)  # much shorter and easier to type
 ```
 
 Finally, you can use the `*` operator, like in low level languages:
@@ -31,7 +31,7 @@ Finally, you can use the `*` operator, like in low level languages:
 ```py
 @decay
 def test(ptr: Pointer[str])
-    print(*ptr) # works the same as above
+    print(*ptr)  # works the same as above
 ```
 
 ### Why should I use `~` over `*`?
@@ -43,8 +43,8 @@ This can cause some issues. For example:
 ```py
 @decay
 def test(ptr: Pointer[str])
-    deref = ~ptr # valid, runs correctly
-    deref = *ptr # invalid syntax error!
+    deref = ~ptr  # valid, runs correctly
+    deref = *ptr  # invalid syntax error!
 
 test("abc")
 ```
@@ -56,8 +56,8 @@ For example, if we have a `list` that we are trying to pass into a function, usi
 ```py
 @decay
 def test(ptr: Pointer[list])
-    some_func(*ptr) # this only dereferences it, doesn't splat it
-    some_func(**ptr) # this is treated as a kwarg splat, raises a typeerror
+    some_func(*ptr)  # this only dereferences it, doesn't splat it
+    some_func(**ptr)  # this is treated as a kwarg splat, raises a typeerror
 
 test([1, 2, 3])
 ```
@@ -73,7 +73,7 @@ a = to_ptr("a")
 b = to_ptr("b")
 
 a.assign(b)
-print(~a) # prints "b", since a is now pointing to the address of b
+print(~a)  # prints "b", since a is now pointing to the address of b
 ```
 
 Note that this **does not** change the original value, it only changes what the pointer is looking at.
@@ -90,7 +90,7 @@ from pointers import to_ptr
 a = to_ptr("a")
 b = to_ptr("b")
 
-a >>= b # does the same thing as above
+a >>= b  # does the same thing as above
 ```
 
 In fact, we don't even need to create a second pointer when using `>>`.
@@ -99,7 +99,7 @@ In fact, we don't even need to create a second pointer when using `>>`.
 from pointers import to_ptr
 
 a = to_ptr("a")
-a >>= "b" # works just fine
+a >>= "b"  # works just fine
 ```
 
 ### For C/C++ developers
@@ -115,4 +115,28 @@ int main() {
     ptr = &b; // switches where the pointer is pointing to
     return 0;
 }
+```
+
+### Frozen Pointers
+
+If you don't want your pointer to ever change, you can use `FrozenPointer` and `to_const_ptr`:
+
+```py
+from pointers import to_const_ptr, FrozenPointer
+
+ptr: FrozenPointer[str] = to_const_ptr("abc")
+ptr >>= "123"  # pointers.IsFrozenError
+```
+
+You can also use it with `decay`:
+
+```py
+from pointers import decay, FrozenPointer
+
+@decay
+def test(ptr: Pointer[str], ptr2: FrozenPointer[str]):
+    ptr >>= "123"  # works just fine
+    ptr2 >>= "123"  # pointers.IsFrozenError
+
+test("a", "b")
 ```

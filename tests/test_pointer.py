@@ -1,5 +1,11 @@
-from pointers import to_ptr, Pointer
-
+from pointers import (
+    to_ptr,
+    Pointer,
+    FrozenPointer,
+    to_const_ptr,
+    IsFrozenError
+)
+import pytest
 
 def test_to_ptr():
     assert type(to_ptr("a")) is Pointer
@@ -23,3 +29,11 @@ def test_move():
 
     a <<= b
     assert num == target
+
+def test_frozen():
+    ptr = to_const_ptr("a")
+
+    assert type(ptr) is FrozenPointer
+
+    with pytest.raises(IsFrozenError):
+        ptr >>= "abc"

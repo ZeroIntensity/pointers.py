@@ -18,7 +18,7 @@ def move(ptr_a: Pointer[str], ptr_b: Pointer[str]):
     ptr_a <<= ptr_b
 
 move(a, b)
-print(a, b) # abc abc
+print(a, b)  # abc abc
 ```
 
 #### Example with malloc
@@ -28,9 +28,9 @@ from pointers import malloc, free
 
 memory = malloc(52)
 memory <<= "abc"
-print(*memory) # abc
+print(*memory)  # abc
 free(memory)
-print(*memory) # MemoryError
+print(*memory)  # MemoryError
 ```
 
 ### Why does this exist?

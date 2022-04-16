@@ -1,7 +1,6 @@
 from pointers import malloc, free, MallocPointer, IsMallocPointerError, realloc
 import pytest
 
-
 def test_malloc_pointer():
     mem = malloc(1)
     assert type(mem) is MallocPointer

@@ -1,4 +1,4 @@
-from .pointer import Pointer, decay, to_ptr, dereference_address
+from .pointer import Pointer, to_ptr, dereference_address
 from .malloc import (
     malloc,
     IsMallocPointerError,
@@ -7,5 +7,12 @@ from .malloc import (
     realloc,
     AllocationError,
 )
-from .exceptions import AllocationError, IsMallocPointerError, NotEnoughChunks
+from .exceptions import (
+    AllocationError,
+    IsMallocPointerError,
+    NotEnoughChunks,
+    IsFrozenError
+)
 from .calloc import calloc, CallocPointer, calloc_safe
+from .frozen_pointer import to_const_ptr, FrozenPointer
+from .decay import decay

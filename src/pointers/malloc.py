@@ -70,7 +70,7 @@ class MallocPointer(Pointer, Generic[T]):
             raise MemoryError("memory has been freed")
 
         bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)) \
-            .from_address(data.address + 24)
+            .from_address(data.address)
 
         ptr = self.make_ct_pointer()
         byte_stream = bytes(bytes_a)

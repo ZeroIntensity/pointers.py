@@ -4,15 +4,11 @@ from typing import (
     TypeVar,
     Any,
     Type,
-    get_type_hints,
-    Callable,
     Iterator,
     Union,
 )
 
 from typing_extensions import ParamSpec
-import inspect
-from functools import wraps
 from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
@@ -23,7 +19,7 @@ with suppress(
 ):  # in case its running in idle or something like that
     faulthandler.enable()
 
-__all__ = ("dereference_address", "Pointer", "to_ptr", "decay")
+__all__ = ("dereference_address", "Pointer", "to_ptr")
 
 T = TypeVar("T")
 A = TypeVar("A")
@@ -122,30 +118,3 @@ class Pointer(Generic[T]):
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
     return Pointer(id(val), type(val))
-
-
-def decay(func: Callable[P, T]) -> Callable[..., T]:
-    """Automatically convert values to pointers when called."""
-
-    @wraps(func)
-    def inner(*args: P.args, **kwargs: P.kwargs) -> T:
-        hints = get_type_hints(func)
-        actual: dict = {}
-        params = inspect.signature(func).parameters
-
-        # mypy is giving false positives here since it doesn't know how to
-        # handle paramspec
-        for index, key in enumerate(params):
-            if key in kwargs:  # type: ignore
-                actual[key] = kwargs[key]  # type: ignore
-            else:
-                with suppress(IndexError):
-                    actual[params[key].name] = args[index]  # type: ignore
-
-        for key, value in hints.items():
-            if (hasattr(value, "__origin__")) and (value.__origin__ is Pointer):  # noqa
-                actual[key] = to_ptr(actual[key])
-
-        return func(**actual)  # type: ignore
-
-    return inner

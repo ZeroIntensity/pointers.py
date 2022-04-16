@@ -17,3 +17,9 @@ class NotEnoughChunks(Exception):
     """Raised when there aren't enough chunks in a CallocPointer."""
 
     pass
+
+
+class IsFrozenError(Exception):
+    """Raised when trying to move the address of a frozen pointer."""
+
+    pass
