@@ -88,14 +88,6 @@ class Pointer(Generic[T]):
         deref_a: T = ~data
         deref_b: T = ~self
 
-        size_a: int = sys.getsizeof(deref_a)
-        size_b: int = sys.getsizeof(deref_b)
-
-        if not size_a == size_b:
-            raise MemoryError(
-                f"object is of size {size_a}, while memory allocation is {size_b}"  # noqa
-            )
-
         bytes_a = (ctypes.c_ubyte * sys.getsizeof(deref_a)) \
             .from_address(data.address)
         bytes_b = (ctypes.c_ubyte * sys.getsizeof(deref_b)) \
