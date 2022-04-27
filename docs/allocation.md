@@ -30,6 +30,35 @@ The size that we pass to `malloc` must match the data we move to the memory. In 
 
 If you give an invalid size, then a `MemoryError` is raised.
 
+### Identity checking
+
+Pointers.py has an known issue with identity checking when using `malloc` or `calloc`
+
+Lets take the following code as an example:
+
+```py
+from pointers import malloc, free
+
+mem = malloc(28)
+mem <<= 1
+
+assert ~mem is 1  # raises an AssertionError
+free(mem)
+```
+
+**What's happening here?** Lets print out the memory addresses of `~mem` and `1`:
+
+```py
+mem = malloc(28)
+mem <<= 1
+
+print(id(~mem), id(1))
+```
+
+In my case, this returns `26493552 9788992`, even though the address for `1` should always be the same.
+
+This means that the `is` operator will not work when dereferencing.
+
 ## Malloc Pointer
 
 `MallocPointer` is extremely similar to `Pointer`, with a few differences:
@@ -76,12 +105,15 @@ Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new m
 
 `calloc` is a bit more complicated than `malloc` and `realloc`. Instead of allocating one block of memory, it allocates multiple blocks of a specified size.
 
+It also sets the allocated memory to zero, so you can dereference it immediately.
+
 Basic usage:
 
 ```py
 from pointers import calloc
 
 memory = calloc(3, 28)
+print(~memory)  # 0
 memory <<= 5
 
 print(~memory)

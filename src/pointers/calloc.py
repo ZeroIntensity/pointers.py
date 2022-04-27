@@ -3,6 +3,7 @@ from .malloc import MallocPointer
 from ._cstd import c_calloc
 from typing import Iterator, Optional, Dict, TypeVar, Generic, Union, Type
 from .pointer import Pointer
+import ctypes
 
 __all__ = ("CallocPointer", "calloc", "calloc_safe")
 
@@ -26,7 +27,6 @@ class CallocPointer(MallocPointer, Generic[T]):
         chunk_size: int,
         current_index: int,
         chunk_cache: Optional[Dict[int, "CallocPointer"]] = None,
-        assigned: bool = False,
         safe: bool = False,
     ) -> None:
         self._address = address
@@ -35,13 +35,18 @@ class CallocPointer(MallocPointer, Generic[T]):
         self._chunks = chunks
         self._freed = False
         self._chunk_cache = chunk_cache or {0: self}
+        self._assigned = True
 
         if chunk_cache:
             self._chunk_cache[self.current_index] = self
 
-        self._assigned = assigned
         self._safe = safe
         self._value_cache: Union[T, Type[RepresentsNone]] = RepresentsNone
+
+        bytes_a = (ctypes.c_ubyte * 24) \
+            .from_address(id(0))
+
+        ctypes.memmove(address, bytes_a, len(bytes_a))
 
     def dereference(self) -> T:
         """Dereference the pointer."""
@@ -105,7 +110,7 @@ class CallocPointer(MallocPointer, Generic[T]):
                 self.chunks,
                 self.chunk_size,
                 index,
-                self._chunk_cache,
+                self._chunk_cache,  # type: ignore
                 safe=self.safe,
             )
 
