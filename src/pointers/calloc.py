@@ -1,17 +1,10 @@
 from .exceptions import AllocationError, NotEnoughChunks
 from .malloc import MallocPointer
 from ._cstd import c_calloc
-from typing import Iterator, Optional, Dict, TypeVar, Generic, Union, Type
-from .pointer import Pointer
+from typing import Iterator, Optional, Dict, TypeVar, Generic
 import ctypes
 
-__all__ = ("CallocPointer", "calloc", "calloc_safe")
-
-
-class RepresentsNone:  # have to use this to allow storing null values
-    """Class for representing a none value cache."""
-
-    pass
+__all__ = ("CallocPointer", "calloc")
 
 
 T = TypeVar("T")
@@ -27,7 +20,6 @@ class CallocPointer(MallocPointer, Generic[T]):
         chunk_size: int,
         current_index: int,
         chunk_cache: Optional[Dict[int, "CallocPointer"]] = None,
-        safe: bool = False,
     ) -> None:
         self._address = address
         self._chunk_size = chunk_size
@@ -40,9 +32,6 @@ class CallocPointer(MallocPointer, Generic[T]):
         if chunk_cache:
             self._chunk_cache[self.current_index] = self
 
-        self._safe = safe
-        self._value_cache: Union[T, Type[RepresentsNone]] = RepresentsNone
-
         bytes_a = (ctypes.c_ubyte * 24) \
             .from_address(id(0))
 
@@ -51,21 +40,7 @@ class CallocPointer(MallocPointer, Generic[T]):
     def dereference(self) -> T:
         """Dereference the pointer."""
 
-        if self._safe:
-            if self._value_cache is RepresentsNone:
-                raise MemoryError(
-                    "cannot dereference pointer that has no value"
-                )
-
-            return self._value_cache  # type: ignore
-            # ^^ false positive
-
         return super().dereference()
-
-    def move(self, data: Pointer[T]) -> None:
-        """Move data to the allocated memory."""
-        self._value_cache = ~data
-        super().move(data)
 
     @property
     def current_index(self) -> int:
@@ -91,11 +66,6 @@ class CallocPointer(MallocPointer, Generic[T]):
     def size(self, value: int) -> None:
         self._chunk_size = value  # this might break things but idk
 
-    @property
-    def safe(self) -> bool:
-        """Whether value caching is enabled."""
-        return self._safe
-
     def __add__(self, amount: int) -> "CallocPointer":
         index: int = self.current_index + amount
 
@@ -104,44 +74,39 @@ class CallocPointer(MallocPointer, Generic[T]):
                 f"chunk index is {index}, while allocation is {self.chunks}"
             )
 
+        if index < 0:  # for handling __sub__
+            raise IndexError("chunk index is below zero")
+
         if index not in self._chunk_cache:
             self._chunk_cache[index] = CallocPointer(
-                self.address + amount,
+                self.address + (amount * self.size),
                 self.chunks,
                 self.chunk_size,
                 index,
                 self._chunk_cache,  # type: ignore
-                safe=self.safe,
             )
 
         return self._chunk_cache[index]
 
     def __sub__(self, amount: int) -> "CallocPointer":
-        index: int = self.current_index - amount
-
-        if index < 0:
-            raise IndexError("chunk index is below zero")
-
-        return self._chunk_cache[index]
+        return self.__add__(-amount)
 
     def __repr__(self) -> str:
         return f"<pointer to allocated chunk at {hex(self.address)}>"
+
+    def __rich__(self) -> str:
+        return f"<pointer to [green]allocated chunk[/green] at [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
     def __iter__(self) -> Iterator["CallocPointer"]:
         for i in range(self.current_index, self.chunks):
             yield self + i
 
 
-def calloc(num: int, size: int, safe: bool = False) -> CallocPointer:
+def calloc(num: int, size: int) -> CallocPointer:
     """Allocate a number of blocks with a given size."""
     address: int = c_calloc(num, size)
 
     if not address:
         raise AllocationError("failed to allocate memory")
 
-    return CallocPointer(address, num, size, 0, safe=safe)
-
-
-def calloc_safe(num: int, size: int) -> CallocPointer:
-    """Allocate a number of blocks with a given size."""
-    return calloc(num, size, True)
+    return CallocPointer(address, num, size, 0)

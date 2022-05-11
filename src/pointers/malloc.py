@@ -62,7 +62,10 @@ class MallocPointer(Pointer, Generic[T]):
         raise IsMallocPointerError("cannot assign to malloc pointer")
 
     def __repr__(self) -> str:
-        return f"<pointer to {self.size} bytes of memory at {hex(self.address)}>" # noqa
+        return f"<pointer to {self.size} bytes of memory at {hex(self.address)}>"  # noqa
+
+    def __rich__(self) -> str:
+        return f"<pointer to [green]{self.size} bytes[/green] of memory at [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
     def move(self, data: Pointer[T]) -> None:
         """Move data to the allocated memory."""

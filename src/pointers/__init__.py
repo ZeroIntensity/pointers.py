@@ -13,6 +13,6 @@ from .exceptions import (
     NotEnoughChunks,
     IsFrozenError
 )
-from .calloc import calloc, CallocPointer, calloc_safe
+from .calloc import calloc, CallocPointer
 from .frozen_pointer import to_const_ptr, FrozenPointer
 from .decay import decay

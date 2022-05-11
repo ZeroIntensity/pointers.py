@@ -17,11 +17,14 @@ def test_malloc_pointer():
     with pytest.raises(IsMallocPointerError):
         mem >>= "abc"
 
+    free(mem)
+
 
 def test_malloc():
     mem = malloc(52)
     mem <<= "abc"
     assert ~mem == "abc"
+    free(mem)
 
 
 def test_free():
@@ -45,3 +48,4 @@ def test_realloc():
 
     mem <<= "abcd"
     assert ~mem == "abcd"
+    free(mem)

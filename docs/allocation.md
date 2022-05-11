@@ -9,7 +9,7 @@ You can use this in pointers.py, like so:
 ```py
 from pointers import malloc, MallocPointer
 
-ptr: MallocPointer[str] = malloc(52) # we have to specify type manually
+ptr: MallocPointer[str] = malloc(52)  # we have to specify type manually
 ```
 
 **Note:** If the memory allocation fails, a `pointers.AllocationError` is raised.
@@ -78,7 +78,7 @@ from pointers import malloc, free
 
 ptr = malloc(52)
 ptr <<= "abc"
-free(ptr) # frees the memory
+free(ptr)  # frees the memory
 ```
 
 A `MemoryError` is raised if you try to access the memory after it is freed.
@@ -140,48 +140,22 @@ memory += 2  # NotEnoughChunks: chunk index is 2, while allocation is 1
 
 ### Safe Mode
 
-Due to garbage collection, segmentation faults are extremely common when using `calloc`. For example:
-
-```py
-from pointers import calloc
-
-memory = calloc(4, 28)
-
-for index, ptr in enumerate(memory):
-    ptr <<= index + 1
-
-for i in memory:
-    print(~i)  # segmentation fault occurs
-```
-
-Luckily, pointers.py has a fix for this. Pass `safe = True` when calling `calloc`:
-
-```py
-from pointers import calloc
-
-memory = calloc(4, 28, safe = True)
-memory <<= 1
-memory += 1
-memory <<= 2
-memory -= 1
-print(~memory)  # this would normally cause a segmentation fault
-```
-
-Alternatively, you can use `calloc_safe`:
+In older versions of pointers.py, the way `calloc` worked internally was broken. In these versions, the `calloc_safe` function needed to be used to get it working properly.
 
 ```py
 from pointers import calloc_safe
 
-memory = calloc_safe(4, 28)  # same thing as passing safe = True
+mem = calloc_safe(4, 28)
+
+for index, ptr in enumerate(mem):
+    ptr <<= index + 1
+
+print(' '.join([~i for i in mem]))  # without calloc_safe, this used to cause a segfault
 ```
 
-### What does safe do?
+`calloc_safe` **did not** use pointers and was holding a dictionary containing values to prevent segfaults.
 
-Safety with `calloc` enables value caching internally.
-
-When safe is disabled, dereferencing the pointer will lookup the memory address stored in the pointer, so when it doesn't exist, a segmentation fault occurs.
-
-Safe fixes this by storing the value in the pointer itself. While this breaks the "legacy" of this awful library, it's really the only way to allow `calloc` to work at all.
+Since 1.2.4, this issue has been patched. For more information on what happened with the broken implementation, see the [GitHub issue](https://github.com/ZeroIntensity/pointers.py/issues/11).
 
 ### Calloc Pointer
 

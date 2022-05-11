@@ -2,10 +2,10 @@ import ctypes
 from typing import (
     Generic,
     TypeVar,
-    Any,
     Type,
     Iterator,
     Union,
+    Any
 )
 
 from typing_extensions import ParamSpec
@@ -14,21 +14,22 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 
+
+def dereference_address(address: int) -> Any:
+    """Get the PyObject at the given address."""
+    return ctypes.cast(address, ctypes.py_object).value
+
+
 with suppress(
     UnsupportedOperation
 ):  # in case its running in idle or something like that
     faulthandler.enable()
 
-__all__ = ("dereference_address", "Pointer", "to_ptr")
+__all__ = ("Pointer", "to_ptr")
 
 T = TypeVar("T")
 A = TypeVar("A")
 P = ParamSpec("P")
-
-
-def dereference_address(address: int) -> Any:
-    """Dereference an address. Will cause a segmentation fault if the address is invalid."""  # noqa
-    return ctypes.cast(address, ctypes.py_object).value
 
 
 class Pointer(Generic[T]):
@@ -52,6 +53,9 @@ class Pointer(Generic[T]):
         return (
             f"<pointer to {self.type.__name__} object at {hex(self.address)}>"  # noqa
         )
+
+    def __rich__(self):
+        return f"<pointer to [green]{self.type.__name__}[/green] object at [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
     def __str__(self) -> str:
         return hex(self.address)
@@ -101,10 +105,10 @@ class Pointer(Generic[T]):
         return self
 
     def __add__(self, amount: int):
-        return Pointer(self.address + amount, self.type)
+        return Pointer(self.address + (amount * 24), self.type)
 
     def __sub__(self, amount: int):
-        return Pointer(self.address - amount, self.type)
+        return Pointer(self.address - (amount * 24), self.type)
 
 
 def to_ptr(val: T) -> Pointer[T]:

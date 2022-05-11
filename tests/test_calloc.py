@@ -1,4 +1,4 @@
-from pointers import calloc_safe, calloc, NotEnoughChunks, free
+from pointers import calloc, NotEnoughChunks, free
 import pytest
 
 
@@ -12,16 +12,13 @@ def test_calloc():
     with pytest.raises(MemoryError):
         print(~mem)
 
-
-def test_calloc_safe():
-    memory = calloc_safe(4, 28)
+    memory = calloc(4, 28)
 
     for index, ptr in enumerate(memory):
         ptr <<= index + 1
 
     array = [~i for i in memory]
     assert array == [1, 2, 3, 4]
-    free(memory)
 
 
 def test_calloc_validators():
@@ -31,3 +28,6 @@ def test_calloc_validators():
 
     with pytest.raises(IndexError):
         mem -= 1
+
+    free(mem)
+ 
