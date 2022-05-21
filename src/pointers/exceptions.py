@@ -1,4 +1,4 @@
-__all__ = ("IsMallocPointerError", "AllocationError", "NotEnoughChunks", "IsFrozenError", "DereferenceError")
+__all__ = ("IsMallocPointerError", "AllocationError", "NotEnoughChunks", "IsFrozenError", "DereferenceError")  # noqa
 
 
 class IsMallocPointerError(Exception):
