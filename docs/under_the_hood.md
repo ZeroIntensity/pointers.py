@@ -26,8 +26,9 @@ In CPython, `id` gets the address of the object. Executing this code will show t
 This is because both `a` and `b` are interally pointers to the same `PyObject`.
 
 Think of variables looking something like this:
-| Name | Target |
-| ------------- | ----- |
+
+| Name            | Value                         |
+| --------------- | ----------------------------- |
 | `variable_name` | `PyObject* at 0x7ffb74bb16b0` |
 
 Heres what a `PyObject` itself might look like:
