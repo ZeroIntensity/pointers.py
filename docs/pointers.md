@@ -62,6 +62,71 @@ def test(ptr: Pointer[list])
 test([1, 2, 3])
 ```
 
+### Dereference Errors
+
+Dereferencing can fail for a number of reasons, the most common being garbage collection.
+
+Lets take the following code as an example:
+
+```py
+from pointers import to_ptr
+
+class test:
+    pass
+
+ptr = to_ptr(test())
+
+print(~ptr)  # this causes a DereferenceError, since python collects our instance before this
+```
+
+CPython does garbage collection based on reference counting, so you can stop the garbage collection by creating an instance variable, like so:
+
+```py
+instance = test()  # this adds to the reference count and stops the collection
+ptr = to_ptr(instance)
+
+print(~ptr)  # works just fine, no error
+```
+
+However, some types (such as `str` or `int`) are not tracked by the garbage collection, so you don't have to worry about them getting collected.
+
+You can check if the object is tracked by reading the `Pointer.tracked` property:
+
+```py
+ptr = to_ptr(test())
+ptr_2 = to_ptr("a")
+
+print(ptr.tracked, ptr_2.tracked)  # True False
+```
+
+### Segmentation Faults
+
+A segmentation fault occurs when we try to access restricted memory.
+
+This can occur for multiple reasons, but we'll use the following as an example:
+
+```py
+from pointers import dereference_address  # internal function used by pointers.py
+
+dereference_address(1)
+```
+
+Executing this code results in something like the following:
+
+```
+Fatal Python error: Segmentation fault
+
+Current thread 0x00007fb99bffa740 (most recent call first):
+  File "[omitted]", line 38 in dereference_address
+[1]    424 segmentation fault
+```
+
+#### What's happening?
+
+`dereference_address` attempts to read the `PyObject` at address 1, which isn't accessible by Python.
+
+This results in the operating system terminating our program using signal `SIGSEGV`, and the [faulthandler](https://docs.python.org/3/library/faulthandler.html) module displays the traceback.
+
 ## Assignment
 
 If we would like to switch where a pointer is pointing to, we can use the `assign` method:

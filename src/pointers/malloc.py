@@ -24,6 +24,7 @@ class MallocPointer(Pointer, Generic[T]):
         self._size = size
         self._freed = False
         self._assigned = assigned
+        self._tracked = False
 
     @property
     def freed(self) -> bool:

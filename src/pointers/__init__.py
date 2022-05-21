@@ -1,4 +1,4 @@
-from .pointer import Pointer, to_ptr, dereference_address
+from .pointer import Pointer, to_ptr, dereference_address, dereference_tracked
 from .malloc import (
     malloc,
     IsMallocPointerError,
@@ -11,7 +11,8 @@ from .exceptions import (
     AllocationError,
     IsMallocPointerError,
     NotEnoughChunks,
-    IsFrozenError
+    IsFrozenError,
+    DereferenceError
 )
 from .calloc import calloc, CallocPointer
 from .frozen_pointer import to_const_ptr, FrozenPointer

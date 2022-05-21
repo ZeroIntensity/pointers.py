@@ -25,9 +25,10 @@ class CallocPointer(MallocPointer, Generic[T]):
         self._chunk_size = chunk_size
         self._current_index = current_index
         self._chunks = chunks
-        self._freed = False
         self._chunk_cache = chunk_cache or {0: self}
         self._assigned = True
+        self._tracked = False
+        self._freed = False
 
         if chunk_cache:
             self._chunk_cache[self.current_index] = self

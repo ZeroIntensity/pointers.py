@@ -13,6 +13,10 @@ from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
 import sys
+import gc
+from .exceptions import DereferenceError
+
+__all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
 
 
 def dereference_address(address: int) -> Any:
@@ -20,12 +24,21 @@ def dereference_address(address: int) -> Any:
     return ctypes.cast(address, ctypes.py_object).value
 
 
+def dereference_tracked(address: int) -> Any:
+    """Dereference an object tracked by the garbage collector."""
+    for obj in gc.get_objects():
+        if id(obj) == address:
+            return obj
+
+    raise DereferenceError(
+        f"address {hex(address)} does not exist (probably removed by the garbage collector)"  # noqa
+    )
+
+
 with suppress(
     UnsupportedOperation
 ):  # in case its running in idle or something like that
     faulthandler.enable()
-
-__all__ = ("Pointer", "to_ptr")
 
 T = TypeVar("T")
 A = TypeVar("A")
@@ -35,9 +48,15 @@ P = ParamSpec("P")
 class Pointer(Generic[T]):
     """Base class representing a pointer."""
 
-    def __init__(self, address: int, typ: Type[T]) -> None:
+    def __init__(self, address: int, typ: Type[T], tracked: bool) -> None:
         self._address = address
         self._type = typ
+        self._tracked = tracked
+
+    @property
+    def tracked(self) -> bool:
+        """Whether the pointed object is tracked by the garbage collector."""
+        return self._tracked
 
     @property
     def address(self) -> int:
@@ -62,7 +81,7 @@ class Pointer(Generic[T]):
 
     def dereference(self) -> T:
         """Dereference the pointer."""
-        return dereference_address(self.address)
+        return (dereference_tracked if self.tracked else dereference_address)(self.address)  # noqa
 
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
@@ -104,13 +123,7 @@ class Pointer(Generic[T]):
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
 
-    def __add__(self, amount: int):
-        return Pointer(self.address + (amount * 24), self.type)
-
-    def __sub__(self, amount: int):
-        return Pointer(self.address - (amount * 24), self.type)
-
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
-    return Pointer(id(val), type(val))
+    return Pointer(id(val), type(val), gc.is_tracked(val))

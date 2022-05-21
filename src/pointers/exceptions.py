@@ -23,3 +23,9 @@ class IsFrozenError(Exception):
     """Raised when trying to move the address of a frozen pointer."""
 
     pass
+
+
+class DereferenceError(Exception):
+    """Raised when trying to dereference an object address that doesn't exist."""  # noqa
+
+    pass

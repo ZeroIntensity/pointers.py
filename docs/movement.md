@@ -137,29 +137,3 @@ Both pointers get turned into a byte stream, and then we use C to change the ori
 
 **Why is this an issue?**
 Python objects have internal data like reference counts, type, length that will be corrupted by blindly copying over them.
-
-### Segmentation Faults
-
-You are less likely to run into problems with other methods in pointers.py, but it is definetly possible:
-
-```py
-from pointers import dereference_address  # internal function used by pointers.py
-
-dereference_address(1)
-```
-
-Executing this code results in something like the following:
-
-```
-Fatal Python error: Segmentation fault
-
-Current thread 0x00007fb99bffa740 (most recent call first):
-  File "[omitted]", line 38 in dereference_address
-[1]    424 segmentation fault
-```
-
-Once again, this is not a Python error that you can try/except.
-
-Whats happening here is that we are trying to access memory at address `1`, which doesn't exist.
-
-The operating system understands this, and then terminates the program using `SIGSEGV`, otherwise known as a segmentation fault.
