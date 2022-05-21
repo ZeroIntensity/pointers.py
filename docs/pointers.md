@@ -4,7 +4,7 @@
 
 Ok, we know how to create pointers, but they aren't very useful if we only have pointer objects.
 
-Pointer.py has a few different ways to dereference a pointer object. The simplest one is the `Pointer.dereference()` method:
+Pointers.py has a few different ways to dereference a pointer object. The simplest one is the `Pointer.dereference()` method:
 
 ```py
 from pointers import Pointer, decay

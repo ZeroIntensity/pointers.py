@@ -1,4 +1,4 @@
-__all__ = ("IsMallocPointerError", "AllocationError", "NotEnoughChunks")
+__all__ = ("IsMallocPointerError", "AllocationError", "NotEnoughChunks", "IsFrozenError", "DereferenceError")
 
 
 class IsMallocPointerError(Exception):
