@@ -14,7 +14,7 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 import gc
-from .exceptions import DereferenceError
+from .exceptions import DereferenceError, IncorrectItemExpectedForSubscriptError, NotSubscriptableError
 
 __all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
 
@@ -122,6 +122,31 @@ class Pointer(Generic[T]):
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
+
+
+    def __getitem__(self, item):
+        """Allows subscription to PyObject referenced Pointers. Inherited by Malloc,
+           superceded for CallocPointers. Works with numpy, pandas, etc."""
+        dereferenced = self.dereference()
+
+        subscriptable = [type(Pointer), type(dict())]
+        referencable = [type(tuple()), type(int()), type(str()), type(list())]
+
+        if hasattr(dereferenced, '__getitem__'):
+            return dereferenced[item]
+
+        elif hasattr(dereferenced, '__iter__'):
+            if (type(item) in referencable) and (type(dereferenced) in subscriptable):
+                return dereferenced[item]
+
+            else:
+                raise IncorrectItemExpectedForSubscriptError("""Subscript with an Int,
+                                        wrong item type for referenced PyObject.""")
+        else:
+            raise NotSubscriptableError("""Ensure PyObject types are correct for
+                                        subscription prior to accessing the item.""")
+
+
 
 
 def to_ptr(val: T) -> Pointer[T]:

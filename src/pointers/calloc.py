@@ -1,4 +1,4 @@
-from .exceptions import AllocationError, NotEnoughChunks
+from .exceptions import AllocationError, NotEnoughChunks, CallocSubscriptionDangerError
 from .malloc import MallocPointer
 from ._cstd import c_calloc
 from typing import Iterator, Optional, Dict, TypeVar, Generic
@@ -101,6 +101,11 @@ class CallocPointer(MallocPointer, Generic[T]):
     def __iter__(self) -> Iterator["CallocPointer"]:
         for i in range(self.current_index, self.chunks):
             yield self + i
+
+    def __getitem__(self, i):
+        raise CallocSubscriptionDangerError("Subscription not allowed for Calloc chunks.")
+
+
 
 
 def calloc(num: int, size: int) -> CallocPointer:
