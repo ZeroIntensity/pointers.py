@@ -4,7 +4,7 @@ import os
 __all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc")
 
 dll = ctypes.CDLL(
-    "msvcrt" if os.name == "nt" else "libc.posix"
+    "msvcrt" if os.name == "nt" else "libc.dylib"
     if os.name == "posix" else "libc.so.6"
 ) # mac = posix, linux = so.6, windows = msvcrt
 
