@@ -1,11 +1,18 @@
-__all__ = ("IsMallocPointerError", "AllocationError", "NotEnoughChunks", "IsFrozenError", "DereferenceError")  # noqa
+__all__ = ("IsMallocPointerError",
+           "AllocationError",
+           "NotEnoughChunks",
+           "IsFrozenError",
+           "DereferenceError",
+           "IncorrectItemExpectedForSubscriptError",
+           "NotSubscriptableError",
+           "CallocSubscriptionDangerError",
+           "ImmutableObjectError")  # noqa
 
 
 class IsMallocPointerError(Exception):
     """Raised when trying perform an operation on a malloc pointer that isn't supported."""  # noqa
 
     pass
-
 
 class AllocationError(Exception):
     """Raised when a memory allocation fails."""
@@ -17,12 +24,10 @@ class NotEnoughChunks(Exception):
 
     pass
 
-
 class IsFrozenError(Exception):
     """Raised when trying to move the address of a frozen pointer."""
 
     pass
-
 
 class DereferenceError(Exception):
     """Raised when trying to dereference an object address that doesn't exist."""  # noqa
@@ -41,5 +46,10 @@ class NotSubscriptableError(Exception):
 
 class CallocSubscriptionDangerError(Exception):
     """Raised when attempting to subscript a Calloc chunk. Assignment like this is dangerous at this time."""
+
+    pass
+
+class ImmutableObjectError(Exception):
+    """Raised when attempting to setting item assignment to immutable objects."""
 
     pass

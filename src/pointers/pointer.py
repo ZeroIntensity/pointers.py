@@ -14,7 +14,10 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 import gc
-from .exceptions import DereferenceError, IncorrectItemExpectedForSubscriptError, NotSubscriptableError
+from .exceptions import (DereferenceError,
+                         IncorrectItemExpectedForSubscriptError,
+                         NotSubscriptableError,
+                         ImmutableObjectError)
 
 __all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
 
@@ -127,6 +130,7 @@ class Pointer(Generic[T]):
     def __getitem__(self, item):
         """Allows subscription to PyObject referenced Pointers. Inherited by Malloc,
            superceded for CallocPointers. Works with numpy, pandas, etc."""
+           
         dereferenced = self.dereference()
 
         subscriptable = [type(Pointer), type(dict())]
@@ -146,7 +150,18 @@ class Pointer(Generic[T]):
             raise NotSubscriptableError("""Ensure PyObject types are correct for
                                         subscription prior to accessing the item.""")
 
+    def __setitem__(self, item):
+        """Allows item assignment to PyObject referenced Pointers. Inherited by Malloc,
+           superceded for CallocPointers. Works with numpy, pandas, etc."""
 
+        dereferenced = self.dereference()
+
+        if hasattr(dereferenced, '__setitem__'):
+            dereferenced.__setitem__(item)
+        else:
+            raise ImmutableObjectError("""PyObject does not support item assignment.
+                                          Ensure PyObject type is correct for the pointer
+                                          you are accessing.""")
 
 
 def to_ptr(val: T) -> Pointer[T]:
