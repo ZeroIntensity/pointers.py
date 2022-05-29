@@ -14,6 +14,7 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 import gc
+from functools import lru_cache
 from .exceptions import (DereferenceError,
                          IncorrectItemExpectedForSubscriptError,
                          NotSubscriptableError,
@@ -124,7 +125,7 @@ class Pointer(Generic[T]):
     def __lshift__(self, data: Union["Pointer[T]", T]):
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
-        return self
+        return self  # noqa
 
 
     def __getitem__(self, item):
@@ -136,7 +137,7 @@ class Pointer(Generic[T]):
 
             >> v[(0, 4)]
             >> 3
-           """
+           """  # noqa
 
         dereferenced = self.dereference()
 
@@ -144,11 +145,11 @@ class Pointer(Generic[T]):
         referencable = [type(tuple()), type(int()), type(str()), type(list())]
 
         if hasattr(dereferenced, '__getitem__'):
-            return dereferenced[item]
+            return dereferenced[item]  # noqa
 
         elif hasattr(dereferenced, '__iter__'):
             if (type(item) in referencable) and (type(dereferenced) in subscriptable):
-                return dereferenced[item]
+                return dereferenced[item]  # noqa
 
             else:
                 raise IncorrectItemExpectedForSubscriptError("""Subscript with an Int,
@@ -171,12 +172,12 @@ class Pointer(Generic[T]):
             >> x[0]
             >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
                    17, 18, 19, 20, 21, 22, 23, 24])
-        """
+        """  # noqa
 
         dereferenced = self.dereference()
 
         if hasattr(dereferenced, '__setitem__'):
-            dereferenced[item] = replace
+            dereferenced[item] = replace  # noqa
         else:
             raise ImmutableObjectError("""PyObject does not support item assignment.
                                           Ensure PyObject type is correct for the pointer

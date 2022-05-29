@@ -103,10 +103,10 @@ class CallocPointer(MallocPointer, Generic[T]):
             yield self + i
 
     def __getitem__(self, i):
-        raise CallocSubscriptionDangerError("""Subscription not allowed for Calloc chunks.""")
+        raise CallocSubscriptionDangerError("""Subscription not allowed for Calloc chunks.""")  # noqa
 
     def __setitem__(self, i):
-        raise CallocSubscriptionDangerError("""Item assignment not allowed for Calloc chunks.""")
+        raise CallocSubscriptionDangerError("""Item assignment not allowed for Calloc chunks.""")  # noqa
 
 
 
