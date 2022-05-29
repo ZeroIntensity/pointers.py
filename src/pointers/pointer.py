@@ -129,8 +129,15 @@ class Pointer(Generic[T]):
 
     def __getitem__(self, item):
         """Allows subscription to PyObject referenced Pointers. Inherited by Malloc,
-           superceded for CallocPointers. Works with numpy, pandas, etc."""
-           
+           superceded for CallocPointers. Works with numpy, pandas, etc.
+
+            x = np.arange(100).reshape(4, 25)
+            v = to_ptr(x)
+
+            >> v[(0, 4)]
+            >> 3
+           """
+
         dereferenced = self.dereference()
 
         subscriptable = [type(Pointer), type(dict())]
@@ -150,14 +157,26 @@ class Pointer(Generic[T]):
             raise NotSubscriptableError("""Ensure PyObject types are correct for
                                         subscription prior to accessing the item.""")
 
-    def __setitem__(self, item):
+    def __setitem__(self, item, replace):
         """Allows item assignment to PyObject referenced Pointers. Inherited by Malloc,
-           superceded for CallocPointers. Works with numpy, pandas, etc."""
+           superceded for CallocPointers. Works with numpy, pandas, etc.
+
+            x = np.arange(100).reshape(4, 25)
+            v = to_ptr(x)
+            v[(0, 4)] = 2
+
+            >> v[0]
+            >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+                   17, 18, 19, 20, 21, 22, 23, 24])
+            >> x[0]
+            >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+                   17, 18, 19, 20, 21, 22, 23, 24])
+        """
 
         dereferenced = self.dereference()
 
         if hasattr(dereferenced, '__setitem__'):
-            dereferenced.__setitem__(item)
+            dereferenced[item] = replace
         else:
             raise ImmutableObjectError("""PyObject does not support item assignment.
                                           Ensure PyObject type is correct for the pointer
