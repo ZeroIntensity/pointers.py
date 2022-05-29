@@ -1,12 +1,15 @@
 import ctypes
-import os
+from platform import system
+
+platforms = {
+    'linux': 'libc.so.6',
+    'darwin': 'libc.dylib',
+    'windows': 'msvcrt'
+}
 
 __all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc")
 
-dll = ctypes.CDLL(
-    "msvcrt" if os.name == "nt" else "libc.dylib"
-    if os.name == "posix" else "libc.so.6"
-)  # mac = dylib, linux = so.6, windows = msvcrt
+dll = ctypes.CDLL(platforms[system().lower()])
 
 # void* malloc(size_t size);
 dll.malloc.argtypes = (ctypes.c_size_t,)
