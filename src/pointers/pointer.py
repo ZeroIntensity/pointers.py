@@ -5,7 +5,8 @@ from typing import (
     Type,
     Iterator,
     Union,
-    Any
+    Any,
+    Mapping
 )
 
 from typing_extensions import ParamSpec
@@ -14,11 +15,12 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 import gc
-from functools import lru_cache
-from .exceptions import (DereferenceError,
-                         IncorrectItemExpectedForSubscriptError,
-                         NotSubscriptableError,
-                         ImmutableObjectError)
+from .exceptions import (
+    DereferenceError,
+    IncorrectItemExpectedForSubscriptError,
+    NotSubscriptableError,
+    ImmutableObjectError
+)
 
 __all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
 
@@ -125,63 +127,64 @@ class Pointer(Generic[T]):
     def __lshift__(self, data: Union["Pointer[T]", T]):
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
-        return self  # noqa
+        return self
 
+    def __getitem__(self, item: Mapping[Any, A]) -> A:
+        """Allows subscription to PyObject referenced Pointers.
+Inherited by Malloc, superceded for CallocPointers.
+Works with numpy, pandas, etc.
+```py
+x = np.arange(100).reshape(4, 25)
+v = to_ptr(x)
 
-    def __getitem__(self, item):
-        """Allows subscription to PyObject referenced Pointers. Inherited by Malloc,
-           superceded for CallocPointers. Works with numpy, pandas, etc.
+>> v[(0, 4)]
+>> 3
+```"""
 
-            x = np.arange(100).reshape(4, 25)
-            v = to_ptr(x)
+        dereferenced: T = ~self
 
-            >> v[(0, 4)]
-            >> 3
-           """  # noqa
-
-        dereferenced = self.dereference()
-
-        subscriptable = [type(Pointer), type(dict())]
-        referencable = [type(tuple()), type(int()), type(str()), type(list())]
+        subscriptable = [Pointer, dict]
+        referencable = [tuple, int, str, list]
 
         if hasattr(dereferenced, '__getitem__'):
-            return dereferenced[item]  # noqa
+            return dereferenced[item]  # type: ignore
 
         elif hasattr(dereferenced, '__iter__'):
-            if (type(item) in referencable) and (type(dereferenced) in subscriptable):
-                return dereferenced[item]  # noqa
-
+            if (type(item) in referencable) and (type(dereferenced) in subscriptable):  # noqa
+                return dereferenced[item]  # type: ignore
             else:
-                raise IncorrectItemExpectedForSubscriptError("""Subscript with an Int,
-                                        wrong item type for referenced PyObject.""")
+                raise IncorrectItemExpectedForSubscriptError(
+                    """subscript with an int,
+wrong item type for referenced PyObject."""
+                )
         else:
-            raise NotSubscriptableError("""Ensure PyObject types are correct for
-                                        subscription prior to accessing the item.""")
+            raise NotSubscriptableError("target PyObject is not scriptable")
 
-    def __setitem__(self, item, replace):
-        """Allows item assignment to PyObject referenced Pointers. Inherited by Malloc,
-           superceded for CallocPointers. Works with numpy, pandas, etc.
+    def __setitem__(self, item: Mapping[Any, A], replace: A) -> None:
+        """Allows item assignment to PyObject referenced Pointers.
+Inherited by Malloc, superceded for CallocPointers. Works with numpy,
+pandas, etc.
+```py
+x = np.arange(100).reshape(4, 25)
+v = to_ptr(x)
+v[(0, 4)] = 2
 
-            x = np.arange(100).reshape(4, 25)
-            v = to_ptr(x)
-            v[(0, 4)] = 2
+>> v[0]
+>> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+        17, 18, 19, 20, 21, 22, 23, 24])
+>> x[0]
+>> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+        17, 18, 19, 20, 21, 22, 23, 24])
+```"""
 
-            >> v[0]
-            >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-                   17, 18, 19, 20, 21, 22, 23, 24])
-            >> x[0]
-            >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-                   17, 18, 19, 20, 21, 22, 23, 24])
-        """  # noqa
-
-        dereferenced = self.dereference()
+        dereferenced = ~self
 
         if hasattr(dereferenced, '__setitem__'):
-            dereferenced[item] = replace  # noqa
+            dereferenced[item] = replace  # type: ignore
         else:
-            raise ImmutableObjectError("""PyObject does not support item assignment.
-                                          Ensure PyObject type is correct for the pointer
-                                          you are accessing.""")
+            raise ImmutableObjectError(
+                f'"{type(dereferenced).__name__}" object does not support item assignment.'  # noqa
+            )
 
 
 def to_ptr(val: T) -> Pointer[T]:

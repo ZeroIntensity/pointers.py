@@ -1,4 +1,8 @@
-from .exceptions import AllocationError, NotEnoughChunks, CallocSubscriptionDangerError
+from .exceptions import (
+    AllocationError,
+    NotEnoughChunks,
+    CallocSubscriptionDangerError
+)
 from .malloc import MallocPointer
 from ._cstd import c_calloc
 from typing import Iterator, Optional, Dict, TypeVar, Generic
@@ -107,7 +111,6 @@ class CallocPointer(MallocPointer, Generic[T]):
 
     def __setitem__(self, i):
         raise CallocSubscriptionDangerError("""Item assignment not allowed for Calloc chunks.""")  # noqa
-
 
 
 def calloc(num: int, size: int) -> CallocPointer:
