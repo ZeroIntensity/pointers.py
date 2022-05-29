@@ -14,7 +14,11 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 import gc
-from .exceptions import DereferenceError
+from functools import lru_cache
+from .exceptions import (DereferenceError,
+                         IncorrectItemExpectedForSubscriptError,
+                         NotSubscriptableError,
+                         ImmutableObjectError)
 
 __all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
 
@@ -121,7 +125,63 @@ class Pointer(Generic[T]):
     def __lshift__(self, data: Union["Pointer[T]", T]):
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
-        return self
+        return self  # noqa
+
+
+    def __getitem__(self, item):
+        """Allows subscription to PyObject referenced Pointers. Inherited by Malloc,
+           superceded for CallocPointers. Works with numpy, pandas, etc.
+
+            x = np.arange(100).reshape(4, 25)
+            v = to_ptr(x)
+
+            >> v[(0, 4)]
+            >> 3
+           """  # noqa
+
+        dereferenced = self.dereference()
+
+        subscriptable = [type(Pointer), type(dict())]
+        referencable = [type(tuple()), type(int()), type(str()), type(list())]
+
+        if hasattr(dereferenced, '__getitem__'):
+            return dereferenced[item]  # noqa
+
+        elif hasattr(dereferenced, '__iter__'):
+            if (type(item) in referencable) and (type(dereferenced) in subscriptable):
+                return dereferenced[item]  # noqa
+
+            else:
+                raise IncorrectItemExpectedForSubscriptError("""Subscript with an Int,
+                                        wrong item type for referenced PyObject.""")
+        else:
+            raise NotSubscriptableError("""Ensure PyObject types are correct for
+                                        subscription prior to accessing the item.""")
+
+    def __setitem__(self, item, replace):
+        """Allows item assignment to PyObject referenced Pointers. Inherited by Malloc,
+           superceded for CallocPointers. Works with numpy, pandas, etc.
+
+            x = np.arange(100).reshape(4, 25)
+            v = to_ptr(x)
+            v[(0, 4)] = 2
+
+            >> v[0]
+            >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+                   17, 18, 19, 20, 21, 22, 23, 24])
+            >> x[0]
+            >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+                   17, 18, 19, 20, 21, 22, 23, 24])
+        """  # noqa
+
+        dereferenced = self.dereference()
+
+        if hasattr(dereferenced, '__setitem__'):
+            dereferenced[item] = replace  # noqa
+        else:
+            raise ImmutableObjectError("""PyObject does not support item assignment.
+                                          Ensure PyObject type is correct for the pointer
+                                          you are accessing.""")
 
 
 def to_ptr(val: T) -> Pointer[T]:
