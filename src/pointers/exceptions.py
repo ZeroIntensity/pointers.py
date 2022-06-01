@@ -51,7 +51,7 @@ class NotSubscriptableError(Exception):
     pass
 
 
-class CallocSubscriptionDangerError(Exception):
+class CallocInheritanceError(Exception):
     """Raised when attempting to subscript a Calloc chunk. Assignment like this is dangerous at this time."""  # noqa
 
     pass
@@ -60,4 +60,8 @@ class CallocSubscriptionDangerError(Exception):
 class ImmutableObjectError(Exception):
     """Raised when attempting to setting item assignment to immutable objects."""  # noqa
 
+    pass
+
+class  MethodNotInheritedError(Exception):
+    """Raised when attempting to use a method not inherited by the Pointer."""
     pass
