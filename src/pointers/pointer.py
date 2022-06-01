@@ -171,21 +171,14 @@ class Pointer(Generic[T]):
             16
         """
         deref = ~self
-        shift = func(deref) # type: ignore
-        self << shift
+        shift = to_ptr(func(deref)) # type: ignore
+        self.assign(shift)
+        return self
 
     def __irshift__(self, func: Callable[..., T]) -> None:
-        """
-        Dangerous: Apply a function on a pointer and move to result. Must return same data-type. Access byteshift via lambda x, y: x >> y
-        eg. x = [1,2,3,4]
-            ptr = to_ptr(x)
-            ptr >>= max
-            >>> ~ptr
-            4
-        """
-        deref = ~self
-        shift = func(deref) # type: ignore
-        self >> shift
+        raise MethodNotInheritedError(
+            f'"{type(deref).__name__}" object does not support >>='  # noqa
+        )
 
     def __abs__(self) -> A:
         deref: T = ~self
@@ -377,6 +370,12 @@ class Pointer(Generic[T]):
             raise MethodNotInheritedError(
                 f"{type(deref_a).__name__} has no attribute '__le__'" # noqa
             )
+
+    def __len__(self) -> int:
+        deref: T = ~self
+
+        if hasattr(deref, '__len__'):
+            return len(deref)
 
     def __lt__(self, other: Union["Pointer[T]", A]) -> A:
         deref_a: T = ~self
