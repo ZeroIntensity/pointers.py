@@ -5,7 +5,7 @@ from .exceptions import (
 )
 from .malloc import MallocPointer
 from ._cstd import c_calloc
-from typing import Iterator, Optional, Dict, TypeVar, Generic, Callable, Union
+from typing import Iterator, Optional, Dict, TypeVar, Generic
 import ctypes
 
 __all__ = ("CallocPointer", "calloc")
@@ -243,7 +243,7 @@ class CallocPointer(MallocPointer, Generic[T]):
                 f"Calloc does not inherit '__oct__'" # noqa
             )
 
-    def __or__(self, other ) -> T:
+    def __or__(self, other) -> None:
         raise CallocInheritanceError(
                 f"Calloc does not inherit '__or__'" # noqa
             )
