@@ -5,7 +5,7 @@ nav:
   - Getting Started: getting_started.md
   - Using Pointers: pointers.md
   - Data Movement: movement.md
-  - Inheritange: inheritance.md
+  - Inheritance: inheritance.md
   - Memory Allocation: allocation.md
   - Under The Hood: under_the_hood.md
 theme: readthedocs
