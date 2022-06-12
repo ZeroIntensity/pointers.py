@@ -5,15 +5,21 @@ from .malloc import (
     MallocPointer,
     free,
     realloc,
-    AllocationError,
 )
 from .exceptions import (
     AllocationError,
     IsMallocPointerError,
     NotEnoughChunks,
     IsFrozenError,
-    DereferenceError
+    DereferenceError,
+    FreedMemoryError,
+    IncorrectItemExpectedForSubscriptError,
+    NotSubscriptableError,
+    CallocSubscriptionDangerError,
+    ImmutableObjectError,
+    InvalidSizeError,
 )
 from .calloc import calloc, CallocPointer
 from .frozen_pointer import to_const_ptr, FrozenPointer
 from .decay import decay
+from .bindings import py_free, py_malloc, py_calloc, py_realloc

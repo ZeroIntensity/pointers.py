@@ -1,12 +1,16 @@
-__all__ = ("IsMallocPointerError",
-           "AllocationError",
-           "NotEnoughChunks",
-           "IsFrozenError",
-           "DereferenceError",
-           "IncorrectItemExpectedForSubscriptError",
-           "NotSubscriptableError",
-           "CallocSubscriptionDangerError",
-           "ImmutableObjectError")  # noqa
+__all__ = (
+    "IsMallocPointerError",
+    "AllocationError",
+    "NotEnoughChunks",
+    "IsFrozenError",
+    "DereferenceError",
+    "IncorrectItemExpectedForSubscriptError",
+    "NotSubscriptableError",
+    "CallocSubscriptionDangerError",
+    "ImmutableObjectError",
+    "FreedMemoryError",
+    "InvalidSizeError",
+)  # noqa
 
 
 class IsMallocPointerError(Exception):
@@ -59,5 +63,17 @@ class CallocSubscriptionDangerError(Exception):
 
 class ImmutableObjectError(Exception):
     """Raised when attempting to setting item assignment to immutable objects."""  # noqa
+
+    pass
+
+
+class FreedMemoryError(Exception):
+    """Rasied when trying to perform an operation on freed memory."""
+
+    pass
+
+
+class InvalidSizeError(Exception):
+    """Raised when trying to move an object of the wrong size to an allocation."""  # noqa
 
     pass

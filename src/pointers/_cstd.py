@@ -1,13 +1,9 @@
 import ctypes
 from platform import system
 
-platforms = {
-    'linux': 'libc.so.6',
-    'darwin': 'libc.dylib',
-    'windows': 'msvcrt'
-}
+platforms = {"linux": "libc.so.6", "darwin": "libc.dylib", "windows": "msvcrt"}
 
-__all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc")
+__all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc", "dll")
 
 dll = ctypes.CDLL(platforms[system().lower()])
 

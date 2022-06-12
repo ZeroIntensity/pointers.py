@@ -1,4 +1,4 @@
-from pointers import calloc, NotEnoughChunks, free
+from pointers import calloc, NotEnoughChunks, free, FreedMemoryError
 import pytest
 
 
@@ -9,7 +9,7 @@ def test_calloc():
     assert ~mem == 1
     free(mem)
 
-    with pytest.raises(MemoryError):
+    with pytest.raises(FreedMemoryError):
         print(~mem)
 
     memory = calloc(4, 28)
@@ -30,4 +30,3 @@ def test_calloc_validators():
         mem -= 1
 
     free(mem)
- 

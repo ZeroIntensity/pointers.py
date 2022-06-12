@@ -9,7 +9,7 @@ You can use this in pointers.py, like so:
 ```py
 from pointers import malloc, MallocPointer
 
-ptr: MallocPointer[str] = malloc(52)  # we have to specify type manually
+ptr: MallocPointer[str] = malloc(52) # we have to specify type manually
 ```
 
 **Note:** If the memory allocation fails, a `pointers.AllocationError` is raised.
@@ -28,7 +28,7 @@ print(~ptr)
 
 The size that we pass to `malloc` must match the data we move to the memory. In the example above, the string `"abc"` has a size of 52 bytes.
 
-If you give an invalid size, then a `MemoryError` is raised.
+If you give an invalid size, then an `InvalidSizeError` is raised.
 
 ### Identity checking
 
@@ -42,7 +42,7 @@ from pointers import malloc, free
 mem = malloc(28)
 mem <<= 1
 
-assert ~mem is 1  # raises an AssertionError
+assert ~mem is 1 # raises an AssertionError
 free(mem)
 ```
 
@@ -78,7 +78,7 @@ from pointers import malloc, free
 
 ptr = malloc(52)
 ptr <<= "abc"
-free(ptr)  # frees the memory
+free(ptr) # frees the memory
 ```
 
 A `MemoryError` is raised if you try to access the memory after it is freed.
@@ -92,8 +92,8 @@ from pointers import malloc, free, realloc
 
 ptr = malloc(52)
 ptr <<= "abc"
-realloc(ptr, 53)  # allocates one more byte
-ptr <<= "abcd"  # works correctly
+realloc(ptr, 53) # allocates one more byte
+ptr <<= "abcd" # works correctly
 free(ptr)
 ```
 
@@ -113,7 +113,7 @@ Basic usage:
 from pointers import calloc
 
 memory = calloc(3, 28)
-print(~memory)  # 0
+print(~memory) # 0
 memory <<= 5
 
 print(~memory)
@@ -125,9 +125,9 @@ Now, to use the other allocated chunks, we can use pointer arithmetic.
 
 ```py
 memory = calloc(4, 28)
-memory <<= 1  # assigns first chunk to 1
-memory += 1  # access next chunk
-memory <<= 2  # assigns this chunk to 2
+memory <<= 1 # assigns first chunk to 1
+memory += 1 # access next chunk
+memory <<= 2 # assigns this chunk to 2
 print(~memory)
 ```
 
@@ -135,7 +135,7 @@ If you attempt to skip more chunks than are allocated, a `NotEnoughChunks` error
 
 ```py
 memory = calloc(1, 28)
-memory += 2  # NotEnoughChunks: chunk index is 2, while allocation is 1
+memory += 2 # NotEnoughChunks: chunk index is 2, while allocation is 1
 ```
 
 ### Safe Mode
@@ -150,7 +150,7 @@ mem = calloc_safe(4, 28)
 for index, ptr in enumerate(mem):
     ptr <<= index + 1
 
-print(' '.join([~i for i in mem]))  # without calloc_safe, this used to cause a segfault
+print(' '.join([~i for i in mem])) # without calloc_safe, this used to cause a segfault
 ```
 
 `calloc_safe` **did not** use pointers and was holding a dictionary containing values to prevent segfaults.

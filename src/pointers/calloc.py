@@ -1,7 +1,7 @@
 from .exceptions import (
     AllocationError,
     NotEnoughChunks,
-    CallocSubscriptionDangerError
+    CallocSubscriptionDangerError,
 )
 from .malloc import MallocPointer
 from ._cstd import c_calloc
@@ -37,8 +37,7 @@ class CallocPointer(MallocPointer, Generic[T]):
         if chunk_cache:
             self._chunk_cache[self.current_index] = self
 
-        bytes_a = (ctypes.c_ubyte * 24) \
-            .from_address(id(0))
+        bytes_a = (ctypes.c_ubyte * 24).from_address(id(0))
 
         ctypes.memmove(address, bytes_a, len(bytes_a))
 
@@ -107,10 +106,14 @@ class CallocPointer(MallocPointer, Generic[T]):
             yield self + i
 
     def __getitem__(self, i):
-        raise CallocSubscriptionDangerError("""Subscription not allowed for Calloc chunks.""")  # noqa
+        raise CallocSubscriptionDangerError(
+            """Subscription not allowed for Calloc chunks."""
+        )  # noqa
 
     def __setitem__(self, i):
-        raise CallocSubscriptionDangerError("""Item assignment not allowed for Calloc chunks.""")  # noqa
+        raise CallocSubscriptionDangerError(
+            """Item assignment not allowed for Calloc chunks."""
+        )  # noqa
 
 
 def calloc(num: int, size: int) -> CallocPointer:

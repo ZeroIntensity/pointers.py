@@ -120,7 +120,7 @@ class test:
     pass
 
 ptr = Pointer(id(test()), test, False)
-print(~ptr)  # since we set tracked to false, it uses dereference_address and causes a segfault
+print(~ptr) # since we set tracked to false, it uses dereference_address and causes a segfault
 ```
 
 This was an issue in pointers.py for a while until version 1.2.5 introduced `dereference_tracked`.
@@ -155,7 +155,7 @@ Lets look at the source for movement:
 
 ```py
 def move(self, data: "Pointer[T]") -> None:
-    """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
+    """Move data from another pointer to this pointer. Very dangerous, use with caution.""" # noqa
     if data.type is not self.type:
         raise ValueError("pointer must be the same type")
 
@@ -244,7 +244,7 @@ The basic implementation is simple:
 # not actual source code
 
 def malloc(size: int) -> MallocPointer:
-    address: int = c_malloc(size)  # allocates from the cdll
+    address: int = c_malloc(size) # allocates from the cdll
     ... # create the pointer object with the address
 ```
 
@@ -260,7 +260,7 @@ In fact, we aren't even using `memmove`:
 def move(self, data: Pointer[T]) -> None:
     """Move data to the allocated memory."""
     if self.freed:
-        raise MemoryError("memory has been freed")
+        raise FreedMemoryError("memory has been freed")
 
     bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)) \
         .from_address(data.address)
@@ -283,8 +283,8 @@ Then, we sent the pointers contents to those bytes.
 We have to use `ptr.contents[:]` to ensure that the bytes are the same size, and if it isn't then we throw an error:
 
 ```py
-raise MemoryError(
-    f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}"  # noqa
+raise InvalidSizeError(
+    f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}" # noqa
 ) from e
 ```
 

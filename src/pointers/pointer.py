@@ -1,13 +1,5 @@
 import ctypes
-from typing import (
-    Generic,
-    TypeVar,
-    Type,
-    Iterator,
-    Union,
-    Any,
-    Mapping
-)
+from typing import Generic, TypeVar, Type, Iterator, Union, Any, Mapping
 
 from typing_extensions import ParamSpec
 from contextlib import suppress
@@ -19,7 +11,7 @@ from .exceptions import (
     DereferenceError,
     IncorrectItemExpectedForSubscriptError,
     NotSubscriptableError,
-    ImmutableObjectError
+    ImmutableObjectError,
 )
 
 __all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
@@ -87,7 +79,9 @@ class Pointer(Generic[T]):
 
     def dereference(self) -> T:
         """Dereference the pointer."""
-        return (dereference_tracked if self.tracked else dereference_address)(self.address)  # noqa
+        return (dereference_tracked if self.tracked else dereference_address)(
+            self.address
+        )  # noqa
 
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
@@ -117,10 +111,12 @@ class Pointer(Generic[T]):
         deref_a: T = ~data
         deref_b: T = ~self
 
-        bytes_a = (ctypes.c_ubyte * sys.getsizeof(deref_a)) \
-            .from_address(data.address)
-        bytes_b = (ctypes.c_ubyte * sys.getsizeof(deref_b)) \
-            .from_address(self.address)
+        bytes_a = (ctypes.c_ubyte * sys.getsizeof(deref_a)).from_address(
+            data.address
+        )  # fmt: off
+        bytes_b = (ctypes.c_ubyte * sys.getsizeof(deref_b)).from_address(
+            self.address
+        )  # fmt: off
 
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
@@ -130,27 +126,20 @@ class Pointer(Generic[T]):
         return self
 
     def __getitem__(self, item: Mapping[Any, A]) -> A:
-        """Allows subscription to PyObject referenced Pointers.
-Inherited by Malloc, superceded for CallocPointers.
-Works with numpy, pandas, etc.
-```py
-x = np.arange(100).reshape(4, 25)
-v = to_ptr(x)
-
->> v[(0, 4)]
->> 3
-```"""
+        """Allows subscription to PyObject referenced Pointers. Works with numpy, pandas, etc."""  # noqa
 
         dereferenced: T = ~self
 
         subscriptable = [Pointer, dict]
         referencable = [tuple, int, str, list]
 
-        if hasattr(dereferenced, '__getitem__'):
+        if hasattr(dereferenced, "__getitem__"):
             return dereferenced[item]  # type: ignore
 
-        elif hasattr(dereferenced, '__iter__'):
-            if (type(item) in referencable) and (type(dereferenced) in subscriptable):  # noqa
+        elif hasattr(dereferenced, "__iter__"):
+            if (type(item) in referencable) and (
+                type(dereferenced) in subscriptable
+            ):  # noqa
                 return dereferenced[item]  # type: ignore
             else:
                 raise IncorrectItemExpectedForSubscriptError(
@@ -161,25 +150,11 @@ wrong item type for referenced PyObject."""
             raise NotSubscriptableError("target PyObject is not scriptable")
 
     def __setitem__(self, item: Mapping[Any, A], replace: A) -> None:
-        """Allows item assignment to PyObject referenced Pointers.
-Inherited by Malloc, superceded for CallocPointers. Works with numpy,
-pandas, etc.
-```py
-x = np.arange(100).reshape(4, 25)
-v = to_ptr(x)
-v[(0, 4)] = 2
-
->> v[0]
->> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20, 21, 22, 23, 24])
->> x[0]
->> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20, 21, 22, 23, 24])
-```"""
+        """Allows item assignment to PyObject referenced Pointers."""
 
         dereferenced = ~self
 
-        if hasattr(dereferenced, '__setitem__'):
+        if hasattr(dereferenced, "__setitem__"):
             dereferenced[item] = replace  # type: ignore
         else:
             raise ImmutableObjectError(

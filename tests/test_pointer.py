@@ -7,11 +7,14 @@ from pointers import (
 )
 import pytest
 
+
 class SomeObj:
     pass
 
+
 def test_to_ptr():
     assert type(to_ptr("a")) is Pointer
+
 
 def test_assign():
     a = to_ptr("a")
@@ -32,6 +35,7 @@ def test_move():
     a <<= b
     assert num == target
 
+
 def test_frozen():
     ptr = to_const_ptr("a")
 
@@ -40,8 +44,10 @@ def test_frozen():
     with pytest.raises(IsFrozenError):
         ptr >>= "abc"
 
+
 def test_tracked():
     ptr = to_ptr(SomeObj())
     assert ptr.tracked
 
-    # we cant test things like DereferenceError here because of the garbage collector being weird
+
+# we cant test things like DereferenceError here because of the garbage collector being weird

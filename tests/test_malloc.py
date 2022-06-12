@@ -1,14 +1,24 @@
-from pointers import malloc, free, MallocPointer, IsMallocPointerError, realloc
+from pointers import (
+    malloc,
+    free,
+    MallocPointer,
+    IsMallocPointerError,
+    realloc,
+    FreedMemoryError,
+    InvalidSizeError,
+    DereferenceError,
+)
 import pytest
+
 
 def test_malloc_pointer():
     mem = malloc(1)
     assert type(mem) is MallocPointer
 
-    with pytest.raises(MemoryError):
+    with pytest.raises(DereferenceError):
         mem.dereference()
 
-    with pytest.raises(MemoryError):
+    with pytest.raises(InvalidSizeError):
         mem <<= "abc"
 
     with pytest.raises(IsMallocPointerError):
@@ -32,7 +42,7 @@ def test_free():
     mem <<= "abc"
     free(mem)
 
-    with pytest.raises(MemoryError):
+    with pytest.raises(FreedMemoryError):
         print(~mem)
 
 
@@ -43,7 +53,7 @@ def test_realloc():
 
     assert mem.size == 53
 
-    with pytest.raises(MemoryError):
+    with pytest.raises(InvalidSizeError):
         mem <<= "abcde"
 
     mem <<= "abcd"

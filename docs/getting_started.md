@@ -28,7 +28,7 @@ Start with importing `to_ptr`, and then calling it on a value:
 from pointers import to_ptr
 
 val = "hello world!"
-ptr = to_ptr(val)  # <pointer to str object at [address]>
+ptr = to_ptr(val) # <pointer to str object at [address]>
 ```
 
 Variable `ptr` gets assigned to type `pointers.Pointer[str]`.
@@ -68,9 +68,9 @@ from pointers import to_ptr, Pointer
 from typing import List, Any
 
 def address_sum(first: Pointer[Any], second: Pointer[Any]) -> List[int]:
-    return first.address + second.address  # we will talk about other pointer attributes later
+    return first.address + second.address # we will talk about other pointer attributes later
 
-print(address_sum(to_ptr("abc"), to_ptr("123"))  # this can get out of hand very quickly!
+print(address_sum(to_ptr("abc"), to_ptr("123")) # this can get out of hand very quickly!
 ```
 
 Luckily, there is a `decay` decorator, that automatically converts function arguments into pointers:
@@ -80,7 +80,7 @@ Luckily, there is a `decay` decorator, that automatically converts function argu
 def address_sum(first: Pointer[Any], second: Pointer[Any]) -> List[int]:
     return first.address + second.address
 
-print(address_sum("abc", "123"))  # much better
+print(address_sum("abc", "123")) # much better
 ```
 
 The `decay` decorator will **only** decay arguments hinted as `Pointer`. For example:
@@ -88,7 +88,7 @@ The `decay` decorator will **only** decay arguments hinted as `Pointer`. For exa
 ```py
 @decay
 def address_sum(first, second) -> List[int]:
-    return first.address + second.address  # error: str has no attribute address
+    return first.address + second.address # error: str has no attribute address
 
-print(address_sum("abc", "123"))  # the data doesnt get decayed!
+print(address_sum("abc", "123")) # the data doesnt get decayed!
 ```

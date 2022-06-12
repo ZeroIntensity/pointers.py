@@ -1,9 +1,15 @@
 import ctypes
 import sys
 from .pointer import Pointer
-from ._cstd import c_malloc, c_free, c_realloc
-from typing import TypeVar, Generic, NoReturn, Optional
-from .exceptions import IsMallocPointerError, AllocationError
+from ._cstd import c_free
+from typing import TypeVar, Generic, NoReturn, Tuple
+from .exceptions import (
+    IsMallocPointerError,
+    FreedMemoryError,
+    InvalidSizeError,
+    DereferenceError,
+)
+from .bindings import py_malloc, py_realloc
 
 __all__ = ("MallocPointer", "malloc", "free", "realloc")
 
@@ -18,7 +24,7 @@ class MallocPointer(Pointer, Generic[T]):
         self,
         address: int,
         size: int,
-        assigned: bool = False
+        assigned: bool = False,
     ) -> None:
         self._address = address
         self._size = size
@@ -63,26 +69,34 @@ class MallocPointer(Pointer, Generic[T]):
         raise IsMallocPointerError("cannot assign to malloc pointer")
 
     def __repr__(self) -> str:
-        return f"<pointer to {self.size} bytes of memory at {hex(self.address)}>"  # noqa
+        return (
+            f"<pointer to {self.size} bytes of memory at {hex(self.address)}>"  # noqa
+        )
 
     def __rich__(self) -> str:
         return f"<pointer to [green]{self.size} bytes[/green] of memory at [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
+    def _make_stream_and_ptr(
+        self,
+        data: Pointer[T],
+    ) -> Tuple[ctypes.pointer, bytes]:
+        if self.freed:
+            raise FreedMemoryError("memory has been freed")
+
+        bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)).from_address(
+            data.address
+        )  # fmt: off
+
+        return self.make_ct_pointer(), bytes(bytes_a)
+
     def move(self, data: Pointer[T]) -> None:
         """Move data to the allocated memory."""
-        if self.freed:
-            raise MemoryError("memory has been freed")
-
-        bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)) \
-            .from_address(data.address)
-
-        ptr = self.make_ct_pointer()
-        byte_stream = bytes(bytes_a)
+        ptr, byte_stream = self._make_stream_and_ptr(data)
 
         try:
             ptr.contents[:] = byte_stream
         except ValueError as e:
-            raise MemoryError(
+            raise InvalidSizeError(
                 f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}"  # noqa
             ) from e
 
@@ -91,16 +105,20 @@ class MallocPointer(Pointer, Generic[T]):
     def make_ct_pointer(self):
         return ctypes.cast(
             self.address,
-            ctypes.POINTER(ctypes.c_char * self.size)
+            ctypes.POINTER(ctypes.c_char * self.size),
         )
 
     def dereference(self):
         """Dereference the pointer."""
         if self.freed:
-            raise MemoryError("cannot dereference memory that has been freed")
+            raise FreedMemoryError(
+                "cannot dereference memory that has been freed",
+            )
 
         if not self.assigned:
-            raise MemoryError("cannot dereference pointer that has no value")
+            raise DereferenceError(
+                "cannot dereference pointer that has no value",
+            )
 
         return super().dereference()
 
@@ -113,12 +131,7 @@ class MallocPointer(Pointer, Generic[T]):
 
 def malloc(size: int) -> MallocPointer:
     """Allocate memory for a given size."""
-    address: Optional[int] = c_malloc(size)
-
-    if not address:
-        raise AllocationError("failed to allocate memory")
-
-    return MallocPointer(address, size)
+    return MallocPointer(py_malloc(size), size)
 
 
 def free(target: MallocPointer):
@@ -130,10 +143,5 @@ def free(target: MallocPointer):
 
 def realloc(target: MallocPointer, size: int) -> None:
     """Resize a memory block created by malloc."""
-    ct_ptr = target.make_ct_pointer()
-    address: Optional[int] = c_realloc(ct_ptr, size)
-
-    if not address:
-        raise AllocationError("failed to resize memory")
-
+    py_realloc(target.address, size)
     target.size = size

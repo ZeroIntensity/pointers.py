@@ -11,7 +11,7 @@ from pointers import Pointer, decay
 
 @decay
 def test(ptr: Pointer[str])
-    print(ptr.dereference())  # prints "abc"
+    print(ptr.dereference()) # prints "abc"
 
 test("abc")
 ```
@@ -23,7 +23,7 @@ The recommended way to dereference a pointer object is to use the `~` operator, 
 ```py
 @decay
 def test(ptr: Pointer[str])
-    print(~ptr)  # much shorter and easier to type
+    print(~ptr) # much shorter and easier to type
 ```
 
 Finally, you can use the `*` operator, like in low level languages:
@@ -31,7 +31,7 @@ Finally, you can use the `*` operator, like in low level languages:
 ```py
 @decay
 def test(ptr: Pointer[str])
-    print(*ptr)  # works the same as above
+    print(*ptr) # works the same as above
 ```
 
 ### Why should I use `~` over `*`?
@@ -43,8 +43,8 @@ This can cause some issues. For example:
 ```py
 @decay
 def test(ptr: Pointer[str])
-    deref = ~ptr  # valid, runs correctly
-    deref = *ptr  # invalid syntax error!
+    deref = ~ptr # valid, runs correctly
+    deref = *ptr # invalid syntax error!
 
 test("abc")
 ```
@@ -56,8 +56,8 @@ For example, if we have a `list` that we are trying to pass into a function, usi
 ```py
 @decay
 def test(ptr: Pointer[list])
-    some_func(*ptr)  # this only dereferences it, doesn't splat it
-    some_func(**ptr)  # this is treated as a kwarg splat, raises a typeerror
+    some_func(*ptr) # this only dereferences it, doesn't splat it
+    some_func(**ptr) # this is treated as a kwarg splat, raises a typeerror
 
 test([1, 2, 3])
 ```
@@ -76,16 +76,16 @@ class test:
 
 ptr = to_ptr(test())
 
-print(~ptr)  # this causes a DereferenceError, since python collects our instance before this
+print(~ptr) # this causes a DereferenceError, since python collects our instance before this
 ```
 
 CPython does garbage collection based on reference counting, so you can stop the garbage collection by creating an instance variable, like so:
 
 ```py
-instance = test()  # this adds to the reference count and stops the collection
+instance = test() # this adds to the reference count and stops the collection
 ptr = to_ptr(instance)
 
-print(~ptr)  # works just fine, no error
+print(~ptr) # works just fine, no error
 ```
 
 However, some types (such as `str` or `int`) are not tracked by the garbage collection, so you don't have to worry about them getting collected.
@@ -96,7 +96,7 @@ You can check if the object is tracked by reading the `Pointer.tracked` property
 ptr = to_ptr(test())
 ptr_2 = to_ptr("a")
 
-print(ptr.tracked, ptr_2.tracked)  # True False
+print(ptr.tracked, ptr_2.tracked) # True False
 ```
 
 ### Segmentation Faults
@@ -106,7 +106,7 @@ A segmentation fault occurs when we try to access restricted memory.
 This can occur for multiple reasons, but we'll use the following as an example:
 
 ```py
-from pointers import dereference_address  # internal function used by pointers.py
+from pointers import dereference_address # internal function used by pointers.py
 
 dereference_address(1)
 ```
@@ -138,7 +138,7 @@ a = to_ptr("a")
 b = to_ptr("b")
 
 a.assign(b)
-print(~a)  # prints "b", since a is now pointing to the address of b
+print(~a) # prints "b", since a is now pointing to the address of b
 ```
 
 Note that this **does not** change the original value, it only changes what the pointer is looking at.
@@ -155,7 +155,7 @@ from pointers import to_ptr
 a = to_ptr("a")
 b = to_ptr("b")
 
-a >>= b  # does the same thing as above
+a >>= b # does the same thing as above
 ```
 
 In fact, we don't even need to create a second pointer when using `>>`.
@@ -164,7 +164,7 @@ In fact, we don't even need to create a second pointer when using `>>`.
 from pointers import to_ptr
 
 a = to_ptr("a")
-a >>= "b"  # works just fine
+a >>= "b" # works just fine
 ```
 
 ### For C/C++ developers
@@ -190,7 +190,7 @@ If you don't want your pointer to ever change, you can use `FrozenPointer` and `
 from pointers import to_const_ptr, FrozenPointer
 
 ptr: FrozenPointer[str] = to_const_ptr("abc")
-ptr >>= "123"  # pointers.IsFrozenError
+ptr >>= "123" # pointers.IsFrozenError
 ```
 
 You can also use it with `decay`:
@@ -200,8 +200,8 @@ from pointers import decay, FrozenPointer
 
 @decay
 def test(ptr: Pointer[str], ptr2: FrozenPointer[str]):
-    ptr >>= "123"  # works just fine
-    ptr2 >>= "123"  # pointers.IsFrozenError
+    ptr >>= "123" # works just fine
+    ptr2 >>= "123" # pointers.IsFrozenError
 
 test("a", "b")
 ```

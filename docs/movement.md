@@ -117,7 +117,7 @@ second_instance = a("b")
 ptr = to_ptr(instance)
 
 ptr <<= second_instance
-print(ptr.a)  # b
+print(ptr.a) # b
 ```
 
 This will execute just fine, and since `a` isn't a cached type, then it isn't changed for the entire interpreter.

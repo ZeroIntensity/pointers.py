@@ -3,10 +3,7 @@ from typing import TypeVar, NoReturn
 from .exceptions import IsFrozenError
 import gc
 
-__all__ = (
-    'FrozenPointer',
-    'to_const_ptr'
-)
+__all__ = ("FrozenPointer", "to_const_ptr")
 
 
 T = TypeVar("T")

@@ -35,7 +35,7 @@ memory = malloc(52)
 memory <<= "abc"
 print(*memory) # abc
 free(memory)
-print(*memory) # MemoryError
+print(*memory) # FreedMemoryError
 ```
 
 ### Why does this exist?

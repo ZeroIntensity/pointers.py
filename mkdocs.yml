@@ -6,5 +6,6 @@ nav:
   - Using Pointers: pointers.md
   - Data Movement: movement.md
   - Memory Allocation: allocation.md
+  - Bindings: bindings.md
   - Under The Hood: under_the_hood.md
 theme: readthedocs

@@ -37,8 +37,11 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
                 if origin not in {Pointer, FrozenPointer}:
                     continue
 
-                actual[key] = to_ptr(actual[key]) if origin is Pointer \
+                actual[key] = (
+                    to_ptr(actual[key])
+                    if origin is Pointer
                     else to_const_ptr(actual[key])
+                )
 
         return func(**actual)  # type: ignore
 
