@@ -69,10 +69,10 @@ They expect the code to look something like the following:
 ```py
 class Pointer(Generic[T]):
     def __init__(self, value: T) -> None:
-        self._value = value
+  self._value = value
 
     def dereference() -> T:
-        return self._value
+  return self._value
 ```
 
 **This is not at all how pointers.py works.**
@@ -133,8 +133,8 @@ If an object matches, we return it.
 def dereference_tracked(address: int) -> Any:
     """Dereference an object tracked by the garbage collector."""
     for obj in gc.get_objects():
-        if id(obj) == address:
-            return obj
+  if id(obj) == address:
+      return obj
 
     raise DereferenceError(...)
 ```
@@ -157,15 +157,15 @@ Lets look at the source for movement:
 def move(self, data: "Pointer[T]") -> None:
     """Move data from another pointer to this pointer. Very dangerous, use with caution.""" # noqa
     if data.type is not self.type:
-        raise ValueError("pointer must be the same type")
+  raise ValueError("pointer must be the same type")
 
     deref_a: T = ~data
     deref_b: T = ~self
 
     bytes_a = (ctypes.c_ubyte * sys.getsizeof(deref_a)) \
-        .from_address(data.address)
+  .from_address(data.address)
     bytes_b = (ctypes.c_ubyte * sys.getsizeof(deref_b)) \
-        .from_address(self.address)
+  .from_address(self.address)
 
     ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 ```
@@ -191,7 +191,7 @@ from pointers import to_ptr
 def print_data(val: int):
     data = ctypes.string_at(id(val), 28)
     ref_count, type_address, number_of_digits, lowest_digit = \
-        struct.unpack('qqqi', data)
+  struct.unpack('qqqi', data)
 
     print('reference count: ', ref_count, sys.getrefcount(x))
     print('type address:    ', type_address, id(type(x)))
@@ -260,18 +260,18 @@ In fact, we aren't even using `memmove`:
 def move(self, data: Pointer[T]) -> None:
     """Move data to the allocated memory."""
     if self.freed:
-        raise FreedMemoryError("memory has been freed")
+  raise FreedMemoryError("memory has been freed")
 
     bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)) \
-        .from_address(data.address)
+  .from_address(data.address)
 
     ptr = self.make_ct_pointer()
     byte_stream = bytes(bytes_a)
 
     try:
-        ptr.contents[:] = byte_stream
+  ptr.contents[:] = byte_stream
     except ValueError as e:
-        ...
+  ...
 ```
 
 We make a ctypes pointer from the allocated memory, and use the same method as earlier to get the bytes of the new pointer.
@@ -319,7 +319,7 @@ def realloc(target: MallocPointer, size: int) -> None:
     address: Optional[int] = c_realloc(ct_ptr, size)
 
     if not address:
-        raise AllocationError("failed to resize memory")
+  raise AllocationError("failed to resize memory")
 
     target.size = size
 ```
@@ -342,7 +342,7 @@ def calloc(num: int, size: int) -> CallocPointer:
     address: int = c_calloc(num, size)
 
     if not address:
-        raise AllocationError("failed to allocate memory")
+  raise AllocationError("failed to allocate memory")
 
     return CallocPointer(address, num, size, 0)
 ```

@@ -238,17 +238,17 @@ from pointers import to_ptr
 x = np.arange(100).reshape(4, 25)
 >> x[0]
 >> array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-       17, 18, 19, 20, 21, 22, 23, 24])
+ 17, 18, 19, 20, 21, 22, 23, 24])
 
 v = to_ptr(x)
 v[(0, 4)] = 2
 
 >> v[0]
 >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-       17, 18, 19, 20, 21, 22, 23, 24]) # the pointer value has changed
+ 17, 18, 19, 20, 21, 22, 23, 24]) # the pointer value has changed
 >> x[0]
 >> array([ 0,  1,  2,  3,  2,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
-       17, 18, 19, 20, 21, 22, 23, 24]) # the same for the original PyObject
+ 17, 18, 19, 20, 21, 22, 23, 24]) # the same for the original PyObject
 ```
 
 ### Caveats

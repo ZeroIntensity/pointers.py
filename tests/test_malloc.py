@@ -16,16 +16,16 @@ def test_malloc_pointer():
     assert type(mem) is MallocPointer
 
     with pytest.raises(DereferenceError):
-        mem.dereference()
+  mem.dereference()
 
     with pytest.raises(InvalidSizeError):
-        mem <<= "abc"
+  mem <<= "abc"
 
     with pytest.raises(IsMallocPointerError):
-        mem.type
+  mem.type
 
     with pytest.raises(IsMallocPointerError):
-        mem >>= "abc"
+  mem >>= "abc"
 
     free(mem)
 
@@ -43,7 +43,7 @@ def test_free():
     free(mem)
 
     with pytest.raises(FreedMemoryError):
-        print(~mem)
+  print(~mem)
 
 
 def test_realloc():
@@ -54,7 +54,7 @@ def test_realloc():
     assert mem.size == 53
 
     with pytest.raises(InvalidSizeError):
-        mem <<= "abcde"
+  mem <<= "abcde"
 
     mem <<= "abcd"
     assert ~mem == "abcd"
