@@ -1,6 +1,5 @@
 import ctypes
 from typing import Generic, TypeVar, Type, Iterator, Union, Any, Mapping
-
 from typing_extensions import ParamSpec
 from contextlib import suppress
 import faulthandler
@@ -9,9 +8,6 @@ import sys
 import gc
 from .exceptions import (
     DereferenceError,
-    IncorrectItemExpectedForSubscriptError,
-    NotSubscriptableError,
-    ImmutableObjectError,
 )
 
 __all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
@@ -124,42 +120,6 @@ class Pointer(Generic[T]):
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
-
-    def __getitem__(self, item: Mapping[Any, A]) -> A:
-        """Allows subscription to PyObject referenced Pointers. Works with numpy, pandas, etc."""  # noqa
-
-        dereferenced: T = ~self
-
-        subscriptable = [Pointer, dict]
-        referencable = [tuple, int, str, list]
-
-        if hasattr(dereferenced, "__getitem__"):
-            return dereferenced[item]  # type: ignore
-
-        elif hasattr(dereferenced, "__iter__"):
-            if (type(item) in referencable) and (
-                type(dereferenced) in subscriptable
-            ):  # noqa
-                return dereferenced[item]  # type: ignore
-            else:
-                raise IncorrectItemExpectedForSubscriptError(
-                    """subscript with an int,
-wrong item type for referenced PyObject."""
-                )
-        else:
-            raise NotSubscriptableError("target PyObject is not scriptable")
-
-    def __setitem__(self, item: Mapping[Any, A], replace: A) -> None:
-        """Allows item assignment to PyObject referenced Pointers."""
-
-        dereferenced = ~self
-
-        if hasattr(dereferenced, "__setitem__"):
-            dereferenced[item] = replace  # type: ignore
-        else:
-            raise ImmutableObjectError(
-                f'"{type(dereferenced).__name__}" object does not support item assignment.'  # noqa
-            )
 
 
 def to_ptr(val: T) -> Pointer[T]:

@@ -1,15 +1,15 @@
 import ctypes
 import sys
 from .pointer import Pointer
-from ._cstd import c_free
+from ._cstd import c_free, c_malloc, c_realloc
 from typing import TypeVar, Generic, NoReturn, Tuple
 from .exceptions import (
     IsMallocPointerError,
     FreedMemoryError,
     InvalidSizeError,
     DereferenceError,
+    AllocationError,
 )
-from .bindings import py_malloc, py_realloc
 
 __all__ = ("MallocPointer", "malloc", "free", "realloc")
 
@@ -131,7 +131,12 @@ class MallocPointer(Pointer, Generic[T]):
 
 def malloc(size: int) -> MallocPointer:
     """Allocate memory for a given size."""
-    return MallocPointer(py_malloc(size), size)
+    mem = c_malloc(size)
+
+    if not mem:
+        raise AllocationError("failed to allocate memory")
+
+    return MallocPointer(mem, size)
 
 
 def free(target: MallocPointer):
@@ -143,5 +148,9 @@ def free(target: MallocPointer):
 
 def realloc(target: MallocPointer, size: int) -> None:
     """Resize a memory block created by malloc."""
-    py_realloc(target.address, size)
+    mem = c_realloc(target.address, size)
+
+    if not mem:
+        raise AllocationError("failed to resize memory")
+
     target.size = size

@@ -7,6 +7,57 @@ __all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc", "dll")
 
 dll = ctypes.CDLL(platforms[system().lower()])
 
+
+class tm(ctypes.Structure):
+    _fields_ = [
+        ("tm_sec", ctypes.c_int),
+        ("tm_min", ctypes.c_int),
+        ("tm_hour", ctypes.c_int),
+        ("tm_mday", ctypes.c_int),
+        ("tm_mon", ctypes.c_int),
+        ("tm_year", ctypes.c_int),
+        ("tm_wday", ctypes.c_int),
+        ("tm_yday", ctypes.c_int),
+        ("tm_isdst", ctypes.c_int),
+    ]
+
+
+class div_t(ctypes.Structure):
+    _fields_ = [
+        ("quot", ctypes.c_int),
+        ("rem", ctypes.c_int),
+    ]
+
+
+class ldiv_t(ctypes.Structure):
+    _fields_ = [
+        ("quot", ctypes.c_long),
+        ("rem", ctypes.c_long),
+    ]
+
+
+class lconv(ctypes.Structure):
+    _fields_ = [
+        ("decimal_point", ctypes.c_char_p),
+        ("thousands_sep", ctypes.c_char_p),
+        ("grouping", ctypes.c_char_p),
+        ("int_curr_symbol", ctypes.c_char_p),
+        ("currency_symbol", ctypes.c_char_p),
+        ("mon_decimal_point", ctypes.c_char_p),
+        ("mon_thousands_sep", ctypes.c_char_p),
+        ("mon_grouping", ctypes.c_char_p),
+        ("positive_sign", ctypes.c_char_p),
+        ("negative_sign", ctypes.c_char_p),
+        ("int_frac_digits", ctypes.c_char),
+        ("frac_digits", ctypes.c_char),
+        ("p_cs_precedes", ctypes.c_char),
+        ("p_sep_by_space", ctypes.c_char),
+        ("n_sep_by_space", ctypes.c_char),
+        ("p_sign_posn", ctypes.c_char),
+        ("n_sign_posn", ctypes.c_char),
+    ]
+
+
 c_raise = getattr(dll, "raise")
 
 # void* malloc(size_t size);
@@ -64,6 +115,8 @@ dll.toupper.restype = ctypes.c_int
 dll.setlocale.argtypes = (ctypes.c_int, ctypes.c_char_p)
 dll.setlocale.restype = ctypes.c_char_p
 # struct lconv* localeconv(void)
+dll.localeconv.argtypes = ()
+dll.localeconv.restype = ctypes.POINTER(lconv)
 # double frexp(double x, int* exponent)
 dll.frexp.argtypes = (ctypes.c_double, ctypes.POINTER(ctypes.c_int))
 dll.frexp.restype = ctypes.c_double
@@ -74,8 +127,10 @@ dll.ldexp.restype = ctypes.c_double
 dll.modf.argtypes = (ctypes.c_double, ctypes.POINTER(ctypes.c_double))
 dll.modf.restype = ctypes.c_double
 # void (*signal(int sig, void (*func)(int)))(int)
+dll.signal.argtypes = (ctypes.c_int, ctypes.c_void_p)
+dll.signal.restype = None
 # int raise(int sig)
-c_raise.argtypes = ctypes.c_int
+c_raise.argtypes = (ctypes.c_int,)
 c_raise.restype = ctypes.c_int
 # int fclose(FILE* stream)
 dll.fclose.argtypes = (ctypes.c_void_p,)
@@ -170,7 +225,7 @@ dll.fgetc.restype = ctypes.c_int
 dll.fgets.argtypes = (ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p)
 dll.fgets.restype = ctypes.c_char_p
 # int fputc(int char, FILE* stream)
-dll.fputc.argtypes = (ctypes.c_int, ctypes.c_void_p)
+dll.fputc.argtypes = (ctypes.c_char, ctypes.c_void_p)
 dll.fputc.restype = ctypes.c_int
 # int fputs(const char* str, FILE* stream)
 dll.fputs.argtypes = (ctypes.c_char_p, ctypes.c_void_p)
@@ -185,17 +240,17 @@ dll.getchar.restype = ctypes.c_int
 dll.gets.argtypes = (ctypes.c_char_p,)
 dll.gets.restype = ctypes.c_char_p
 # int putc(int char, FILE* stream)
-dll.putc.argtypes = (ctypes.c_int, ctypes.c_void_p)
+dll.putc.argtypes = (ctypes.c_char, ctypes.c_void_p)
 dll.putc.restype = ctypes.c_int
 # int putchar(int char)
-dll.putchar.argtypes = (ctypes.c_int,)
+dll.putchar.argtypes = (ctypes.c_char,)
 dll.putchar.restype = ctypes.c_int
 # int puts(const char* str)
 dll.puts.argtypes = (ctypes.c_char_p,)
 dll.puts.restype = ctypes.c_int
 # int ungetc(int char, FILE* stream)
 dll.ungetc.argtypes = (
-    ctypes.c_int,
+    ctypes.c_char,
     ctypes.c_void_p,
 )
 dll.ungetc.restype = ctypes.c_int
@@ -229,10 +284,14 @@ dll.system.restype = ctypes.c_int
 dll.abs.argtypes = (ctypes.c_int,)
 dll.abs.restype = ctypes.c_int
 # div_t div(int numer, int denom)
+dll.div.argtypes = (ctypes.c_int, ctypes.c_int)
+dll.div.restype = div_t
 # long int labs(long int x)
 dll.labs.argtypes = (ctypes.c_long,)
 dll.labs.restype = ctypes.c_long
 # ldiv_t ldiv(long int numer, long int denom)
+dll.ldiv.argtypes = (ctypes.c_long, ctypes.c_long)
+dll.ldiv.restype = ldiv_t
 # int rand(void)
 dll.rand.argtypes = ()
 dll.rand.restype = ctypes.c_int
@@ -320,15 +379,38 @@ dll.strtok.restype = ctypes.c_char_p
 # size_t strxfrm(char* dest, const char* src, size_t n)
 dll.strxfrm.argtypes = (ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t)
 dll.strxfrm.restype = ctypes.c_size_t
-# char* asctime(const struct tm *timeptr)
+# char* asctime(const struct tm* timeptr)
+dll.asctime.argtypes = (ctypes.POINTER(tm),)
+dll.asctime.restype = ctypes.c_char_p
 # clock_t clock(void)
-# char* ctime(const time_t *timer)
+dll.clock.argtypes = ()
+dll.clock.restype = ctypes.c_int
+# char* ctime(const time_t* timer)
+dll.ctime.argtypes = (ctypes.POINTER(ctypes.c_int),)
+dll.ctime.restype = ctypes.c_char_p
 # double difftime(time_t time1, time_t time2)
-# struct tm* gmtime(const time_t *timer)
-# struct tm* localtime(const time_t *timer)
-# time_t mktime(struct tm *timeptr)
-# size_t strftime(char *str, size_t maxsize, const char *format, const struct tm *timeptr)
-# time_t time(time_t *timer)
+dll.difftime.argtypes = (ctypes.c_int, ctypes.c_int)
+dll.difftime.restype = ctypes.c_double
+# struct tm* gmtime(const time_t* timer)
+dll.gmtime.argtypes = (ctypes.c_int,)
+dll.gmtime.restype = ctypes.POINTER(tm)
+# struct tm* localtime(const time_t* timer)
+dll.localtime.argtypes = (ctypes.c_int,)
+dll.localtime.restype = ctypes.POINTER(tm)
+# time_t mktime(struct tm* timeptr)
+dll.mktime.argtypes = (ctypes.POINTER(tm),)
+dll.mktime.restype = ctypes.c_int
+# size_t strftime(char *str, size_t maxsize, const char *format, const struct tm* timeptr)
+dll.strftime.argtypes = (
+    ctypes.c_char_p,
+    ctypes.c_size_t,
+    ctypes.c_char_p,
+    ctypes.POINTER(tm),
+)
+dll.strftime.restype = ctypes.c_size_t
+# time_t time(time_t* timer)
+dll.time.argtypes = (ctypes.POINTER(ctypes.c_int),)
+dll.time.restype = ctypes.c_int
 
 c_malloc = dll.malloc
 c_free = dll.free
