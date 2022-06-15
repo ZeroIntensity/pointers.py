@@ -1,9 +1,26 @@
 import ctypes
 from platform import system
+from .struct import Struct
+from typing import Dict, Type
 
 platforms = {"linux": "libc.so.6", "darwin": "libc.dylib", "windows": "msvcrt"}
 
-__all__ = ("c_malloc", "c_free", "c_realloc", "c_calloc", "dll")
+__all__ = (
+    "c_malloc",
+    "c_free",
+    "c_realloc",
+    "c_calloc",
+    "dll",
+    "tm",
+    "lconv",
+    "div_t",
+    "ldiv_t",
+    "STRUCT_MAP",
+    "Tm",
+    "DivT",
+    "LDivT",
+    "Lconv",
+)
 
 dll = ctypes.CDLL(platforms[system().lower()])
 
@@ -22,6 +39,23 @@ class tm(ctypes.Structure):
     ]
 
 
+class Tm(Struct):
+    tm_sec: int
+    tm_min: int
+    tm_hour: int
+    tm_mday: int
+    tm_mon: int
+    tm_year: int
+    tm_wday: int
+    tm_yday: int
+    tm_isdst: int
+
+
+class DivT(Struct):
+    quot: int
+    rem: int
+
+
 class div_t(ctypes.Structure):
     _fields_ = [
         ("quot", ctypes.c_int),
@@ -29,11 +63,34 @@ class div_t(ctypes.Structure):
     ]
 
 
+class LDivT(DivT):
+    pass
+
+
 class ldiv_t(ctypes.Structure):
     _fields_ = [
         ("quot", ctypes.c_long),
         ("rem", ctypes.c_long),
     ]
+
+
+class Lconv(Struct):
+    decimal_point: str
+    thousands_sep: str
+    grouping: str
+    int_curr_symbol: str
+    currency_symbol: str
+    mon_decimal_point: str
+    mon_thousands_sep: str
+    mon_grouping: str
+    positive_sign: str
+    negative_sign: str
+    frac_digits: str
+    p_cs_precedes: str
+    p_sep_by_space: str
+    n_sep_by_space: str
+    p_sign_posn: str
+    n_sign_posn: str
 
 
 class lconv(ctypes.Structure):
@@ -56,6 +113,14 @@ class lconv(ctypes.Structure):
         ("p_sign_posn", ctypes.c_char),
         ("n_sign_posn", ctypes.c_char),
     ]
+
+
+STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
+    tm: Tm,
+    div_t: DivT,
+    ldiv_t: LDivT,
+    lconv: Lconv,
+}
 
 
 c_raise = getattr(dll, "raise")
@@ -198,10 +263,8 @@ dll.tmpfile.restype = ctypes.c_void_p
 dll.tmpnam.argtypes = (ctypes.c_char_p,)
 dll.tmpnam.restype = ctypes.c_char_p
 # int fprintf(FILE* stream, const char* format, ...)
-dll.fprintf.argtypes = (ctypes.c_void_p, ctypes.c_char_p)
 dll.fprintf.restype = ctypes.c_int
 # int printf(const char* format, ...)
-dll.printf.argtypes = (ctypes.c_char_p,)
 dll.printf.restype = ctypes.c_int
 # int sprintf(char* str, const char* format, ...)
 dll.sprintf.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
@@ -210,13 +273,11 @@ dll.sprintf.restype = ctypes.c_int
 # int vprintf(const char* format, va_list arg)
 # int vsprintf(char* str, const char* format, va_list arg)
 # int fscanf(FILE* stream, const char* format, ...)
-dll.fscanf.argtypes = (ctypes.c_void_p, ctypes.c_char_p)
 dll.fscanf.restype = ctypes.c_int
 # int scanf(const char* format, ...)
 dll.scanf.argtypes = (ctypes.c_char_p,)
 dll.scanf.restype = ctypes.c_int
 # int sscanf(const char* str, const char* format, ...)
-dll.sscanf.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
 dll.sscanf.restype = ctypes.c_int
 # int fgetc(FILE* stream)
 dll.fgetc.argtypes = (ctypes.c_void_p,)

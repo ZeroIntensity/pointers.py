@@ -1,8 +1,121 @@
 from ._cstd import *
-from ._cstd import tm
-from typing import Any, Union
-from .c_pointer import CVoidPointer, CTypedPointer, StructPointer
+from typing import Any, Union, TypeVar, Optional
+from .c_pointer import VoidPointer, TypedCPointer, StructPointer
 import ctypes
+from . import _cstd
+
+T = TypeVar("T")
+
+__all__ = (
+    "isalnum",
+    "isalpha",
+    "iscntrl",
+    "isdigit",
+    "isgraph",
+    "islower",
+    "isprint",
+    "ispunct",
+    "isspace",
+    "isupper",
+    "isxdigit",
+    "tolower",
+    "toupper",
+    "setlocale",
+    "frexp",
+    "ldexp",
+    "modf",
+    "fclose",
+    "clearerr",
+    "feof",
+    "ferror",
+    "fflush",
+    "fgetpos",
+    "fopen",
+    "fread",
+    "freopen",
+    "fseek",
+    "fsetpos",
+    "ftell",
+    "fwrite",
+    "remove",
+    "rename",
+    "rewind",
+    "setbuf",
+    "setvbuf",
+    "tmpfile",
+    "tmpnam",
+    "fprintf",
+    "printf",
+    "sprintf",
+    "fscanf",
+    "scanf",
+    "sscanf",
+    "fgetc",
+    "fgets",
+    "fputc",
+    "fputs",
+    "getc",
+    "getchar",
+    "gets",
+    "putc",
+    "putchar",
+    "puts",
+    "ungetc",
+    "perror",
+    "strtod",
+    "strtol",
+    "strtoul",
+    "abort",
+    "exit",
+    "getenv",
+    "system",
+    "abs",
+    "labs",
+    "rand",
+    "srand",
+    "mblen",
+    "mbstowcs",
+    "mbtowc",
+    "wcstombs",
+    "wctomb",
+    "memchr",
+    "memcmp",
+    "memcpy",
+    "memmove",
+    "memset",
+    "strcat",
+    "strncat",
+    "strchr",
+    "strcmp",
+    "strncmp",
+    "strcoll",
+    "strcpy",
+    "strncpy",
+    "strcspn",
+    "strerror",
+    "strlen",
+    "strpbrk",
+    "strrchr",
+    "strspn",
+    "strstr",
+    "strtok",
+    "strxfrm",
+    "asctime",
+    "clock",
+    "ctime",
+    "difftime",
+    "mktime",
+    "strftime",
+    "time",
+    "div",
+    "ldiv",
+    "localeconv",
+)
+
+
+def _not_null(data: Optional[T]) -> T:
+    assert data is not None
+    return data
 
 
 def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
@@ -10,17 +123,25 @@ def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
     res_typ = type(res)
 
     if res_typ.__name__.startswith("LP_"):
+        struct_type = STRUCT_MAP.get(getattr(_cstd, res_typ.__name__[3:]))
+        struct = struct_type.from_existing(res.contents) if struct_type else None
+
         res = (
-            CTypedPointer(
+            TypedCPointer(
                 ctypes.addressof(res),
                 res_typ,
             )
             if not issubclass(type(res.contents), ctypes.Structure)
-            else StructPointer(ctypes.addressof(res.contents), res_typ)
+            else StructPointer(id(struct), type(_not_null(struct)))
         )
 
     elif fn.restype is ctypes.c_void_p:  # type safety gets mad if i dont use elif here
-        res = CVoidPointer(res)
+        res = VoidPointer(res)
+
+    elif issubclass(res_typ, ctypes.Structure):
+        struct = STRUCT_MAP.get(res_typ)
+        if struct:
+            res = struct.from_existing(res)
 
     return res
 
@@ -85,7 +206,7 @@ def setlocale(category: int, locale: str) -> str:
     return _base(dll.setlocale, category, _make_char_pointer(locale))
 
 
-def frexp(x: float, exponent: CTypedPointer[int]) -> int:
+def frexp(x: float, exponent: TypedCPointer[int]) -> int:
     return _base(dll.frexp, x, exponent)
 
 
@@ -93,61 +214,61 @@ def ldexp(x: float, exponent: int) -> int:
     return _base(dll.ldexp, x, exponent)
 
 
-def modf(x: float, integer: CTypedPointer[float]) -> int:
+def modf(x: float, integer: TypedCPointer[float]) -> int:
     return _base(dll.modf, x, integer)
 
 
-def fclose(stream: CVoidPointer) -> int:
+def fclose(stream: VoidPointer) -> int:
     return _base(dll.fclose, stream)
 
 
-def clearerr(stream: CVoidPointer) -> None:
+def clearerr(stream: VoidPointer) -> None:
     return _base(dll.clearerr, stream)
 
 
-def feof(stream: CVoidPointer) -> int:
+def feof(stream: VoidPointer) -> int:
     return _base(dll.feof, stream)
 
 
-def ferror(stream: CVoidPointer) -> int:
+def ferror(stream: VoidPointer) -> int:
     return _base(dll.ferror, stream)
 
 
-def fflush(stream: CVoidPointer) -> int:
+def fflush(stream: VoidPointer) -> int:
     return _base(dll.fflush, stream)
 
 
-def fgetpos(stream: CVoidPointer, pos: CVoidPointer) -> int:
+def fgetpos(stream: VoidPointer, pos: VoidPointer) -> int:
     return _base(dll.fgetpos, stream, pos)
 
 
-def fopen(filename: str, mode: str) -> CVoidPointer:
+def fopen(filename: str, mode: str) -> VoidPointer:
     return _base(dll.fopen, _make_char_pointer(filename), _make_char_pointer(mode))
 
 
-def fread(ptr: CTypedPointer[Any], size: int, nmemb: int, stream: CVoidPointer) -> int:
+def fread(ptr: TypedCPointer[Any], size: int, nmemb: int, stream: VoidPointer) -> int:
     return _base(dll.fread, ptr, size, nmemb, stream)
 
 
-def freopen(filename: str, mode: str, stream: CVoidPointer) -> CVoidPointer:
+def freopen(filename: str, mode: str, stream: VoidPointer) -> VoidPointer:
     return _base(
         dll.freopen, _make_char_pointer(filename), _make_char_pointer(mode), stream
     )
 
 
-def fseek(stream: CVoidPointer, offset: int, whence: int) -> int:
+def fseek(stream: VoidPointer, offset: int, whence: int) -> int:
     return _base(dll.fseek, stream, offset, whence)
 
 
-def fsetpos(stream: CVoidPointer, pos: CVoidPointer) -> int:
+def fsetpos(stream: VoidPointer, pos: VoidPointer) -> int:
     return _base(dll.fsetpos, stream, pos)
 
 
-def ftell(stream: CVoidPointer) -> int:
+def ftell(stream: VoidPointer) -> int:
     return _base(dll.ftell, stream)
 
 
-def fwrite(ptr: CTypedPointer[Any], size: int, nmemb: int, stream: CVoidPointer) -> int:
+def fwrite(ptr: TypedCPointer[Any], size: int, nmemb: int, stream: VoidPointer) -> int:
     return _base(dll.fwrite, ptr, size, nmemb, stream)
 
 
@@ -161,19 +282,19 @@ def rename(old_filename: str, new_filename: str) -> int:
     )
 
 
-def rewind(stream: CVoidPointer) -> None:
+def rewind(stream: VoidPointer) -> None:
     return _base(dll.rewind, stream)
 
 
-def setbuf(stream: CVoidPointer, buffer: str) -> None:
+def setbuf(stream: VoidPointer, buffer: str) -> None:
     return _base(dll.setbuf, stream, _make_char_pointer(buffer))
 
 
-def setvbuf(stream: CVoidPointer, buffer: str, mode: int, size: int) -> int:
+def setvbuf(stream: VoidPointer, buffer: str, mode: int, size: int) -> int:
     return _base(dll.setvbuf, stream, _make_char_pointer(buffer), mode, size)
 
 
-def tmpfile() -> CVoidPointer:
+def tmpfile() -> VoidPointer:
     return _base(dll.tmpfile)
 
 
@@ -181,7 +302,7 @@ def tmpnam(string: str) -> str:
     return _base(dll.tmpnam, _make_char_pointer(string))
 
 
-def fprintf(stream: CVoidPointer, fmt: str, *args: str) -> int:
+def fprintf(stream: VoidPointer, fmt: str, *args: str) -> int:
     return _base(dll.fprintf, stream, _make_char_pointer(fmt), *args)
 
 
@@ -195,7 +316,7 @@ def sprintf(string: str, fmt: str, *args: str) -> int:
     )
 
 
-def fscanf(stream: CVoidPointer, fmt: str, *args: str) -> int:
+def fscanf(stream: VoidPointer, fmt: str, *args: str) -> int:
     return _base(dll.fscanf, stream, _make_char_pointer(fmt), *args)
 
 
@@ -207,23 +328,23 @@ def sscanf(string: str, fmt: str, *args: str) -> int:
     return _base(dll.sscanf, _make_char_pointer(string), _make_char_pointer(fmt), *args)
 
 
-def fgetc(stream: CVoidPointer) -> int:
+def fgetc(stream: VoidPointer) -> int:
     return _base(dll.fgetc, stream)
 
 
-def fgets(string: str, n: int, stream: CVoidPointer) -> str:
+def fgets(string: str, n: int, stream: VoidPointer) -> str:
     return _base(dll.fgets, _make_char_pointer(string), n, stream)
 
 
-def fputc(char: int, stream: CVoidPointer) -> int:
+def fputc(char: int, stream: VoidPointer) -> int:
     return _base(dll.fputc, char, stream)
 
 
-def fputs(string: str, stream: CVoidPointer) -> int:
+def fputs(string: str, stream: VoidPointer) -> int:
     return _base(dll.fputs, _make_char_pointer(string), stream)
 
 
-def getc(stream: CVoidPointer) -> int:
+def getc(stream: VoidPointer) -> int:
     return _base(dll.getc, stream)
 
 
@@ -235,7 +356,7 @@ def gets(string: str) -> str:
     return _base(dll.gets, _make_char_pointer(string))
 
 
-def putc(char: int, stream: CVoidPointer) -> int:
+def putc(char: int, stream: VoidPointer) -> int:
     return _base(dll.putc, char, stream)
 
 
@@ -247,7 +368,7 @@ def puts(string: str) -> int:
     return _base(dll.puts, _make_char_pointer(string))
 
 
-def ungetc(char: int, stream: CVoidPointer) -> int:
+def ungetc(char: int, stream: VoidPointer) -> int:
     return _base(dll.ungetc, char, stream)
 
 
@@ -255,15 +376,15 @@ def perror(string: str) -> None:
     return _base(dll.perror, _make_char_pointer(string))
 
 
-def strtod(string: str, endptr: CTypedPointer[str]) -> int:
+def strtod(string: str, endptr: TypedCPointer[str]) -> int:
     return _base(dll.strtod, _make_char_pointer(string), endptr)
 
 
-def strtol(string: str, endptr: CTypedPointer[str], base: int) -> int:
+def strtol(string: str, endptr: TypedCPointer[str], base: int) -> int:
     return _base(dll.strtol, _make_char_pointer(string), endptr, base)
 
 
-def strtoul(string: str, endptr: CTypedPointer[str], base: int) -> int:
+def strtoul(string: str, endptr: TypedCPointer[str], base: int) -> int:
     return _base(dll.strtoul, _make_char_pointer(string), endptr, base)
 
 
@@ -319,23 +440,23 @@ def wctomb(string: str, wchar: str) -> int:
     return _base(dll.wctomb, _make_char_pointer(string), wchar)
 
 
-def memchr(string: CTypedPointer[Any], c: int, n: int) -> CVoidPointer:
+def memchr(string: TypedCPointer[Any], c: int, n: int) -> VoidPointer:
     return _base(dll.memchr, string, c, n)
 
 
-def memcmp(str1: CTypedPointer[Any], str2: CTypedPointer[Any], n: int) -> int:
+def memcmp(str1: TypedCPointer[Any], str2: TypedCPointer[Any], n: int) -> int:
     return _base(dll.memcmp, str1, str2, n)
 
 
-def memcpy(dest: CTypedPointer[Any], src: CTypedPointer[Any], n: int) -> CVoidPointer:
+def memcpy(dest: TypedCPointer[Any], src: TypedCPointer[Any], n: int) -> VoidPointer:
     return _base(dll.memcpy, dest, src, n)
 
 
-def memmove(dest: CTypedPointer[Any], src: CTypedPointer[Any], n: int) -> CVoidPointer:
+def memmove(dest: TypedCPointer[Any], src: TypedCPointer[Any], n: int) -> VoidPointer:
     return _base(dll.memmove, dest, src, n)
 
 
-def memset(string: CTypedPointer[Any], c: int, n: int) -> CVoidPointer:
+def memset(string: TypedCPointer[Any], c: int, n: int) -> VoidPointer:
     return _base(dll.memset, string, c, n)
 
 
@@ -407,7 +528,7 @@ def strxfrm(dest: str, src: str, n: int) -> int:
     return _base(dll.strxfrm, _make_char_pointer(dest), _make_char_pointer(src), n)
 
 
-def asctime(timeptr: StructPointer[tm]) -> str:
+def asctime(timeptr: StructPointer[Tm]) -> str:
     return _base(dll.asctime, timeptr)
 
 
@@ -415,7 +536,7 @@ def clock() -> int:
     return _base(dll.clock)
 
 
-def ctime(timer: CTypedPointer[int]) -> str:
+def ctime(timer: TypedCPointer[int]) -> str:
     return _base(dll.ctime, timer)
 
 
@@ -423,15 +544,27 @@ def difftime(time1: int, time2: int) -> int:
     return _base(dll.difftime, time1, time2)
 
 
-def mktime(timeptr: StructPointer[tm]) -> int:
+def mktime(timeptr: StructPointer[Tm]) -> int:
     return _base(dll.mktime, timeptr)
 
 
 def strftime(
-    string: str, maxsize: int, fmt: CTypedPointer[str], timeptr: StructPointer[tm]
+    string: str, maxsize: int, fmt: TypedCPointer[str], timeptr: StructPointer[Tm]
 ) -> int:
     return _base(dll.strftime, string, maxsize, fmt, timeptr)
 
 
-def time(timer: CTypedPointer[int]) -> int:
+def time(timer: TypedCPointer[int]) -> int:
     return _base(dll.time, timer)
+
+
+def div(numer: int, denom: int) -> DivT:
+    return _base(dll.div, numer, denom)
+
+
+def ldiv(numer: int, denom: int) -> LDivT:
+    return _base(dll.ldiv, numer, denom)
+
+
+def localeconv() -> StructPointer[Lconv]:
+    return _base(dll.localeconv)
