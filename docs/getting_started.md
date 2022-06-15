@@ -70,7 +70,7 @@ from typing import List, Any
 def address_sum(first: Pointer[Any], second: Pointer[Any]) -> List[int]:
     return first.address + second.address # we will talk about other pointer attributes later
 
-print(address_sum(to_ptr("abc"), to_ptr("123")) # this can get out of hand very quickly!
+print(address_sum(to_ptr("abc"), to_ptr("123"))) # this can get out of hand very quickly!
 ```
 
 Luckily, there is a `decay` decorator, that automatically converts function arguments into pointers:

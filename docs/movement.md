@@ -110,7 +110,7 @@ from pointers import to_ptr
 
 class a:
     def __init__(self, a: str) -> None:
-  self.a = a
+        self.a = a
 
 instance = a("a")
 second_instance = a("b")
