@@ -14,7 +14,8 @@ class Struct(ABC):
 
         class _InternalStruct(ctypes.Structure):
             _fields_ = [
-                (name, TypedCPointer.get_mapped(typ)) for name, typ in hints.items()
+                (name, TypedCPointer.get_mapped(typ))
+                for name, typ in hints.items()  # fmt: off
             ]
 
         self._struct = _InternalStruct(*args, **kwargs)
@@ -56,4 +57,4 @@ class Struct(ABC):
             setattr(self, name, getattr(self._struct, name))
 
     def __repr__(self) -> str:
-        return f"<struct {self.__class__.__name__} at {hex(ctypes.addressof(self._struct))}>"
+        return f"<struct {self.__class__.__name__} at {hex(ctypes.addressof(self._struct))}>"  # noqa

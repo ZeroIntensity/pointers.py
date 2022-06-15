@@ -3,7 +3,11 @@ from platform import system
 from .struct import Struct
 from typing import Dict, Type
 
-platforms = {"linux": "libc.so.6", "darwin": "libc.dylib", "windows": "msvcrt"}
+platforms = {
+    "linux": "libc.so.6",
+    "darwin": "libc.dylib",
+    "windows": "msvcrt",
+}
 
 __all__ = (
     "c_malloc",
@@ -183,13 +187,19 @@ dll.setlocale.restype = ctypes.c_char_p
 dll.localeconv.argtypes = ()
 dll.localeconv.restype = ctypes.POINTER(lconv)
 # double frexp(double x, int* exponent)
-dll.frexp.argtypes = (ctypes.c_double, ctypes.POINTER(ctypes.c_int))
+dll.frexp.argtypes = (
+    ctypes.c_double,
+    ctypes.POINTER(ctypes.c_int),
+)
 dll.frexp.restype = ctypes.c_double
 # double ldexp(double x, int exponent)
 dll.ldexp.argtypes = (ctypes.c_double, ctypes.c_int)
 dll.ldexp.restype = ctypes.c_double
 # double modf(double x, double* integer)
-dll.modf.argtypes = (ctypes.c_double, ctypes.POINTER(ctypes.c_double))
+dll.modf.argtypes = (
+    ctypes.c_double,
+    ctypes.POINTER(ctypes.c_double),
+)
 dll.modf.restype = ctypes.c_double
 # void (*signal(int sig, void (*func)(int)))(int)
 dll.signal.argtypes = (ctypes.c_int, ctypes.c_void_p)
@@ -219,10 +229,18 @@ dll.fgetpos.restype = ctypes.c_int
 dll.fopen.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
 dll.fopen.restype = ctypes.c_void_p
 # size_t fread(void* ptr, size_t size, size_t nmemb, FILE* stream)
-dll.fread.argtypes = (ctypes.c_void_p, ctypes.c_size_t, ctypes.c_size_t)
+dll.fread.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_size_t,
+    ctypes.c_size_t,
+)
 dll.fread.restype = ctypes.c_size_t
 # FILE* freopen(const char* filename, const char* mode, FILE* stream)
-dll.freopen.argtypes = (ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p)
+dll.freopen.argtypes = (
+    ctypes.c_char_p,
+    ctypes.c_char_p,
+    ctypes.c_void_p,
+)
 dll.freopen.restype = ctypes.c_void_p
 # int fseek(FILE* stream, long int offset, int whence)
 dll.fseek.argtypes = (ctypes.c_void_p, ctypes.c_long, ctypes.c_int)
@@ -254,7 +272,12 @@ dll.rewind.restype = None
 dll.setbuf.argtypes = (ctypes.c_void_p, ctypes.c_char_p)
 dll.setbuf.restype = None
 # int setvbuf(FILE* stream, char* buffer, int mode, size_t size)
-dll.setvbuf.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_size_t)
+dll.setvbuf.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_char_p,
+    ctypes.c_int,
+    ctypes.c_size_t,
+)
 dll.setvbuf.restype = ctypes.c_int
 # FILE* tmpfile(void)
 dll.tmpfile.argtypes = ()
@@ -322,10 +345,18 @@ dll.perror.restype = None
 dll.strtod.argtypes = (ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p))
 dll.strtod.restype = ctypes.c_double
 # long int strtol(const char* str, char** endptr, int base)
-dll.strtol.argtypes = (ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int)
+dll.strtol.argtypes = (
+    ctypes.c_char_p,
+    ctypes.POINTER(ctypes.c_char_p),
+    ctypes.c_int,
+)
 dll.strtol.restype = ctypes.c_long
 # unsigned long int strtoul(const char* str, char** endptr, int base)
-dll.strtoul.argtypes = (ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int)
+dll.strtoul.argtypes = (
+    ctypes.c_char_p,
+    ctypes.POINTER(ctypes.c_char_p),
+    ctypes.c_int,
+)
 dll.strtoul.restype = ctypes.c_ulong
 # void abort(void)
 dll.abort.argtypes = ()
@@ -339,8 +370,20 @@ dll.getenv.restype = ctypes.c_char_p
 # int system(const char* string)
 dll.system.argtypes = (ctypes.c_char_p,)
 dll.system.restype = ctypes.c_int
-# void* bsearch(const void* key, const void* base, size_t nitems, size_t size, int (*compar)(const void* , const void* ))
-# void qsort(void* base, size_t nitems, size_t size, int (*compar)(const void* , const void*))
+# void* bsearch(
+# const void* key,
+# const void* base,
+# size_t nitems,
+# size_t size,
+# int (*compar)(const void* , const void* )
+# )
+# void qsort(
+# void* base,
+# size_t nitems,
+# size_t size,
+# int (*compar)
+# (const void* , const void*)
+# )
 # int abs(int x)
 dll.abs.argtypes = (ctypes.c_int,)
 dll.abs.restype = ctypes.c_int
@@ -363,37 +406,73 @@ dll.srand.restype = None
 dll.mblen.argtypes = (ctypes.c_char_p, ctypes.c_size_t)
 dll.mblen.restype = ctypes.c_int
 # size_t mbstowcs(wchar_t* pwcs, const char* str, size_t n)
-dll.mbstowcs.argtypes = (ctypes.c_wchar_p, ctypes.c_char_p, ctypes.c_size_t)
+dll.mbstowcs.argtypes = (
+    ctypes.c_wchar_p,
+    ctypes.c_char_p,
+    ctypes.c_size_t,
+)
 dll.mbstowcs.restype = ctypes.c_size_t
 # int mbtowc(wchar_t* pwc, const char* str, size_t n)
-dll.mbtowc.argtypes = (ctypes.c_wchar_p, ctypes.c_char_p, ctypes.c_size_t)
+dll.mbtowc.argtypes = (
+    ctypes.c_wchar_p,
+    ctypes.c_char_p,
+    ctypes.c_size_t,
+)
 dll.mbtowc.restype = ctypes.c_int
 # size_t wcstombs(char* str, const wchar_t* pwcs, size_t n)
-dll.wcstombs.argtypes = (ctypes.c_char_p, ctypes.c_wchar_p, ctypes.c_size_t)
+dll.wcstombs.argtypes = (
+    ctypes.c_char_p,
+    ctypes.c_wchar_p,
+    ctypes.c_size_t,
+)
 dll.wcstombs.restype = ctypes.c_size_t
 # int wctomb(char* str, wchar_t wchar)
 dll.wctomb.argtypes = (ctypes.c_char_p, ctypes.c_wchar_p)
 dll.wctomb.restype = ctypes.c_int
 # void* memchr(const void* str, int c, size_t n)
-dll.memchr.argtypes = (ctypes.c_void_p, ctypes.c_int, ctypes.c_size_t)
+dll.memchr.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_int,
+    ctypes.c_size_t,
+)
 dll.memchr.restype = ctypes.c_void_p
 # int memcmp(const void* str1, const void* str2, size_t n)
-dll.memcmp.argtypes = (ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t)
+dll.memcmp.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_size_t,
+)
 dll.memcmp.restype = ctypes.c_int
 # void* memcpy(void* dest, const void* src, size_t n)
-dll.memcpy.argtypes = (ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t)
+dll.memcpy.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_size_t,
+)
 dll.memcpy.restype = ctypes.c_void_p
 # void* memmove(void* dest, const void* src, size_t n)
-dll.memmove.argtypes = (ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t)
+dll.memmove.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_size_t,
+)
 dll.memmove.restype = ctypes.c_void_p
 # void* memset(void* str, int c, size_t n)
-dll.memset.argtypes = (ctypes.c_void_p, ctypes.c_int, ctypes.c_size_t)
+dll.memset.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_int,
+    ctypes.c_size_t,
+)
 dll.memset.restype = ctypes.c_void_p
 # char* strcat(char* dest, const char* src)
 dll.strcat.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
 dll.strcat.restype = ctypes.c_char_p
 # char* strncat(char* dest, const char* src, size_t n)
-dll.strncat.argtypes = (ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t)
+dll.strncat.argtypes = (
+    ctypes.c_char_p,
+    ctypes.c_char_p,
+    ctypes.c_size_t,
+)
 dll.strncat.restype = ctypes.c_char_p
 # char* strchr(const char* str, int c)
 dll.strchr.argtypes = (ctypes.c_char_p, ctypes.c_int)
@@ -411,7 +490,11 @@ dll.strcoll.restype = ctypes.c_int
 dll.strcpy.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
 dll.strcpy.restype = ctypes.c_char_p
 # char* strncpy(char* dest, const char* src, size_t n)
-dll.strncpy.argtypes = (ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t)
+dll.strncpy.argtypes = (
+    ctypes.c_char_p,
+    ctypes.c_char_p,
+    ctypes.c_size_t,
+)
 dll.strncpy.restype = ctypes.c_char_p
 # size_t strcspn(const char* str1, const char* str2)
 dll.strcspn.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
@@ -438,7 +521,11 @@ dll.strstr.restype = ctypes.c_char_p
 dll.strstr.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
 dll.strtok.restype = ctypes.c_char_p
 # size_t strxfrm(char* dest, const char* src, size_t n)
-dll.strxfrm.argtypes = (ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t)
+dll.strxfrm.argtypes = (
+    ctypes.c_char_p,
+    ctypes.c_char_p,
+    ctypes.c_size_t,
+)
 dll.strxfrm.restype = ctypes.c_size_t
 # char* asctime(const struct tm* timeptr)
 dll.asctime.argtypes = (ctypes.POINTER(tm),)
@@ -461,7 +548,12 @@ dll.localtime.restype = ctypes.POINTER(tm)
 # time_t mktime(struct tm* timeptr)
 dll.mktime.argtypes = (ctypes.POINTER(tm),)
 dll.mktime.restype = ctypes.c_int
-# size_t strftime(char *str, size_t maxsize, const char *format, const struct tm* timeptr)
+# size_t strftime(
+#   char *str,
+#   size_t maxsize,
+#   const char *format,
+#   const struct tm* timeptr
+# )
 dll.strftime.argtypes = (
     ctypes.c_char_p,
     ctypes.c_size_t,

@@ -1,5 +1,5 @@
 import ctypes
-from typing import Generic, TypeVar, Type, Iterator, Union, Any, Mapping
+from typing import Generic, TypeVar, Type, Iterator, Union, Any
 from typing_extensions import ParamSpec
 from contextlib import suppress
 import faulthandler

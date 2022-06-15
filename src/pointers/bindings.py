@@ -1,4 +1,4 @@
-from ._cstd import *
+from ._cstd import dll, DivT, Tm, LDivT, Lconv, STRUCT_MAP
 from typing import Any, Union, TypeVar, Optional
 from .c_pointer import VoidPointer, TypedCPointer, StructPointer
 import ctypes
@@ -124,7 +124,9 @@ def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
 
     if res_typ.__name__.startswith("LP_"):
         struct_type = STRUCT_MAP.get(getattr(_cstd, res_typ.__name__[3:]))
-        struct = struct_type.from_existing(res.contents) if struct_type else None
+        struct = (
+            struct_type.from_existing(res.contents) if struct_type else None
+        )  # fmt: off
 
         res = (
             TypedCPointer(
@@ -134,8 +136,8 @@ def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
             if not issubclass(type(res.contents), ctypes.Structure)
             else StructPointer(id(struct), type(_not_null(struct)))
         )
-
-    elif fn.restype is ctypes.c_void_p:  # type safety gets mad if i dont use elif here
+    # type safety gets mad if i dont use elif here
+    elif fn.restype is ctypes.c_void_p:
         res = VoidPointer(res)
 
     elif issubclass(res_typ, ctypes.Structure):
@@ -243,16 +245,28 @@ def fgetpos(stream: VoidPointer, pos: VoidPointer) -> int:
 
 
 def fopen(filename: str, mode: str) -> VoidPointer:
-    return _base(dll.fopen, _make_char_pointer(filename), _make_char_pointer(mode))
+    return _base(
+        dll.fopen,
+        _make_char_pointer(filename),
+        _make_char_pointer(mode),
+    )
 
 
-def fread(ptr: TypedCPointer[Any], size: int, nmemb: int, stream: VoidPointer) -> int:
+def fread(
+    ptr: TypedCPointer[Any],
+    size: int,
+    nmemb: int,
+    stream: VoidPointer,
+) -> int:
     return _base(dll.fread, ptr, size, nmemb, stream)
 
 
 def freopen(filename: str, mode: str, stream: VoidPointer) -> VoidPointer:
     return _base(
-        dll.freopen, _make_char_pointer(filename), _make_char_pointer(mode), stream
+        dll.freopen,
+        _make_char_pointer(filename),
+        _make_char_pointer(mode),
+        stream,
     )
 
 
@@ -268,7 +282,12 @@ def ftell(stream: VoidPointer) -> int:
     return _base(dll.ftell, stream)
 
 
-def fwrite(ptr: TypedCPointer[Any], size: int, nmemb: int, stream: VoidPointer) -> int:
+def fwrite(
+    ptr: TypedCPointer[Any],
+    size: int,
+    nmemb: int,
+    stream: VoidPointer,
+) -> int:
     return _base(dll.fwrite, ptr, size, nmemb, stream)
 
 
@@ -278,7 +297,9 @@ def remove(filename: str) -> int:
 
 def rename(old_filename: str, new_filename: str) -> int:
     return _base(
-        dll.rename, _make_char_pointer(old_filename), _make_char_pointer(new_filename)
+        dll.rename,
+        _make_char_pointer(old_filename),
+        _make_char_pointer(new_filename),
     )
 
 
@@ -290,8 +311,19 @@ def setbuf(stream: VoidPointer, buffer: str) -> None:
     return _base(dll.setbuf, stream, _make_char_pointer(buffer))
 
 
-def setvbuf(stream: VoidPointer, buffer: str, mode: int, size: int) -> int:
-    return _base(dll.setvbuf, stream, _make_char_pointer(buffer), mode, size)
+def setvbuf(
+    stream: VoidPointer,
+    buffer: str,
+    mode: int,
+    size: int,
+) -> int:
+    return _base(
+        dll.setvbuf,
+        stream,
+        _make_char_pointer(buffer),
+        mode,
+        size,
+    )
 
 
 def tmpfile() -> VoidPointer:
@@ -312,12 +344,20 @@ def printf(fmt: str, *args: str) -> int:
 
 def sprintf(string: str, fmt: str, *args: str) -> int:
     return _base(
-        dll.sprintf, _make_char_pointer(string), _make_char_pointer(fmt), *args
+        dll.sprintf,
+        _make_char_pointer(string),
+        _make_char_pointer(fmt),
+        *args,
     )
 
 
 def fscanf(stream: VoidPointer, fmt: str, *args: str) -> int:
-    return _base(dll.fscanf, stream, _make_char_pointer(fmt), *args)
+    return _base(
+        dll.fscanf,
+        stream,
+        _make_char_pointer(fmt),
+        *args,
+    )
 
 
 def scanf(fmt: str, *args: str) -> int:
@@ -325,7 +365,12 @@ def scanf(fmt: str, *args: str) -> int:
 
 
 def sscanf(string: str, fmt: str, *args: str) -> int:
-    return _base(dll.sscanf, _make_char_pointer(string), _make_char_pointer(fmt), *args)
+    return _base(
+        dll.sscanf,
+        _make_char_pointer(string),
+        _make_char_pointer(fmt),
+        *args,
+    )
 
 
 def fgetc(stream: VoidPointer) -> int:
@@ -333,7 +378,12 @@ def fgetc(stream: VoidPointer) -> int:
 
 
 def fgets(string: str, n: int, stream: VoidPointer) -> str:
-    return _base(dll.fgets, _make_char_pointer(string), n, stream)
+    return _base(
+        dll.fgets,
+        _make_char_pointer(string),
+        n,
+        stream,
+    )
 
 
 def fputc(char: int, stream: VoidPointer) -> int:
@@ -380,12 +430,30 @@ def strtod(string: str, endptr: TypedCPointer[str]) -> int:
     return _base(dll.strtod, _make_char_pointer(string), endptr)
 
 
-def strtol(string: str, endptr: TypedCPointer[str], base: int) -> int:
-    return _base(dll.strtol, _make_char_pointer(string), endptr, base)
+def strtol(
+    string: str,
+    endptr: TypedCPointer[str],
+    base: int,
+) -> int:
+    return _base(
+        dll.strtol,
+        _make_char_pointer(string),
+        endptr,
+        base,
+    )
 
 
-def strtoul(string: str, endptr: TypedCPointer[str], base: int) -> int:
-    return _base(dll.strtoul, _make_char_pointer(string), endptr, base)
+def strtoul(
+    string: str,
+    endptr: TypedCPointer[str],
+    base: int,
+) -> int:
+    return _base(
+        dll.strtoul,
+        _make_char_pointer(string),
+        endptr,
+        base,
+    )
 
 
 def abort() -> None:
@@ -421,15 +489,29 @@ def srand(seed: int) -> None:
 
 
 def mblen(string: str, n: int) -> int:
-    return _base(dll.mblen, _make_char_pointer(string), n)
+    return _base(
+        dll.mblen,
+        _make_char_pointer(string),
+        n,
+    )
 
 
 def mbstowcs(pwcs: str, string: str, n: int) -> int:
-    return _base(dll.mbstowcs, pwcs, _make_char_pointer(string), n)
+    return _base(
+        dll.mbstowcs,
+        pwcs,
+        _make_char_pointer(string),
+        n,
+    )
 
 
 def mbtowc(pwc: str, string: str, n: int) -> int:
-    return _base(dll.mbtowc, pwc, _make_char_pointer(string), n)
+    return _base(
+        dll.mbtowc,
+        pwc,
+        _make_char_pointer(string),
+        n,
+    )
 
 
 def wcstombs(string: str, pwcs: str, n: int) -> int:
@@ -444,15 +526,27 @@ def memchr(string: TypedCPointer[Any], c: int, n: int) -> VoidPointer:
     return _base(dll.memchr, string, c, n)
 
 
-def memcmp(str1: TypedCPointer[Any], str2: TypedCPointer[Any], n: int) -> int:
+def memcmp(
+    str1: TypedCPointer[Any],
+    str2: TypedCPointer[Any],
+    n: int,
+) -> int:
     return _base(dll.memcmp, str1, str2, n)
 
 
-def memcpy(dest: TypedCPointer[Any], src: TypedCPointer[Any], n: int) -> VoidPointer:
+def memcpy(
+    dest: TypedCPointer[Any],
+    src: TypedCPointer[Any],
+    n: int,
+) -> VoidPointer:
     return _base(dll.memcpy, dest, src, n)
 
 
-def memmove(dest: TypedCPointer[Any], src: TypedCPointer[Any], n: int) -> VoidPointer:
+def memmove(
+    dest: TypedCPointer[Any],
+    src: TypedCPointer[Any],
+    n: int,
+) -> VoidPointer:
     return _base(dll.memmove, dest, src, n)
 
 
@@ -461,11 +555,20 @@ def memset(string: TypedCPointer[Any], c: int, n: int) -> VoidPointer:
 
 
 def strcat(dest: str, src: str) -> str:
-    return _base(dll.strcat, _make_char_pointer(dest), _make_char_pointer(src))
+    return _base(
+        dll.strcat,
+        _make_char_pointer(dest),
+        _make_char_pointer(src),
+    )
 
 
 def strncat(dest: str, src: str, n: int) -> str:
-    return _base(dll.strncat, _make_char_pointer(dest), _make_char_pointer(src), n)
+    return _base(
+        dll.strncat,
+        _make_char_pointer(dest),
+        _make_char_pointer(src),
+        n,
+    )
 
 
 def strchr(string: str, c: int) -> str:
@@ -473,27 +576,53 @@ def strchr(string: str, c: int) -> str:
 
 
 def strcmp(str1: str, str2: str) -> int:
-    return _base(dll.strcmp, _make_char_pointer(str1), _make_char_pointer(str2))
+    return _base(
+        dll.strcmp,
+        _make_char_pointer(str1),
+        _make_char_pointer(str2),
+    )
 
 
 def strncmp(str1: str, str2: str, n: int) -> int:
-    return _base(dll.strncmp, _make_char_pointer(str1), _make_char_pointer(str2), n)
+    return _base(
+        dll.strncmp,
+        _make_char_pointer(str1),
+        _make_char_pointer(str2),
+        n,
+    )
 
 
 def strcoll(str1: str, str2: str) -> int:
-    return _base(dll.strcoll, _make_char_pointer(str1), _make_char_pointer(str2))
+    return _base(
+        dll.strcoll,
+        _make_char_pointer(str1),
+        _make_char_pointer(str2),
+    )
 
 
 def strcpy(dest: str, src: str) -> str:
-    return _base(dll.strcpy, _make_char_pointer(dest), _make_char_pointer(src))
+    return _base(
+        dll.strcpy,
+        _make_char_pointer(dest),
+        _make_char_pointer(src),
+    )
 
 
 def strncpy(dest: str, src: str, n: int) -> str:
-    return _base(dll.strncpy, _make_char_pointer(dest), _make_char_pointer(src), n)
+    return _base(
+        dll.strncpy,
+        _make_char_pointer(dest),
+        _make_char_pointer(src),
+        n,
+    )
 
 
 def strcspn(str1: str, str2: str) -> int:
-    return _base(dll.strcspn, _make_char_pointer(str1), _make_char_pointer(str2))
+    return _base(
+        dll.strcspn,
+        _make_char_pointer(str1),
+        _make_char_pointer(str2),
+    )
 
 
 def strerror(errnum: int) -> str:
@@ -505,7 +634,11 @@ def strlen(string: str) -> int:
 
 
 def strpbrk(str1: str, str2: str) -> str:
-    return _base(dll.strpbrk, _make_char_pointer(str1), _make_char_pointer(str2))
+    return _base(
+        dll.strpbrk,
+        _make_char_pointer(str1),
+        _make_char_pointer(str2),
+    )
 
 
 def strrchr(string: str, c: int) -> str:
@@ -513,19 +646,36 @@ def strrchr(string: str, c: int) -> str:
 
 
 def strspn(str1: str, str2: str) -> int:
-    return _base(dll.strspn, _make_char_pointer(str1), _make_char_pointer(str2))
+    return _base(
+        dll.strspn,
+        _make_char_pointer(str1),
+        _make_char_pointer(str2),
+    )
 
 
 def strstr(haystack: str, needle: str) -> str:
-    return _base(dll.strstr, _make_char_pointer(haystack), _make_char_pointer(needle))
+    return _base(
+        dll.strstr,
+        _make_char_pointer(haystack),
+        _make_char_pointer(needle),
+    )
 
 
 def strtok(string: str, delim: str) -> str:
-    return _base(dll.strtok, _make_char_pointer(string), _make_char_pointer(delim))
+    return _base(
+        dll.strtok,
+        _make_char_pointer(string),
+        _make_char_pointer(delim),
+    )
 
 
 def strxfrm(dest: str, src: str, n: int) -> int:
-    return _base(dll.strxfrm, _make_char_pointer(dest), _make_char_pointer(src), n)
+    return _base(
+        dll.strxfrm,
+        _make_char_pointer(dest),
+        _make_char_pointer(src),
+        n,
+    )
 
 
 def asctime(timeptr: StructPointer[Tm]) -> str:
@@ -549,7 +699,10 @@ def mktime(timeptr: StructPointer[Tm]) -> int:
 
 
 def strftime(
-    string: str, maxsize: int, fmt: TypedCPointer[str], timeptr: StructPointer[Tm]
+    string: str,
+    maxsize: int,
+    fmt: TypedCPointer[str],
+    timeptr: StructPointer[Tm],
 ) -> int:
     return _base(dll.strftime, string, maxsize, fmt, timeptr)
 

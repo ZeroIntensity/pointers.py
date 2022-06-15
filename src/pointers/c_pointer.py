@@ -31,7 +31,7 @@ def attempt_decode(data: bytes) -> Union[str, bytes]:
     """Attempt to decode a string of bytes."""
     try:
         return data.decode()
-    except:
+    except UnicodeDecodeError:
         return data
 
 
@@ -201,7 +201,9 @@ def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:
     """Convert a python type to a pointer to a C type."""
-    ct = TypedCPointer.map_type(data if not isinstance(data, str) else data.encode())
+    ct = TypedCPointer.map_type(
+        data if not isinstance(data, str) else data.encode(),
+    )
     address = ctypes.addressof(ct)
 
     ptr = ctypes.cast(address, ctypes.c_void_p)
