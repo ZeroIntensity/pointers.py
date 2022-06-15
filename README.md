@@ -26,6 +26,16 @@ move(a, b)
 print(a, b) # abc abc
 ```
 
+#### Example with bindings
+
+```py
+from pointers import fopen, fprintf, fclose
+
+file = fopen("/dev/null", "w")
+fprintf(file, "hello world")
+fclose(file)
+```
+
 #### Example with malloc
 
 ```py
