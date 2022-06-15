@@ -13,10 +13,6 @@ from .exceptions import (
     IsFrozenError,
     DereferenceError,
     FreedMemoryError,
-    IncorrectItemExpectedForSubscriptError,
-    NotSubscriptableError,
-    CallocSubscriptionDangerError,
-    ImmutableObjectError,
     InvalidSizeError,
 )
 from .calloc import calloc, CallocPointer

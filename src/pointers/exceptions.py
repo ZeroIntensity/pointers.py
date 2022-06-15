@@ -4,10 +4,6 @@ __all__ = (
     "NotEnoughChunks",
     "IsFrozenError",
     "DereferenceError",
-    "IncorrectItemExpectedForSubscriptError",
-    "NotSubscriptableError",
-    "CallocSubscriptionDangerError",
-    "ImmutableObjectError",
     "FreedMemoryError",
     "InvalidSizeError",
 )  # noqa
@@ -39,30 +35,6 @@ class IsFrozenError(Exception):
 
 class DereferenceError(Exception):
     """Raised when trying to dereference an object address that doesn't exist."""  # noqa
-
-    pass
-
-
-class IncorrectItemExpectedForSubscriptError(Exception):
-    """Raised when an item subscript method is subscripted with a non-integer value."""  # noqa
-
-    pass
-
-
-class NotSubscriptableError(Exception):
-    """Raised when a Pointer subscript is attempted to a PyObject that is not subscriptable."""  # noqa
-
-    pass
-
-
-class CallocSubscriptionDangerError(Exception):
-    """Raised when attempting to subscript a Calloc chunk. Assignment like this is dangerous at this time."""  # noqa
-
-    pass
-
-
-class ImmutableObjectError(Exception):
-    """Raised when attempting to setting item assignment to immutable objects."""  # noqa
 
     pass
 
