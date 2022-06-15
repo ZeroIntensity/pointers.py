@@ -201,9 +201,6 @@ dll.modf.argtypes = (
     ctypes.POINTER(ctypes.c_double),
 )
 dll.modf.restype = ctypes.c_double
-# void (*signal(int sig, void (*func)(int)))(int)
-dll.signal.argtypes = (ctypes.c_int, ctypes.c_void_p)
-dll.signal.restype = None
 # int raise(int sig)
 c_raise.argtypes = (ctypes.c_int,)
 c_raise.restype = ctypes.c_int
@@ -370,20 +367,6 @@ dll.getenv.restype = ctypes.c_char_p
 # int system(const char* string)
 dll.system.argtypes = (ctypes.c_char_p,)
 dll.system.restype = ctypes.c_int
-# void* bsearch(
-# const void* key,
-# const void* base,
-# size_t nitems,
-# size_t size,
-# int (*compar)(const void* , const void* )
-# )
-# void qsort(
-# void* base,
-# size_t nitems,
-# size_t size,
-# int (*compar)
-# (const void* , const void*)
-# )
 # int abs(int x)
 dll.abs.argtypes = (ctypes.c_int,)
 dll.abs.restype = ctypes.c_int

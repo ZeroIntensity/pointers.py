@@ -42,7 +42,7 @@ def test_frozen():
     assert type(ptr) is FrozenPointer
 
     with pytest.raises(IsFrozenError):
-  ptr >>= "abc"
+        ptr >>= "abc"
 
 
 def test_tracked():

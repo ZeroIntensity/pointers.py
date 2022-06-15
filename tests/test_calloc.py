@@ -10,12 +10,12 @@ def test_calloc():
     free(mem)
 
     with pytest.raises(FreedMemoryError):
-  print(~mem)
+        print(~mem)
 
     memory = calloc(4, 28)
 
     for index, ptr in enumerate(memory):
-  ptr <<= index + 1
+        ptr <<= index + 1
 
     array = [~i for i in memory]
     assert array == [1, 2, 3, 4]
@@ -24,9 +24,9 @@ def test_calloc():
 def test_calloc_validators():
     mem = calloc(1, 1)
     with pytest.raises(NotEnoughChunks):
-  mem += 2
+        mem += 2
 
     with pytest.raises(IndexError):
-  mem -= 1
+        mem -= 1
 
     free(mem)

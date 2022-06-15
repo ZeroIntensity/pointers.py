@@ -16,6 +16,33 @@ Pointers.py will automatically convert the parameters to C values, and then conv
 
 These bindings are also completely type safe, unlike trying to do something in a library like `ctypes`.
 
+## Limitations
+
+### Functions
+
+As of now, there isn't really any good way to pass C functions from Python.
+
+Due to this, the `signal`, `qsort`, and `bsearch` functions are not supported by the pointers.py bindings.
+
+### Macros
+
+Since macros aren't stored in the C standard library DLL, we can't access any of those functions.
+
+This means functions like `setjmp` aren't supported either.
+
+### Name collison
+
+The C standard library has a function called `raise`, which terminates the program with a signal.
+
+Since the `raise` keyword prohibits naming a function `raise`, pointers.py had to name it `c_raise`:
+
+```py
+from pointers import c_raise
+
+c_raise(11)
+# program terminated with signal 11, segmentation fault
+```
+
 ## Void Pointers
 
 Some types (such as `FILE`) cannot be converted to Python. Pointers.py resolves this by returning a `VoidPointer` object.
@@ -48,7 +75,7 @@ fclose(file)
 
 ### Typed vs void pointers
 
-The `TypedCPointer` class inherits from `VoidPointer` so most of the behavior is the same, with 2 key differences:
+`TypedCPointer` and `VoidPointer` inherit from the same base class, so most of the behavior is the same with 2 key differences:
 
 - `VoidPointer` always points to `int`, whereas `TypedCPointer` always points to `T`.
 - `TypedCPointer` forces the pointer to be the same type when using data movement, but `VoidPointer` will move any type.
@@ -85,6 +112,19 @@ from pointers import localeconv
 
 ptr = localeconv()
 print((~ptr).grouping)
+```
+
+You can also create a pointer to your own struct using the `to_struct_ptr` function:
+
+```py
+from pointers import Struct, to_struct_ptr
+
+class MyStruct(Struct):
+    a: str
+    b: str
+
+a = to_struct_ptr(MyStruct('a', 'b'))
+print((~a).a)
 ```
 
 ## Custom C Pointers

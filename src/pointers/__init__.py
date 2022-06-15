@@ -18,6 +18,13 @@ from .exceptions import (
 from .calloc import calloc, CallocPointer
 from .frozen_pointer import to_const_ptr, FrozenPointer
 from .decay import decay
-from .c_pointer import TypedCPointer, VoidPointer, cast, StructPointer, to_c_ptr
+from .c_pointer import (
+    TypedCPointer,
+    VoidPointer,
+    cast,
+    StructPointer,
+    to_c_ptr,
+    to_struct_ptr,
+)
 from .struct import Struct
 from .bindings import *

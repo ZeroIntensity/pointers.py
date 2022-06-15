@@ -1,4 +1,4 @@
-from ._cstd import dll, DivT, Tm, LDivT, Lconv, STRUCT_MAP
+from ._cstd import dll, DivT, Tm, LDivT, Lconv, STRUCT_MAP, c_raise as ct_raise
 from typing import Any, Union, TypeVar, Optional
 from .c_pointer import VoidPointer, TypedCPointer, StructPointer
 import ctypes
@@ -110,6 +110,7 @@ __all__ = (
     "div",
     "ldiv",
     "localeconv",
+    "c_raise",
 )
 
 
@@ -129,16 +130,13 @@ def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
         )  # fmt: off
 
         res = (
-            TypedCPointer(
-                ctypes.addressof(res),
-                res_typ,
-            )
+            TypedCPointer(ctypes.addressof(res), res_typ, ctypes.sizeof(res))
             if not issubclass(type(res.contents), ctypes.Structure)
             else StructPointer(id(struct), type(_not_null(struct)))
         )
     # type safety gets mad if i dont use elif here
     elif fn.restype is ctypes.c_void_p:
-        res = VoidPointer(res)
+        res = VoidPointer(res, ctypes.sizeof(res))
 
     elif issubclass(res_typ, ctypes.Structure):
         struct = STRUCT_MAP.get(res_typ)
@@ -721,3 +719,7 @@ def ldiv(numer: int, denom: int) -> LDivT:
 
 def localeconv() -> StructPointer[Lconv]:
     return _base(dll.localeconv)
+
+
+def c_raise(sig: int) -> int:
+    return _base(ct_raise, sig)

@@ -1,4 +1,4 @@
-from .pointer import Pointer, to_ptr, dereference_address
+from .pointer import Pointer, dereference_address
 import ctypes
 from typing import (
     Optional,
@@ -9,10 +9,13 @@ from typing import (
     Generic,
     TYPE_CHECKING,
     Union,
+    Tuple,
 )
 
 if TYPE_CHECKING:
     from .struct import Struct
+
+from .exceptions import InvalidSizeError
 
 T = TypeVar("T")
 A = TypeVar("A", bound="Struct")
@@ -24,6 +27,7 @@ __all__ = (
     "cast",
     "to_c_ptr",
     "attempt_decode",
+    "to_struct_ptr",
 )
 
 
@@ -49,40 +53,50 @@ class StructPointer(Pointer[A]):
             raise Exception
         return super().__getattribute__(name)
 
+    @property
+    def _as_parameter_(self):
+        return self._address
 
-class VoidPointer(Pointer[int]):
-    """Class representing a void pointer to a C object."""
 
-    def __init__(self, address: int):
+class _BaseCPointer(Pointer[Any]):
+    def __init__(self, address: int, size: int):
         super().__init__(address, int, False)
+        self._size = size
 
     @property
-    def _as_parameter_(self) -> int:
-        return self.address
+    def size(self):
+        """Size of the pointer."""
+        return self._size
 
-    def dereference(self) -> Optional[int]:
-        """Dereference the pointer."""
-        deref = ctypes.c_void_p.from_address(self.address)
-        return deref.value
+    def _make_stream_and_ptr(
+        self,
+        data: "_BaseCPointer",
+    ) -> Tuple[ctypes.pointer, bytes]:
+        bytes_a = (ctypes.c_ubyte * data.size).from_address(data.address)
 
-    def __lshift__(self, data: Any):
-        """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
-        self.move(data if isinstance(data, Pointer) else to_ptr(data))
-        return self
+        return self.make_ct_pointer(), bytes(bytes_a)
 
-    def __repr__(self) -> str:
-        return f"<void pointer to {hex(self.address)}>"  # noqa
+    def move(self, data: Pointer[Any]) -> None:
+        """Move data to the allocated memory."""
+        if not isinstance(data, _BaseCPointer):
+            raise ValueError(
+                f'"{type(data).__name__}" object is not a valid C pointer',
+            )
 
-    def __rich__(self):
-        return (
-            f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        ptr, byte_stream = self._make_stream_and_ptr(data)
+
+        try:
+            ptr.contents[:] = byte_stream
+        except ValueError as e:
+            raise InvalidSizeError(
+                f"object is of size {len(byte_stream)}, while object size is {len(ptr.contents)}"  # noqa
+            ) from e
+
+    def make_ct_pointer(self):
+        return ctypes.cast(
+            self.address,
+            ctypes.POINTER(ctypes.c_char * self.size),
         )
-
-    def move(self, data: Pointer) -> None:
-        """Move data to the target C object."""
-        ptr = ctypes.cast(self.address, ctypes.c_void_p)
-        ptr2 = ctypes.pointer(self.map_type(~data))
-        ctypes.memmove(ptr, ptr2, ctypes.sizeof(ptr2))
 
     @classmethod
     def map_type(cls, data: Any) -> "ctypes._CData":
@@ -155,12 +169,38 @@ class VoidPointer(Pointer[int]):
 
         return res
 
+    def __lshift__(self, data: Any):
+        """Move data from another pointer to this pointer."""  # noqa
+        self.move(data if isinstance(data, _BaseCPointer) else to_c_ptr(data))
+        return self
 
-class TypedCPointer(VoidPointer, Generic[T]):
+
+class VoidPointer(_BaseCPointer):
+    """Class representing a void pointer to a C object."""
+
+    @property
+    def _as_parameter_(self) -> int:
+        return self.address
+
+    def dereference(self) -> Optional[int]:
+        """Dereference the pointer."""
+        deref = ctypes.c_void_p.from_address(self.address)
+        return deref.value
+
+    def __repr__(self) -> str:
+        return f"<void pointer to {hex(self.address)}>"  # noqa
+
+    def __rich__(self):
+        return (
+            f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        )
+
+
+class TypedCPointer(_BaseCPointer, Generic[T]):
     """Class representing a pointer with a known type."""
 
-    def __init__(self, address: int, data_type: Type[T]):
-        super().__init__(address)
+    def __init__(self, address: int, data_type: Type[T], size: int):
+        super().__init__(address, size)
         self._type = data_type
 
     @property
@@ -169,18 +209,13 @@ class TypedCPointer(VoidPointer, Generic[T]):
         deref = ctype.from_address(self.address)
         return ctypes.pointer(deref)
 
-    @property
-    def type(self) -> Type[T]:
-        """Type of the pointer."""
-        return self._type
-
     def dereference(self) -> Optional[T]:
         """Dereference the pointer."""
         ctype = self.get_mapped(self.type)
         deref = ctype.from_address(self.address)
         return deref.value  # type: ignore
 
-    def move(self, data: Pointer[T]) -> None:
+    def move(self, data: Pointer) -> None:
         """Move data to the target C object."""
         if data.type is not self.type:
             raise ValueError("pointer must be the same type")
@@ -196,7 +231,7 @@ class TypedCPointer(VoidPointer, Generic[T]):
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
-    return TypedCPointer(ptr.address, data_type)
+    return TypedCPointer(ptr.address, data_type, ptr.size)
 
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:
@@ -210,4 +245,9 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
     ptr2 = ctypes.pointer(TypedCPointer.map_type(data))
     ctypes.memmove(ptr, ptr2, ctypes.sizeof(ptr2))
 
-    return TypedCPointer(address, type(data))
+    return TypedCPointer(address, type(data), ctypes.sizeof(ct))
+
+
+def to_struct_ptr(struct: A) -> StructPointer[A]:
+    """Convert a struct to a pointer."""
+    return StructPointer(id(struct), type(struct))

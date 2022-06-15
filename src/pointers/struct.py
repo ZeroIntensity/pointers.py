@@ -6,7 +6,7 @@ from contextlib import suppress
 
 
 class Struct(ABC):
-    """Abstract class representing a struct values."""
+    """Abstract class representing a struct."""
 
     def __init__(self, *args, **kwargs):
         hints = get_type_hints(self.__class__)
