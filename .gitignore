@@ -6,3 +6,4 @@ site/
 .tox/
 .mypy_cache/
 .pytest_cache/
+test.py

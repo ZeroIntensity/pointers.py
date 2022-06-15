@@ -35,23 +35,54 @@ def attempt_decode(data: bytes) -> Union[str, bytes]:
         return data
 
 
-class TypedCPointer(Pointer[T], Generic[T]):
-    """Class representing a pointer with a known type."""
+class StructPointer(Pointer[A]):
+    """Class representing a pointer to a struct."""
 
-    def __init__(self, address: int, data_type: Type[T]):
-        super().__init__(address, data_type, False)
-        self._as_parameter_ = address
+    def __init__(self, address: int, data_type: Type[A]):
+        super().__init__(address, data_type, True)
+        self.__ref = dereference_address(
+            address
+        )  # this needs to be here to stop garbage collection
+
+    def __getattr__(self, name: str):
+        if name == "__ref":
+            raise Exception
+        return super().__getattribute__(name)
+
+
+class VoidPointer(Pointer[int]):
+    """Class representing a void pointer to a C object."""
+
+    def __init__(self, address: int):
+        super().__init__(address, int, False)
 
     @property
-    def type(self) -> Type[T]:
-        """Type of the pointer."""
-        return self._type
+    def _as_parameter_(self) -> int:
+        return self.address
 
-    def dereference(self) -> Optional[T]:
+    def dereference(self) -> Optional[int]:
         """Dereference the pointer."""
-        ctype = self.get_mapped(self.type)
-        deref = ctype.from_address(self.address)
-        return deref.value  # type: ignore
+        deref = ctypes.c_void_p.from_address(self.address)
+        return deref.value
+
+    def __lshift__(self, data: Any):
+        """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
+        self.move(data if isinstance(data, Pointer) else to_ptr(data))
+        return self
+
+    def __repr__(self) -> str:
+        return f"<void pointer to {hex(self.address)}>"  # noqa
+
+    def __rich__(self):
+        return (
+            f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        )
+
+    def move(self, data: Pointer) -> None:
+        """Move data to the target C object."""
+        ptr = ctypes.cast(self.address, ctypes.c_void_p)
+        ptr2 = ctypes.pointer(self.map_type(~data))
+        ctypes.memmove(ptr, ptr2, ctypes.sizeof(ptr2))
 
     @classmethod
     def map_type(cls, data: Any) -> "ctypes._CData":
@@ -124,54 +155,43 @@ class TypedCPointer(Pointer[T], Generic[T]):
 
         return res
 
+
+class TypedCPointer(VoidPointer, Generic[T]):
+    """Class representing a pointer with a known type."""
+
+    def __init__(self, address: int, data_type: Type[T]):
+        super().__init__(address)
+        self._type = data_type
+
+    @property
+    def _as_parameter_(self):
+        ctype = self.get_mapped(self.type)
+        deref = ctype.from_address(self.address)
+        return ctypes.pointer(deref)
+
+    @property
+    def type(self) -> Type[T]:
+        """Type of the pointer."""
+        return self._type
+
+    def dereference(self) -> Optional[T]:
+        """Dereference the pointer."""
+        ctype = self.get_mapped(self.type)
+        deref = ctype.from_address(self.address)
+        return deref.value  # type: ignore
+
     def move(self, data: Pointer[T]) -> None:
         """Move data to the target C object."""
         if data.type is not self.type:
             raise ValueError("pointer must be the same type")
 
-        ptr = ctypes.cast(self.address, ctypes.c_void_p)
-        ptr2 = ctypes.pointer(self.map_type(~data))
-        ctypes.memmove(ptr, ptr2, ctypes.sizeof(ptr2))
-
-
-class StructPointer(Pointer[A]):
-    """Class representing a pointer to a struct."""
-
-    def __init__(self, address: int, data_type: Type[A]):
-        super().__init__(address, data_type, True)
-        self.__ref = dereference_address(
-            address
-        )  # this needs to be here to stop garbage collection
-
-    def __getattr__(self, name: str):
-        if name == "__ref":
-            raise Exception
-        return super().__getattribute__(name)
-
-
-class VoidPointer(TypedCPointer[int]):
-    """Class representing a void pointer to a C object."""
-
-    def __init__(self, address: int):
-        super().__init__(address, int)
-
-    def dereference(self) -> Optional[int]:
-        """Dereference the pointer."""
-        deref = ctypes.c_void_p.from_address(self.address)
-        return deref.value
-
-    def __lshift__(self, data: Any):
-        """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
-        self.move(data if isinstance(data, Pointer) else to_ptr(data))
-        return self
+        super().move(data)
 
     def __repr__(self) -> str:
-        return f"<void pointer to {hex(self.address)}>"  # noqa
+        return f"<typed c pointer to {hex(self.address)}>"  # noqa
 
     def __rich__(self):
-        return (
-            f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
-        )
+        return f"<[green]typed c[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
