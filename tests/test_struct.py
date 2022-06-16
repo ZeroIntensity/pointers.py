@@ -12,12 +12,3 @@ def test_struct():
     instance.a = "test"
     assert instance.a == "test"
     assert instance._struct.a == "test"
-
-
-def test_struct_ptr():
-    class MyStruct(Struct):
-        a: str
-        b: int
-
-    ptr = to_struct_ptr(MyStruct("a", 1))
-    assert (~ptr).a == "a"
