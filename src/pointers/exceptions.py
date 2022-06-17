@@ -40,7 +40,7 @@ class DereferenceError(Exception):
 
 
 class FreedMemoryError(Exception):
-    """Rasied when trying to perform an operation on freed memory."""
+    """Raised when trying to perform an operation on freed memory."""
 
     pass
 

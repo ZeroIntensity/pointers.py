@@ -25,7 +25,7 @@ def test_assign():
 
 
 def test_move():
-    num: int = 432154
+    num: int = 4321545
     target: int = 7676745
     # ^^ some random numbers
 

@@ -7,3 +7,4 @@ site/
 .mypy_cache/
 .pytest_cache/
 test.py
+.vscode/
