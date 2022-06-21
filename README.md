@@ -36,6 +36,33 @@ fprintf(file, "hello world")
 fclose(file)
 ```
 
+#### Example with custom bindings
+
+```py
+from pointers import binds, Struct
+import ctypes
+
+dll = ctypes.CDLL("libc.so.6")
+
+class DivStruct(Struct):
+    quot: int
+    rem: int
+
+class div_t(ctypes.Structure):
+    _fields_ = [
+        ("quot", ctypes.c_int),
+        ("rem", ctypes.c_int),
+    ]
+
+dll.div.restype = div_t
+
+@binds(dll.div, struct=DivStruct)
+def div(numer: int, denom: int) -> DivStruct:
+    ...
+
+print((div(10, 10).quot))
+```
+
 #### Example with malloc
 
 ```py
