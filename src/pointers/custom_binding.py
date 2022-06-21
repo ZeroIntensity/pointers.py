@@ -39,12 +39,15 @@ def binds(
             return _base(
                 dll_func,
                 *[
-                    i if not isinstance(i, str) else _make_char_pointer(i)  # fmt: off
+                    # fmt: off
+                    i if not isinstance(i, str)
+                    else _make_char_pointer(i)
+                    # fmt: on
                     for i in args  # type: ignore
                 ],
                 map_extra={
-                    dll_func.restype: struct,  # type: ignore
-                }
+                    dll_func.restype: struct,
+                }  # type: ignore
                 if struct
                 else None,
             )
