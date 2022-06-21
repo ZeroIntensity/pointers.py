@@ -27,11 +27,12 @@ def binds(
                     "keyword arguments are not allowed when calling C functions"  # noqa
                 )
 
-            if struct and (
-                not issubclass(
-                    dll_func.restype,  # type: ignore
-                    ctypes.Structure,
-                )
+            restype = dll_func.restype
+
+            if (
+                struct
+                and (not issubclass(restype, ctypes.Structure))  # type: ignore
+                and (not (restype or int).__name__.startswith("LP_"))
             ):
                 raise ValueError("restype must be a ctypes structure")
 
