@@ -21,6 +21,8 @@ Unfortunately, calling dereference takes a _minimum_ of 15 characters, which can
 The recommended way to dereference a pointer object is to use the `~` operator, which looks a lot nicer:
 
 ```py
+from pointers import Pointer, decay
+
 @decay
 def test(ptr: Pointer[str])
     print(~ptr) # much shorter and easier to type
@@ -29,6 +31,8 @@ def test(ptr: Pointer[str])
 Finally, you can use the `*` operator, like in low level languages:
 
 ```py
+from pointers import Pointer, decay
+
 @decay
 def test(ptr: Pointer[str])
     print(*ptr) # works the same as above
@@ -41,6 +45,8 @@ The `~` operator is a **unary operator**, opposed to `*` which is for iterators.
 This can cause some issues. For example:
 
 ```py
+from pointers import Pointer, decay
+
 @decay
 def test(ptr: Pointer[str])
     deref = ~ptr # valid, runs correctly
@@ -54,6 +60,8 @@ The `*` can also cause issues with iterability of the dereferenced object.
 For example, if we have a `list` that we are trying to pass into a function, using the `*` operator steals the iterability:
 
 ```py
+from pointers import Pointer, decay
+
 @decay
 def test(ptr: Pointer[list])
     some_func(*ptr) # this only dereferences it, doesn't splat it

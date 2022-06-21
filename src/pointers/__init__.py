@@ -28,3 +28,4 @@ from .c_pointer import (
 )
 from .struct import Struct
 from .bindings import *
+from .custom_binding import binds, binding

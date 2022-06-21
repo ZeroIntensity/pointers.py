@@ -21,14 +21,12 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
         actual: dict = {}
         params = inspect.signature(func).parameters
 
-        # mypy is giving false positives here since it doesn't know how to
-        # handle paramspec
         for index, key in enumerate(params):
-            if key in kwargs:  # type: ignore
-                actual[key] = kwargs[key]  # type: ignore
+            if key in kwargs:
+                actual[key] = kwargs[key]
             else:
                 with suppress(IndexError):
-                    actual[params[key].name] = args[index]  # type: ignore
+                    actual[params[key].name] = args[index]
 
         for key, value in hints.items():
             if hasattr(value, "__origin__"):

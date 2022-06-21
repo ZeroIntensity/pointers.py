@@ -1,8 +1,11 @@
 from ._cstd import dll, DivT, Tm, LDivT, Lconv, STRUCT_MAP, c_raise as ct_raise
-from typing import Any, Union, TypeVar, Optional
+from typing import Any, Union, TypeVar, Optional, TYPE_CHECKING, Dict, Type
 from .c_pointer import VoidPointer, TypedCPointer, StructPointer
 import ctypes
 from . import _cstd
+
+if TYPE_CHECKING:
+    from .struct import Struct
 
 T = TypeVar("T")
 
@@ -119,12 +122,20 @@ def _not_null(data: Optional[T]) -> T:
     return data
 
 
-def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
+StructMap = Dict[Type[ctypes.Structure], Type["Struct"]]
+
+
+def _base(
+    fn: "ctypes._NamedFuncPointer",
+    *args,
+    map_extra: Optional[StructMap] = None,
+) -> Any:
     res = fn(*args)
     res_typ = type(res)
+    struct_map: StructMap = {**STRUCT_MAP, **(map_extra or {})}
 
     if res_typ.__name__.startswith("LP_"):
-        struct_type = STRUCT_MAP.get(getattr(_cstd, res_typ.__name__[3:]))
+        struct_type = struct_map.get(getattr(_cstd, res_typ.__name__[3:]))
         struct = (
             struct_type.from_existing(res.contents) if struct_type else None
         )  # fmt: off
@@ -139,7 +150,7 @@ def _base(fn: "ctypes._NamedFuncPointer", *args) -> Any:
         res = VoidPointer(res, ctypes.sizeof(res))
 
     elif issubclass(res_typ, ctypes.Structure):
-        struct = STRUCT_MAP.get(res_typ)
+        struct = struct_map.get(res_typ)
         if struct:
             res = struct.from_existing(res)
 

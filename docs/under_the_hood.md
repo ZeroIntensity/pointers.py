@@ -409,7 +409,7 @@ dll.name.restype = ctypes.c_some_type
 ```
 
 - `dll` is the `ctypes.CDLL` object containing the C standard library
-- `argtypes` must always be `Tuple[ctypes._CData]`
+- `argtypes` must always be `Tuple[ctypes._CData, ...]`
 - `restype` must always be `ctypes._CData`
 
 If you are unfamiliar with the `_CData` type, it's simply a `ctypes` type (`c_void_p`, `c_char_p`, `c_int`, etc).
@@ -518,7 +518,7 @@ The function can return a converted C type, a `ctypes.POINTER`, a `ctypes.Struct
 
 This causes several problems:
 
-- If we get an `int`, we don't know if it was mapped from `c_void_p`, `c_int`, or `size_t`, or some other integer type.
+- If we get an `int`, we don't know if it was mapped from `c_void_p`, `c_int`, `c_size_t`, or some other integer type.
 - Returned `ctypes.Structure` objects have no type information, so we don't know what they contain.
 - When we receive a `ctypes.POINTER`, a new type is created and is prefixed with `LP_`.
 
@@ -656,4 +656,4 @@ Unfortunately, garbage collection breaks things when interacting with our target
 
 To fix this, the `__ref` attribute had to be introduced. This attribute actually contains the target object, and keeps its alive as long as the pointer exists.
 
-To keep the "spirit" of pointers.py true, an error is raised inside the `__getattr__` if trying to access `__ref`.
+To keep the "spirit" of pointers.py, an error is raised inside the `__getattr__` if trying to access `__ref`.
