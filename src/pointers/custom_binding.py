@@ -46,8 +46,8 @@ def binds(
                     for i in args  # type: ignore
                 ],
                 map_extra={
-                    dll_func.restype: struct,
-                }  # type: ignore
+                    dll_func.restype: struct,  # type: ignore
+                }
                 if struct
                 else None,
             )
