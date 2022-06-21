@@ -16,7 +16,7 @@ __all__ = ("binds", "binding")
 
 def binds(
     dll_func: "_NamedFuncPointer",
-    /,
+    *,
     struct: Optional[Type["Struct"]] = None,
 ):
     def decorator(func: Callable[P, T]) -> Callable[P, T]:
