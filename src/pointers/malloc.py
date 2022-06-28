@@ -128,6 +128,9 @@ class MallocPointer(Pointer, Generic[T]):
     def __sub__(self, amount: int):
         return MallocPointer(self.address - amount, self.size, self.assigned)
 
+    def __del__(self):
+        pass
+
 
 def malloc(size: int) -> MallocPointer:
     """Allocate memory for a given size."""

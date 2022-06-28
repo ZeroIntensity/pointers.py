@@ -34,7 +34,7 @@ class IsFrozenError(Exception):
 
 
 class DereferenceError(Exception):
-    """Raised when trying to dereference an object address that doesn't exist."""  # noqa
+    """Raised when dereferencing an address fails."""  # noqa
 
     pass
 

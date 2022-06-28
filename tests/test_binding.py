@@ -5,6 +5,7 @@ from pointers import (
     localeconv,
     frexp,
     div,
+    strlen,
 )
 from pointers._cstd import DivT
 
@@ -12,10 +13,9 @@ from pointers._cstd import DivT
 def test_to_c_ptr():
     ptr = to_c_ptr(5)
     assert type(ptr) is TypedCPointer
-    # assert ~ptr == 5
-    # ptr <<= 10
-    # assert ~ptr == 10
-    # for whatever reason, this only fails when testing. it works fine normally
+    assert ~ptr == 5
+    ptr <<= 10
+    assert ~ptr == 10
 
 
 def test_bindings():
@@ -24,3 +24,7 @@ def test_bindings():
     div_t = div(10, 1)
     assert type(div_t) is DivT
     assert div_t.quot is 10
+
+    r = strlen("test")
+    assert type(r) is int
+    assert r is 4

@@ -5,28 +5,15 @@ from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
 import sys
-import gc
-from .exceptions import (
-    DereferenceError,
-)
+from _pointers import add_ref, remove_ref
 
-__all__ = ("Pointer", "to_ptr", "dereference_address", "dereference_tracked")
+
+__all__ = ("Pointer", "to_ptr", "dereference_address")
 
 
 def dereference_address(address: int) -> Any:
     """Get the PyObject at the given address."""
     return ctypes.cast(address, ctypes.py_object).value
-
-
-def dereference_tracked(address: int) -> Any:
-    """Dereference an object tracked by the garbage collector."""
-    for obj in gc.get_objects():
-        if id(obj) == address:
-            return obj
-
-    raise DereferenceError(
-        f"address {hex(address)} does not exist (probably removed by the garbage collector)"  # noqa
-    )
 
 
 with suppress(
@@ -42,15 +29,17 @@ P = ParamSpec("P")
 class Pointer(Generic[T]):
     """Base class representing a pointer."""
 
-    def __init__(self, address: int, typ: Type[T], tracked: bool) -> None:
+    def __init__(
+        self,
+        address: int,
+        typ: Type[T],
+        increment_ref: bool = False,
+    ) -> None:
         self._address = address
         self._type = typ
-        self._tracked = tracked
 
-    @property
-    def tracked(self) -> bool:
-        """Whether the pointed object is tracked by the garbage collector."""
-        return self._tracked
+        if increment_ref:
+            add_ref(~self)
 
     @property
     def address(self) -> int:
@@ -75,9 +64,7 @@ class Pointer(Generic[T]):
 
     def dereference(self) -> T:
         """Dereference the pointer."""
-        return (dereference_tracked if self.tracked else dereference_address)(
-            self.address
-        )  # noqa
+        return dereference_address(self.address)
 
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
@@ -121,7 +108,11 @@ class Pointer(Generic[T]):
         self.move(data if isinstance(data, Pointer) else to_ptr(data))
         return self
 
+    def __del__(self):
+        remove_ref(~self)
+
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
-    return Pointer(id(val), type(val), gc.is_tracked(val))
+    add_ref(val)
+    return Pointer(id(val), type(val))

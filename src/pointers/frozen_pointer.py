@@ -1,7 +1,7 @@
 from .pointer import Pointer
 from typing import TypeVar, NoReturn
 from .exceptions import IsFrozenError
-import gc
+from _pointers import add_ref
 
 __all__ = ("FrozenPointer", "to_const_ptr")
 
@@ -21,4 +21,5 @@ class FrozenPointer(Pointer[T]):
 
 def to_const_ptr(val: T) -> FrozenPointer[T]:
     """Convert a value to a pointer."""
-    return FrozenPointer(id(val), type(val), gc.is_tracked(val))
+    add_ref(val)
+    return FrozenPointer(id(val), type(val))

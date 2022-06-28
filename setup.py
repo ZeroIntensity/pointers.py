@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, Extension
 
 with open("./README.md") as f:
     long_desc: str = f.read()
@@ -6,7 +6,7 @@ with open("./README.md") as f:
 if __name__ == "__main__":
     setup(
         name="pointers.py",
-        version="1.3.2",
+        version="1.3.3",
         author="ZeroIntensity",
         author_email="<zintensitydev@gmail.com>",
         description="Bringing the hell of pointers to Python.",
@@ -29,4 +29,5 @@ if __name__ == "__main__":
             "Documentation": "https://pointerspy.netlify.app/",
         },
         package_dir={"": "src"},
+        ext_modules=[Extension("_pointers", ["./src/mod.c"])],
     )

@@ -72,40 +72,9 @@ test([1, 2, 3])
 
 ### Dereference Errors
 
-Dereferencing can fail for a number of reasons, the most common being garbage collection.
+In versions prior to 1.3.3, a `DereferenceError` could occur if the target object had been garbage collected.
 
-Lets take the following code as an example:
-
-```py
-from pointers import to_ptr
-
-class test:
-    pass
-
-ptr = to_ptr(test())
-
-print(~ptr) # this causes a DereferenceError, since python collects our instance before this
-```
-
-CPython does garbage collection based on reference counting, so you can stop the garbage collection by creating an instance variable, like so:
-
-```py
-instance = test() # this adds to the reference count and stops the collection
-ptr = to_ptr(instance)
-
-print(~ptr) # works just fine, no error
-```
-
-However, some types (such as `str` or `int`) are not tracked by the garbage collection, so you don't have to worry about them getting collected.
-
-You can check if the object is tracked by reading the `Pointer.tracked` property:
-
-```py
-ptr = to_ptr(test())
-ptr_2 = to_ptr("a")
-
-print(ptr.tracked, ptr_2.tracked) # True False
-```
+However, this is no longer a problem. You can read more about the fix [here](under_the_hood.md#the-garbage-collector).
 
 ### Segmentation Faults
 

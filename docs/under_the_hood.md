@@ -81,70 +81,59 @@ class Pointer(Generic[T]):
 
 Essentially, the `to_ptr` function takes in an object, and then uses this [CPython implementation detail](https://docs.python.org/3/library/functions.html#id) to get the address of that object.
 
-It takes this address and then stores it in our pointer object. Then, when we call `dereference()`, we use either [ctypes](https://docs.python.org/3/library/ctypes.html) or [gc](https://docs.python.org/3/library/gc.html) to get the original object.
+It takes this address and then stores it in our pointer object. Then, when we call `dereference()`, we use [ctypes](https://docs.python.org/3/library/ctypes.html) (or [gc](https://docs.python.org/3/library/gc.html) in versions prior to 1.3.3) to get the original object.
 
 ### Dereferencing
 
 #### The Garbage Collector
 
-Above, we said that we could use the [gc](https://docs.python.org/3/library/gc.html) module to dereference a pointer object.
+In version 1.3.3, the `dereference_tracked` function was removed from pointers.py, along with the `Pointer.tracked` property.
 
-Looking at this module's documentation, there isn't any clear way to do something like get an object by address, so how do we do it?
+`dereference_tracked` used the garbage collector to dereference its objects, and simply threw an exception if the object had been collected.
 
-Lets go back to `to_ptr`:
+The following code used to be a classic example of how to raise a `DereferenceError`:
+
+```py
+from pointers import to_ptr
+
+class Test:
+    pass
+
+ptr = to_ptr(Test()) # reference count hits 0 and this object is collected
+print(~ptr) # DereferenceError!
+```
+
+But, now it works just fine.
+
+Pointers.py does this by using the Python API itself to manually increase the reference count of pointer objects.
+
+You can see this being done in `to_ptr`:
 
 ```py
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
-    return Pointer(id(val), type(val), gc.is_tracked(val))
+    add_ref(val)
+    return Pointer(id(val), type(val))
 ```
 
-Above when we talked about the basics of how the pointer implementation works, I didn't talk about the `Pointer` objects other parameters, which are `type` and `tracked`.
+The `increment_ref` parameter also exists when constructing a `Pointer` object, which will increment the reference count from `Pointer.__init__` in case you aren't instantiating from something like `to_ptr`.
 
-`type` is fairly simple, as it's just the data type of what the pointer is looking at, but `tracked` is more complicated.
+The `add_ref` function refers to `_pointers.add_ref`, which is a C function that looks like this:
 
-`tracked` is whether the pointer is tracked by the garbage collector. If this is `True`, then we use the `dereference_tracked` internal function to dereference.
-
-If it's `False`, then we use `dereference_address`.
-
-#### Difference between tracked and address
-
-`dereference_address` will work on any object, but has one large flaw.
-
-This function uses [ctypes](https://docs.python.org/3/library/ctypes.html), and simply attempts to read the `PyObject` at the specified address.
-
-But if the address isn't valid (such as when the object is garbage collected), the Python interpreter is terminated with `SIGSEGV`.
-
-```py
-class test:
-    pass
-
-ptr = Pointer(id(test()), test, False)
-print(~ptr) # since we set tracked to false, it uses dereference_address and causes a segfault
+```c
+static PyObject* method_add_ref(PyObject* self, PyObject* args) {
+    Py_INCREF(args);
+    Py_RETURN_NONE;
+}
 ```
 
-This was an issue in pointers.py for a while until version 1.2.5 introduced `dereference_tracked`.
+This manually adds to the objects reference count, and stops it from being collected while the pointer is in use.
 
-`dereference_tracked` doesn't use C, and instead goes through the objects tracked by the garbage collector.
-
-If an object matches, we return it.
+We then can safely decrement the reference count when the pointer is deleted:
 
 ```py
-def dereference_tracked(address: int) -> Any:
-    """Dereference an object tracked by the garbage collector."""
-    for obj in gc.get_objects():
-        if id(obj) == address:
-            return obj
-
-    raise DereferenceError(...)
-```
-
-Then, when calling `dereference()` on our original pointer, we simply check whether the target is tracked:
-
-```py
-def dereference(self) -> T:
-    """Dereference the pointer."""
-    return (dereference_tracked if self.tracked else dereference_address)(self.address)
+def __del__(self):
+    remove_ref(~self)
 ```
 
 ### Movement
@@ -636,14 +625,6 @@ class StructPointer(Pointer[A]):
 
     def __init__(self, address: int, data_type: Type[A]):
         super().__init__(address, data_type, True)
-        self.__ref = dereference_address(
-            address
-        )  # this needs to be here to stop garbage collection
-
-    def __getattr__(self, name: str):
-        if name == "__ref":
-            raise Exception
-        return super().__getattribute__(name)
 
     @property
     def _as_parameter_(self):
@@ -652,8 +633,4 @@ class StructPointer(Pointer[A]):
 
 We need `_as_parameter_` to allow it to be used in a `ctypes` call. Since we won't always have a binding for a struct, we can just use the address, like in `VoidPointer`.
 
-Unfortunately, garbage collection breaks things when interacting with our target `Struct` object.
-
-To fix this, the `__ref` attribute had to be introduced. This attribute actually contains the target object, and keeps its alive as long as the pointer exists.
-
-To keep the "spirit" of pointers.py, an error is raised inside the `__getattr__` if trying to access `__ref`.
+The `increment_ref` is also passed to stop the struct from being garbage collected.

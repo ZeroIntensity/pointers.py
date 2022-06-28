@@ -1,4 +1,4 @@
-from .pointer import Pointer, dereference_address
+from .pointer import Pointer
 import ctypes
 from typing import (
     Optional,
@@ -44,14 +44,6 @@ class StructPointer(Pointer[A]):
 
     def __init__(self, address: int, data_type: Type[A]):
         super().__init__(address, data_type, True)
-        self.__ref = dereference_address(
-            address
-        )  # this needs to be here to stop garbage collection
-
-    def __getattr__(self, name: str):
-        if name == "__ref":
-            raise Exception
-        return super().__getattribute__(name)
 
     @property
     def _as_parameter_(self):
@@ -60,7 +52,7 @@ class StructPointer(Pointer[A]):
 
 class _BaseCPointer(Pointer[Any]):
     def __init__(self, address: int, size: int):
-        super().__init__(address, int, False)
+        super().__init__(address, int)
         self._size = size
 
     @property

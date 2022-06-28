@@ -6,6 +6,7 @@ from pointers import (
     IsFrozenError,
 )
 import pytest
+from sys import getrefcount
 
 
 class SomeObj:
@@ -45,9 +46,7 @@ def test_frozen():
         ptr >>= "abc"
 
 
-def test_tracked():
+def test_ref_counts():
     ptr = to_ptr(SomeObj())
-    assert ptr.tracked
-
-
-# we cant test things like DereferenceError here because of the garbage collector being weird
+    assert type(~ptr) is SomeObj
+    assert getrefcount(~ptr) == 3

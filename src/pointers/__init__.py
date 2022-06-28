@@ -1,4 +1,4 @@
-from .pointer import Pointer, to_ptr, dereference_address, dereference_tracked
+from .pointer import Pointer, to_ptr, dereference_address
 from .malloc import (
     malloc,
     IsMallocPointerError,
