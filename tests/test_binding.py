@@ -13,9 +13,6 @@ from pointers._cstd import DivT
 def test_to_c_ptr():
     ptr = to_c_ptr(5)
     assert type(ptr) is TypedCPointer
-    assert ~ptr == 5
-    ptr <<= 10
-    assert ~ptr == 10
 
 
 def test_bindings():
