@@ -1,5 +1,5 @@
-#include <Python.h>
 #define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
 static PyObject* method_add_ref(PyObject* self, PyObject* args) {
     Py_INCREF(args);
