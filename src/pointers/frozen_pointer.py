@@ -14,7 +14,7 @@ class FrozenPointer(Pointer[T]):
         """Point to a different address."""
         raise IsFrozenError("cannot assign to frozen pointer")
 
-    def move(self, _: Pointer[T]) -> NoReturn:
+    def move(self, _: Pointer[T], __: bool = False) -> NoReturn:
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         raise IsFrozenError("cannot move data to frozen pointer")
 

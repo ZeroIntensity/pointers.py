@@ -351,25 +351,6 @@ self.address + (amount * self.size)
 
 Then, we get a new `CallocPointer` object with that address and return it to the user.
 
-#### Zeroed Memory
-
-Memory created by `calloc` in C is initalized to 0 by default.
-
-That means that we can just dereference our `CallocPointer` immediately, right?
-
-No, since a C 0 is not a `PyObject`. We can dereference it just fine, but we can't use it as a python object.
-
-We can fix this, though.
-
-pointers.py replicates zeroed memory by just moving a `PyObject` 0 to the memory when our `CallocPointer` is initialized:
-
-```py
-bytes_a = (ctypes.c_ubyte * 24) \
-    .from_address(id(0))
-
-ctypes.memmove(address, bytes_a, len(bytes_a))
-```
-
 ## Bindings
 
 ### Basics
@@ -397,9 +378,9 @@ dll.name.argtypes = (ctypes.c_some_type, ctypes.c_some_type)
 dll.name.restype = ctypes.c_some_type
 ```
 
-- `dll` is the `ctypes.CDLL` object containing the C standard library
-- `argtypes` must always be `Tuple[ctypes._CData, ...]`
-- `restype` must always be `ctypes._CData`
+-   `dll` is the `ctypes.CDLL` object containing the C standard library
+-   `argtypes` must always be `Tuple[ctypes._CData, ...]`
+-   `restype` must always be `ctypes._CData`
 
 If you are unfamiliar with the `_CData` type, it's simply a `ctypes` type (`c_void_p`, `c_char_p`, `c_int`, etc).
 
@@ -419,13 +400,13 @@ Most of the type conversions are handled by `ctypes`, which can be found [here](
 
 A diagram of these conversions could look like this:
 
-| CTypes Type | C Type      | Pointers.py Type   |
-| ----------- | ----------- | ------------------ |
-| `c_char_p`  | `char*`     | str                |
-| `c_void_p`  | `void*`     | `VoidPointer`      |
-| `POINTER`   | `T*`        | `TypedCPointer[T]` |
-| `Structure` | `struct A`  | `Struct`           |
-| `POINTER`   | `struct A*` | `StructPointer[A]` |
+| CTypes Type          | C Type      | Pointers.py Type   |
+| -------------------- | ----------- | ------------------ |
+| `c_char_p`           | `char*`     | `str`              |
+| `c_void_p`           | `void*`     | `VoidPointer`      |
+| `POINTER`            | `T*`        | `TypedCPointer[T]` |
+| `Structure`          | `struct A`  | `Struct`           |
+| `POINTER(Structure)` | `struct A*` | `StructPointer[A]` |
 
 ### High Level Mappings
 
@@ -507,9 +488,9 @@ The function can return a converted C type, a `ctypes.POINTER`, a `ctypes.Struct
 
 This causes several problems:
 
-- If we get an `int`, we don't know if it was mapped from `c_void_p`, `c_int`, `c_size_t`, or some other integer type.
-- Returned `ctypes.Structure` objects have no type information, so we don't know what they contain.
-- When we receive a `ctypes.POINTER`, a new type is created and is prefixed with `LP_`.
+-   If we get an `int`, we don't know if it was mapped from `c_void_p`, `c_int`, `c_size_t`, or some other integer type.
+-   Returned `ctypes.Structure` objects have no type information, so we don't know what they contain.
+-   When we receive a `ctypes.POINTER`, a new type is created and is prefixed with `LP_`.
 
 To solve the first problem, pointers.py has to set `restype` on every raw binding, and then we check if restype is supposed to be a pointer, in which case we return a `VoidPointer` object.
 
@@ -546,8 +527,8 @@ We can then either build a `Struct` followed by a `StructPointer`, or just a `Ty
 
 This means that they have most of the same functionality, with two main differences:
 
-- The way they dereference.
-- How they work as `ctypes` parameters.
+-   The way they dereference.
+-   How they work as `ctypes` parameters.
 
 #### Void Pointers
 

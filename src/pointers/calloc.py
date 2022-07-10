@@ -5,7 +5,6 @@ from .exceptions import (
 from .malloc import MallocPointer
 from ._cstd import c_calloc
 from typing import Iterator, Optional, Dict, TypeVar, Generic
-import ctypes
 
 __all__ = ("CallocPointer", "calloc")
 
@@ -35,10 +34,6 @@ class CallocPointer(MallocPointer, Generic[T]):
 
         if chunk_cache:
             self._chunk_cache[self.current_index] = self
-
-        bytes_a = (ctypes.c_ubyte * 24).from_address(id(0))
-
-        ctypes.memmove(address, bytes_a, len(bytes_a))
 
     def dereference(self) -> T:
         """Dereference the pointer."""

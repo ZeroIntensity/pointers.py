@@ -11,11 +11,10 @@ from typing import (
     Union,
     Tuple,
 )
+from .exceptions import InvalidSizeError
 
 if TYPE_CHECKING:
     from .struct import Struct
-
-from .exceptions import InvalidSizeError
 
 T = TypeVar("T")
 A = TypeVar("A", bound="Struct")
@@ -29,6 +28,25 @@ __all__ = (
     "attempt_decode",
     "to_struct_ptr",
 )
+
+
+def _move(
+    ptr: ctypes.pointer,
+    stream: bytes,
+    *,
+    unsafe: bool = False,
+    target: str = "memory allocation",
+):
+    """Move data to C pointer."""
+    try:
+        if not unsafe:
+            ptr.contents[:] = stream
+        else:
+            ctypes.memmove(ptr, stream, len(stream))
+    except ValueError as e:
+        raise InvalidSizeError(
+            f"object is of size {len(stream)}, while {target} is {len(ptr.contents)}"  # noqa
+        ) from e
 
 
 def attempt_decode(data: bytes) -> Union[str, bytes]:
@@ -68,7 +86,7 @@ class _BaseCPointer(Pointer[Any]):
 
         return self.make_ct_pointer(), bytes(bytes_a)
 
-    def move(self, data: Pointer[Any]) -> None:
+    def move(self, data: Pointer[Any], unsafe: bool = False) -> None:
         """Move data to the allocated memory."""
         if not isinstance(data, _BaseCPointer):
             raise ValueError(
@@ -76,13 +94,7 @@ class _BaseCPointer(Pointer[Any]):
             )
 
         ptr, byte_stream = self._make_stream_and_ptr(data)
-
-        try:
-            ptr.contents[:] = byte_stream
-        except ValueError as e:
-            raise InvalidSizeError(
-                f"object is of size {len(byte_stream)}, while object size is {len(ptr.contents)}"  # noqa
-            ) from e
+        _move(ptr, byte_stream, unsafe=unsafe, target="C data")
 
     def make_ct_pointer(self):
         return ctypes.cast(
@@ -207,12 +219,12 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
         deref = ctype.from_address(self.address)
         return deref.value  # type: ignore
 
-    def move(self, data: Pointer) -> None:
+    def move(self, data: Pointer, unsafe: bool = False) -> None:
         """Move data to the target C object."""
         if data.type is not self.type:
             raise ValueError("pointer must be the same type")
 
-        super().move(data)
+        super().move(data, unsafe)
 
     def __repr__(self) -> str:
         return f"<typed c pointer to {hex(self.address)}>"  # noqa

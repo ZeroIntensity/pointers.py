@@ -6,9 +6,9 @@
 
 Why would you ever need this
 
-- [Documentation](https://pointerspy.netlify.app/)
-- [Repository](https://github.com/ZeroIntensity/pointers.py)
-- [PyPI](https://pypi.org/project/pointers.py)
+-   [Documentation](https://pointerspy.netlify.app/)
+-   [Repository](https://github.com/ZeroIntensity/pointers.py)
+-   [PyPI](https://pypi.org/project/pointers.py)
 
 ### Example
 
@@ -36,53 +36,21 @@ fprintf(file, "hello world")
 fclose(file)
 ```
 
-#### Example with custom bindings
+### Features
 
-```py
-from pointers import binds, Struct
-import ctypes
-
-dll = ctypes.CDLL("libc.so.6")
-
-class DivStruct(Struct):
-    quot: int
-    rem: int
-
-class div_t(ctypes.Structure):
-    _fields_ = [
-        ("quot", ctypes.c_int),
-        ("rem", ctypes.c_int),
-    ]
-
-dll.div.restype = div_t
-
-@binds(dll.div, struct=DivStruct)
-def div(numer: int, denom: int) -> DivStruct:
-    ...
-
-print((div(10, 10).quot))
-```
-
-#### Example with malloc
-
-```py
-from pointers import malloc, free
-
-memory = malloc(52)
-memory <<= "abc"
-print(*memory) # abc
-free(memory)
-print(*memory) # FreedMemoryError
-```
+-   Fully type safe
+-   Pythonic pointer API
+-   Bindings for the entire C standard library
+-   Segfaults
 
 ### Why does this exist?
 
 The main purpose of pointers.py is to simply break the rules of Python, but has some other use cases:
 
-- Can help C/C++ developers get adjusted to Python
-- Provides a nice learning environment for programmers learning how pointers work
-- Makes it very easy to manipulate memory in Python
-- Why _not_?
+-   Can help C/C++ developers get adjusted to Python
+-   Provides a nice learning environment for programmers learning how pointers work
+-   Makes it very easy to manipulate memory in Python
+-   Why _not_?
 
 ### Installation
 

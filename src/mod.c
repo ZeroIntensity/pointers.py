@@ -14,6 +14,7 @@ static PyObject* method_remove_ref(PyObject* self, PyObject* args) {
 static PyMethodDef PointersMethods[] = {
     {"add_ref", method_add_ref, METH_VARARGS, "Increment the reference count on the target object."},
     {"remove_ref", method_remove_ref, METH_VARARGS, "Decrement the reference count on the target object."},
+    {NULL, NULL, 0, NULL}
 };
 
 static struct PyModuleDef pointersmod = {

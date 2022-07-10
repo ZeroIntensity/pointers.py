@@ -8,26 +8,48 @@ To overwrite a value in memory, use `Pointer.move`.
 from pointers import to_ptr
 
 a = "test"
-b = "hello world"
+b = "abcd"
 
 ptr = to_ptr(a)
 ptr2 = to_ptr(b)
 
-ptr.move(ptr2) # overwrites a with "hello world"
+ptr.move(ptr2) # overwrites a with "abcd"
 print(~ptr)
 ```
 
-This is extremely dangerous, since we are overwriting the string `"test"` with `"hello world"`.
+This is extremely dangerous, since we are overwriting the string `"test"` with `"abcd"`.
 
-That means that if we try to use the string `"test"` anywhere else, then it will be switched with `"hello world"`
+That means that if we try to use the string `"test"` anywhere else, then it will be switched with `"abcd"`
 
 **Note:** Data movement will only change the literal on cached types (such as `int` and `str`)
 
 ```py
 ptr.move(ptr2)
 print(~ptr)
-print("test") # prints "hello world"
+print("test") # prints "abcd"
 ```
+
+## Buffer Overflows
+
+By default, pointers.py doesn't allow you to
+
+```py
+a = to_ptr("test")
+b = to_ptr("abcdefg")
+
+a.move(b) # InvalidSizeError
+```
+
+This can be bypassed by passing `unsafe = True` to `move`:
+
+```py
+a = to_ptr("test")
+b = to_ptr("abcdefg")
+
+a.move(b, unsafe=True) # works just fine
+```
+
+**This is extremely dangerous and makes your code vulnerable to buffer overflow attacks.**
 
 ### For C/C++ developers
 
@@ -63,6 +85,14 @@ a = "test"
 
 ptr = to_ptr(a)
 ptr <<= "hello world" # works just fine
+print(~ptr)
+```
+
+If you would like to run an unsafe move, you can use the `^` operator, which will pass it for you:
+
+```py
+ptr = to_ptr(a)
+ptr ^= "hello world" # same as ptr.move(to_ptr("hello world"), unsafe=True)
 print(~ptr)
 ```
 

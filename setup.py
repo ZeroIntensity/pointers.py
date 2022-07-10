@@ -6,7 +6,7 @@ with open("./README.md") as f:
 if __name__ == "__main__":
     setup(
         name="pointers.py",
-        version="1.3.3",
+        version="1.3.4",
         author="ZeroIntensity",
         author_email="<zintensitydev@gmail.com>",
         description="Bringing the hell of pointers to Python.",
@@ -22,6 +22,7 @@ if __name__ == "__main__":
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: Implementation :: CPython",
         ],
         license="MIT",
         project_urls={

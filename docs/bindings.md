@@ -43,6 +43,15 @@ c_raise(11)
 # program terminated with signal 11, segmentation fault
 ```
 
+Pointers.py also already provides APIs for dynamic memory functions (`malloc`, `free`, etc), so these are prefixed with `c_` as well:
+
+```py
+a = c_malloc(2)
+sprintf(a, "%s", "b")
+printf("%s\n", a)
+c_free(a)
+```
+
 ## Void Pointers
 
 Some types (such as `FILE`) cannot be converted to Python. Pointers.py resolves this by returning a `VoidPointer` object.
@@ -77,8 +86,8 @@ fclose(file)
 
 `TypedCPointer` and `VoidPointer` inherit from the same base class, so most of the behavior is the same with 2 key differences:
 
-- `VoidPointer` always points to `int`, whereas `TypedCPointer` always points to `T`.
-- `TypedCPointer` forces the pointer to be the same type when using data movement, but `VoidPointer` will move any type.
+-   `VoidPointer` always points to `int`, whereas `TypedCPointer` always points to `T`.
+-   `TypedCPointer` forces the pointer to be the same type when using data movement, but `VoidPointer` will move any type.
 
 ## Structs
 

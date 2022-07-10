@@ -4,7 +4,6 @@ import pytest
 
 def test_calloc():
     mem = calloc(4, 28)
-    assert ~mem == 0
     mem <<= 1
     assert ~mem == 1
     free(mem)

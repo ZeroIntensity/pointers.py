@@ -6,10 +6,10 @@ from typing import TypeVar, Generic, NoReturn, Tuple
 from .exceptions import (
     IsMallocPointerError,
     FreedMemoryError,
-    InvalidSizeError,
     DereferenceError,
     AllocationError,
 )
+from .c_pointer import _move
 
 __all__ = ("MallocPointer", "malloc", "free", "realloc")
 
@@ -89,17 +89,11 @@ class MallocPointer(Pointer, Generic[T]):
 
         return self.make_ct_pointer(), bytes(bytes_a)
 
-    def move(self, data: Pointer[T]) -> None:
+    def move(self, data: Pointer[T], unsafe: bool = False) -> None:
         """Move data to the allocated memory."""
         ptr, byte_stream = self._make_stream_and_ptr(data)
 
-        try:
-            ptr.contents[:] = byte_stream
-        except ValueError as e:
-            raise InvalidSizeError(
-                f"object is of size {len(byte_stream)}, while memory allocation is {len(ptr.contents)}"  # noqa
-            ) from e
-
+        _move(ptr, byte_stream, unsafe=unsafe)
         self.assigned = True
 
     def make_ct_pointer(self):

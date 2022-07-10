@@ -6,9 +6,19 @@ import faulthandler
 from io import UnsupportedOperation
 import sys
 from _pointers import add_ref, remove_ref
+from .exceptions import InvalidSizeError
 
 
 __all__ = ("Pointer", "to_ptr", "dereference_address")
+
+T = TypeVar("T")
+A = TypeVar("A")
+P = ParamSpec("P")
+
+with suppress(
+    UnsupportedOperation
+):  # in case its running in idle or something like that
+    faulthandler.enable()
 
 
 def dereference_address(address: int) -> Any:
@@ -16,14 +26,8 @@ def dereference_address(address: int) -> Any:
     return ctypes.cast(address, ctypes.py_object).value
 
 
-with suppress(
-    UnsupportedOperation
-):  # in case its running in idle or something like that
-    faulthandler.enable()
-
-T = TypeVar("T")
-A = TypeVar("A")
-P = ParamSpec("P")
+def _make_ptr(data: Union["Pointer[T]", T]) -> "Pointer[T]":
+    return data if isinstance(data, Pointer) else to_ptr(data)
 
 
 class Pointer(Generic[T]):
@@ -86,7 +90,7 @@ class Pointer(Generic[T]):
         self.assign(value if isinstance(value, Pointer) else to_ptr(value))
         return self
 
-    def move(self, data: "Pointer[T]") -> None:
+    def move(self, data: "Pointer[T]", unsafe: bool = False) -> None:
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         if data.type is not self.type:
             raise ValueError("pointer must be the same type")
@@ -94,22 +98,35 @@ class Pointer(Generic[T]):
         deref_a: T = ~data
         deref_b: T = ~self
 
-        bytes_a = (ctypes.c_ubyte * sys.getsizeof(deref_a)).from_address(
-            data.address
-        )  # fmt: off
-        bytes_b = (ctypes.c_ubyte * sys.getsizeof(deref_b)).from_address(
-            self.address
-        )  # fmt: off
+        size_a: int = sys.getsizeof(deref_a)
+        size_b: int = sys.getsizeof(deref_b)
+
+        if (size_b < size_a) and (not unsafe):
+            raise InvalidSizeError(
+                f"target size may not exceed current size ({size_a} < {size_b})",  # noqa
+            )
+
+        bytes_a = (ctypes.c_ubyte * size_a).from_address(data.address)
+        bytes_b = (ctypes.c_ubyte * size_b).from_address(self.address)
 
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
     def __lshift__(self, data: Union["Pointer[T]", T]):
-        """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
-        self.move(data if isinstance(data, Pointer) else to_ptr(data))
+        self.move(_make_ptr(data))
+        return self
+
+    def __xor__(self, data: Union["Pointer[T]", T]):
+        self.move(_make_ptr(data), unsafe=True)
         return self
 
     def __del__(self):
         remove_ref(~self)
+
+    def __eq__(self, data: object):
+        if not isinstance(data, Pointer):
+            return False
+
+        return data.address == self.address
 
 
 def to_ptr(val: T) -> Pointer[T]:

@@ -63,9 +63,9 @@ This means that the `is` operator will not work when dereferencing.
 
 `MallocPointer` is extremely similar to `Pointer`, with a few differences:
 
-- `freed` and `assigned` property are present.
-- Attempting to read property `type` results in a `IsMallocPointerError`
-- Pointer assignment unsupported (also results in a `IsMallocPointerError`)
+-   `freed` and `assigned` property are present.
+-   Attempting to read property `type` results in a `IsMallocPointerError`
+-   Pointer assignment unsupported (also results in a `IsMallocPointerError`)
 
 ## Free
 
@@ -105,15 +105,12 @@ Unlike in C, `realloc` in pointers.py **does not** return a pointer to the new m
 
 `calloc` is a bit more complicated than `malloc` and `realloc`. Instead of allocating one block of memory, it allocates multiple blocks of a specified size.
 
-It also sets the allocated memory to zero, so you can dereference it immediately.
-
 Basic usage:
 
 ```py
 from pointers import calloc
 
 memory = calloc(3, 28)
-print(~memory) # 0
 memory <<= 5
 
 print(~memory)
@@ -161,5 +158,5 @@ Since 1.2.4, this issue has been patched. For more information on what happened 
 
 `CallocPointer` inherits from `MallocPointer`, so it's mostly the same, but has a few different features:
 
-- `safe`, `chunks`, `chunk_size`, and `current_index` properties are present.
-- Dereferencing using `*` is not supported
+-   `safe`, `chunks`, `chunk_size`, and `current_index` properties are present.
+-   Dereferencing using `*` is not supported
