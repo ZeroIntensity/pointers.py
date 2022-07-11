@@ -5,7 +5,7 @@ from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
 import sys
-from _pointers import add_ref, remove_ref, force_set_attr
+from _pointers import add_ref, remove_ref, force_set_attr as _force_set_attr
 from .exceptions import InvalidSizeError
 
 
@@ -34,7 +34,7 @@ def force_set_attr(typ: Type[Any], key: str, value: Any) -> None:
             f"{typ} does not derive from type (did you pass an instance and not a class)?",  # noqa
         )
 
-    force_set_attr(typ, key, value)
+    _force_set_attr(typ, key, value)
 
 
 def _make_ptr(data: Union["Pointer[T]", T]) -> "Pointer[T]":
