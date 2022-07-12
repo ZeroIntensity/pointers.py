@@ -50,3 +50,12 @@ def test_ref_counts():
     ptr = to_ptr(SomeObj())
     assert type(~ptr) is SomeObj
     assert getrefcount(~ptr) == 3
+
+def test_set_attr():
+    ptr = to_ptr(str)
+    ptr.set_attr("a", "b")
+
+    ptr2 = to_ptr("test")
+    ptr2.set_attr("b", "c")
+    assert str.a == "b"
+    assert str.b == "c"

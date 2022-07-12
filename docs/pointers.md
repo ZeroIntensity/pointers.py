@@ -159,6 +159,18 @@ int main() {
 }
 ```
 
+## Setting Attributes
+If you would like to force setting an attribute on the targets type (or itself if you are pointing to a type), you can use `Pointer.set_attr`:
+
+```py
+from pointers import to_ptr
+
+ptr = to_ptr(str)
+ptr.set_attr("a", "b")
+print(str.a)  # b
+print("test".a)  # b
+```
+
 ## Frozen Pointers
 
 If you don't want your pointer to ever change, you can use `FrozenPointer` and `to_const_ptr`:

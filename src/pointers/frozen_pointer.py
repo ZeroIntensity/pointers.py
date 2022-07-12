@@ -1,5 +1,5 @@
 from .pointer import Pointer
-from typing import TypeVar, NoReturn
+from typing import TypeVar, NoReturn, Any
 from .exceptions import IsFrozenError
 from _pointers import add_ref
 
@@ -17,6 +17,9 @@ class FrozenPointer(Pointer[T]):
     def move(self, _: Pointer[T], __: bool = False) -> NoReturn:
         """Move data from another pointer to this pointer. Very dangerous, use with caution."""  # noqa
         raise IsFrozenError("cannot move data to frozen pointer")
+
+    def set_attr(self, key: str, value: Any) -> NoReturn:
+        raise IsFrozenError("cannot set attribute on frozen pointer")
 
 
 def to_const_ptr(val: T) -> FrozenPointer[T]:

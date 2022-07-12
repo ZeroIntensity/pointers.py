@@ -12,6 +12,7 @@ from typing import (
     Tuple,
 )
 from .exceptions import InvalidSizeError
+from _pointers import add_ref, remove_ref
 
 if TYPE_CHECKING:
     from .struct import Struct
@@ -70,7 +71,7 @@ class StructPointer(Pointer[A]):
 
 class _BaseCPointer(Pointer[Any]):
     def __init__(self, address: int, size: int):
-        super().__init__(address, int)
+        super().__init__(address, int, True)
         self._size = size
 
     @property
@@ -203,7 +204,14 @@ class VoidPointer(_BaseCPointer):
 class TypedCPointer(_BaseCPointer, Generic[T]):
     """Class representing a pointer with a known type."""
 
-    def __init__(self, address: int, data_type: Type[T], size: int):
+    def __init__(
+        self,
+        address: int,
+        data_type: Type[T],
+        size: int,
+        alternate_method: bool = True
+    ):
+        self._alt = alternate_method
         super().__init__(address, size)
         self._type = data_type
 
@@ -216,8 +224,12 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
     def dereference(self) -> Optional[T]:
         """Dereference the pointer."""
         ctype = self.get_mapped(self.type)
-        deref = ctype.from_address(self.address)
-        return deref.value  # type: ignore
+        ptr = (
+            ctype.from_address(self.address)
+            if not self._alt else
+            ctype(self.address)
+        )
+        return ptr.value  # type: ignore
 
     def move(self, data: Pointer, unsafe: bool = False) -> None:
         """Move data to the target C object."""
@@ -232,6 +244,10 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
     def __rich__(self):
         return f"<[green]typed c[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
+    def __del__(self):
+        super().__del__()
+        remove_ref(~self)
+
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
@@ -243,13 +259,17 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
     ct = TypedCPointer.map_type(
         data if not isinstance(data, str) else data.encode(),
     )
+
+    add_ref(ct)
     address = ctypes.addressof(ct)
+    typ = type(data)
 
-    ptr = ctypes.cast(address, ctypes.c_void_p)
-    ptr2 = ctypes.pointer(TypedCPointer.map_type(data))
-    ctypes.memmove(ptr, ptr2, ctypes.sizeof(ptr2))
-
-    return TypedCPointer(address, type(data), ctypes.sizeof(ct))
+    return TypedCPointer(
+        address,
+        typ if typ is not str else bytes,  # type: ignore
+        ctypes.sizeof(ct),
+        False
+    )
 
 
 def to_struct_ptr(struct: A) -> StructPointer[A]:
