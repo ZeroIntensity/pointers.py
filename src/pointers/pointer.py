@@ -139,6 +139,13 @@ class Pointer(Generic[T]):
 
         return data.address == self.address
 
+    def set_attr(self, key: str, value: Any) -> None:
+        v: Any = ~self  # mypy gets angry if this isnt any
+        if not isinstance(~self, type):
+            v = type(v)
+
+        force_set_attr(v, key, value)
+
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""

@@ -37,7 +37,7 @@ def _move(
     unsafe: bool = False,
     target: str = "memory allocation",
 ):
-    """Move data to C pointer."""
+    """Move data to a C pointer."""
     try:
         if not unsafe:
             ptr.contents[:] = stream
