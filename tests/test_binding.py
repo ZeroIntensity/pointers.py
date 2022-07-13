@@ -1,9 +1,7 @@
 from pointers import (
     to_c_ptr,
-    TypedCPointer,
     StructPointer,
     localeconv,
-    frexp,
     div,
     strlen,
     c_malloc,
@@ -24,3 +22,15 @@ def test_bindings():
     r = strlen("test")
     assert r == 4
     assert type(r) is int
+
+def test_to_c_ptr():
+    a = to_c_ptr('test')
+    assert a.type is str
+    assert ~a == 'test'
+
+def test_strings():
+    mem = c_malloc(2)
+    sprintf(mem, "%s", "a")  # testing format strings
+    ptr = cast(mem, bytes)
+    assert ~ptr == b"a"
+    c_free(mem)

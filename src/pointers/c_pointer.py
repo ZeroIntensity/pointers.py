@@ -209,6 +209,9 @@ class VoidPointer(_BaseCPointer[int]):
         return (
             f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
         )
+    
+    def __del__(self):
+        pass
 
 
 class TypedCPointer(_BaseCPointer[T], Generic[T]):
@@ -219,11 +222,13 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
         address: int,
         data_type: Type[T],
         size: int,
-        alternate_method: bool = True
+        alternate_method: bool = True,
+        decref: bool = True
     ):
         self._alt = alternate_method
         super().__init__(address, size)
         self._type = data_type
+        self._decref = decref
 
     @property
     def _as_parameter_(self) -> "ctypes.pointer[ctypes._CData]":
@@ -255,7 +260,7 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
         return f"<[green]typed c[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
     def __del__(self):
-        if self.type is not str:
+        if (self.type is not str) and (self._decref):
             super().__del__()
             remove_ref(~self)
 
@@ -264,7 +269,12 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
-    return TypedCPointer(ptr.address, data_type, ptr.size)
+    return TypedCPointer(
+        ptr.address,
+        data_type,
+        ptr.size,
+        decref = False
+    )
 
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:
