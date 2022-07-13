@@ -209,9 +209,7 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
         address: int,
         data_type: Type[T],
         size: int,
-        alternate_method: bool = True
     ):
-        self._alt = alternate_method
         super().__init__(address, size)
         self._type = data_type
 
@@ -224,11 +222,7 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
     def dereference(self) -> Optional[T]:
         """Dereference the pointer."""
         ctype = self.get_mapped(self.type)
-        ptr = (
-            ctype.from_address(self.address)
-            if not self._alt else
-            ctype(self.address)
-        )
+        ptr = ctype.from_address(self.address)
         return ptr.value  # type: ignore
 
     def move(self, data: Pointer, unsafe: bool = False) -> None:
@@ -267,8 +261,7 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
     return TypedCPointer(
         address,
         typ if typ is not str else bytes,  # type: ignore
-        ctypes.sizeof(ct),
-        False
+        ctypes.sizeof(ct)
     )
 
 
