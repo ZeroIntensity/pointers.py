@@ -10,6 +10,7 @@ from typing import (
     TYPE_CHECKING,
     Union,
     Tuple,
+    Iterator
 )
 from .exceptions import InvalidSizeError
 from _pointers import add_ref, remove_ref
@@ -69,7 +70,7 @@ class StructPointer(Pointer[A]):
         return self._address
 
 
-class _BaseCPointer(Pointer[Any]):
+class _BaseCPointer(Pointer[Any], Generic[T]):
     def __init__(self, address: int, size: int):
         super().__init__(address, int, True)
         self._size = size
@@ -78,6 +79,15 @@ class _BaseCPointer(Pointer[Any]):
     def size(self):
         """Size of the pointer."""
         return self._size
+
+    # i need to repeat these for type safety
+    def __iter__(self) -> Iterator[T]:
+        """Dereference the pointer."""
+        return iter({self.dereference()})
+
+    def __invert__(self) -> T:
+        """Dereference the pointer."""
+        return self.dereference()
 
     def _make_stream_and_ptr(
         self,
@@ -180,7 +190,7 @@ class _BaseCPointer(Pointer[Any]):
         return self
 
 
-class VoidPointer(_BaseCPointer):
+class VoidPointer(_BaseCPointer[int]):
     """Class representing a void pointer to a C object."""
 
     @property
@@ -201,7 +211,7 @@ class VoidPointer(_BaseCPointer):
         )
 
 
-class TypedCPointer(_BaseCPointer, Generic[T]):
+class TypedCPointer(_BaseCPointer[T], Generic[T]):
     """Class representing a pointer with a known type."""
 
     def __init__(
@@ -209,20 +219,26 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
         address: int,
         data_type: Type[T],
         size: int,
+        alternate_method: bool = True
     ):
+        self._alt = alternate_method
         super().__init__(address, size)
         self._type = data_type
 
     @property
-    def _as_parameter_(self):
+    def _as_parameter_(self) -> "ctypes.pointer[ctypes._CData]":
         ctype = self.get_mapped(self.type)
         deref = ctype.from_address(self.address)
         return ctypes.pointer(deref)
 
-    def dereference(self) -> Optional[T]:
+    def dereference(self) -> T:
         """Dereference the pointer."""
         ctype = self.get_mapped(self.type)
-        ptr = ctype.from_address(self.address)
+        ptr = (
+            ctype.from_address(self.address)
+            if not self._alt else
+            ctype(self.address)
+        )
         return ptr.value  # type: ignore
 
     def move(self, data: Pointer, unsafe: bool = False) -> None:
@@ -239,8 +255,11 @@ class TypedCPointer(_BaseCPointer, Generic[T]):
         return f"<[green]typed c[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
 
     def __del__(self):
-        super().__del__()
-        remove_ref(~self)
+        if self.type is not str:
+            super().__del__()
+            remove_ref(~self)
+
+
 
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
@@ -251,7 +270,7 @@ def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
 def to_c_ptr(data: T) -> TypedCPointer[T]:
     """Convert a python type to a pointer to a C type."""
     ct = TypedCPointer.map_type(
-        data if not isinstance(data, str) else data.encode(),
+        data,
     )
 
     add_ref(ct)
@@ -260,8 +279,9 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
 
     return TypedCPointer(
         address,
-        typ if typ is not str else bytes,  # type: ignore
-        ctypes.sizeof(ct)
+        typ,
+        ctypes.sizeof(ct),
+        False
     )
 
 

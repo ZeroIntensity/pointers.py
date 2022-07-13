@@ -130,10 +130,10 @@ class Pointer(Generic[T]):
         self.move(_make_ptr(data), unsafe=True)
         return self
 
-    def __del__(self):
+    def __del__(self) -> None:
         remove_ref(~self)
 
-    def __eq__(self, data: object):
+    def __eq__(self, data: object) -> bool:
         if not isinstance(data, Pointer):
             return False
 
