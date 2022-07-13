@@ -209,7 +209,7 @@ class VoidPointer(_BaseCPointer[int]):
         return (
             f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
         )
-    
+
     def __del__(self):
         pass
 
@@ -265,15 +265,13 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
             remove_ref(~self)
 
 
-
-
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
     return TypedCPointer(
         ptr.address,
         data_type,
         ptr.size,
-        decref = False
+        decref=False
     )
 
 
