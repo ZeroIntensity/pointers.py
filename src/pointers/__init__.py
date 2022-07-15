@@ -14,6 +14,7 @@ from .exceptions import (
     DereferenceError,
     FreedMemoryError,
     InvalidSizeError,
+    InvalidBindingParameter,
 )
 from .calloc import calloc, CallocPointer
 from .frozen_pointer import to_const_ptr, FrozenPointer

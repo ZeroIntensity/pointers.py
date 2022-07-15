@@ -10,7 +10,7 @@ from typing import (
     TYPE_CHECKING,
     Union,
     Tuple,
-    Iterator
+    Iterator,
 )
 from .exceptions import InvalidSizeError
 from _pointers import add_ref, remove_ref
@@ -147,7 +147,7 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
             return False
 
     @staticmethod
-    def get_py(data: Type["ctypes._CData"]) -> Type:
+    def get_py(data: Type["ctypes._CData"]) -> type:
         """Map the specified C type to a Python type."""
         types: Dict[Type["ctypes._CData"], type] = {
             ctypes.c_bool: bool,
@@ -223,7 +223,7 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
         data_type: Type[T],
         size: int,
         alternate_method: bool = True,
-        decref: bool = True
+        decref: bool = True,
     ):
         self._alt = alternate_method
         super().__init__(address, size)
@@ -241,8 +241,8 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
         ctype = self.get_mapped(self.type)
         ptr = (
             ctype.from_address(self.address)
-            if not self._alt else
-            ctype(self.address)
+            if not self._alt
+            else ctype(self.address)  # fmt: off
         )
         return ptr.value  # type: ignore
 
@@ -267,12 +267,7 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
-    return TypedCPointer(
-        ptr.address,
-        data_type,
-        ptr.size,
-        decref=False
-    )
+    return TypedCPointer(ptr.address, data_type, ptr.size, decref=False)
 
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:
@@ -285,12 +280,7 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
     address = ctypes.addressof(ct)
     typ = type(data)
 
-    return TypedCPointer(
-        address,
-        typ,
-        ctypes.sizeof(ct),
-        False
-    )
+    return TypedCPointer(address, typ, ctypes.sizeof(ct), False)
 
 
 def to_struct_ptr(struct: A) -> StructPointer[A]:

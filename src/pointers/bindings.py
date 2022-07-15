@@ -20,10 +20,17 @@ from typing import (
     Dict,
     Type,
     Iterator,
+    Tuple,
 )
-from .c_pointer import VoidPointer, TypedCPointer, StructPointer
+from .c_pointer import (
+    VoidPointer,
+    TypedCPointer,
+    StructPointer,
+    _BaseCPointer,
+)
 import ctypes
 from . import _cstd
+from .exceptions import InvalidBindingParameter
 
 if TYPE_CHECKING:
     from .struct import Struct
@@ -153,14 +160,12 @@ def _not_null(data: Optional[T]) -> T:
 StructMap = Dict[Type[ctypes.Structure], Type["Struct"]]
 
 
-def _base(
+def _decode_response(
+    res: Any,
+    struct_map: StructMap,
     fn: "ctypes._NamedFuncPointer",
-    *args,
-    map_extra: Optional[StructMap] = None,
 ) -> Any:
-    res = fn(*args)
     res_typ = type(res)
-    struct_map: StructMap = {**STRUCT_MAP, **(map_extra or {})}
 
     if res_typ.__name__.startswith("LP_"):
         struct_type = struct_map.get(getattr(_cstd, res_typ.__name__[3:]))
@@ -185,7 +190,50 @@ def _base(
     return res
 
 
+def _validate_args(
+    args: Tuple[Any, ...],
+    fn: "ctypes._NamedFuncPointer",
+) -> None:
+    if not fn.argtypes:
+        return
+
+    for index, (value, typ) in enumerate(zip(args, fn.argtypes)):
+        n_type = VoidPointer.get_py(typ)
+
+        if not isinstance(value, n_type):
+            v_type = type(value)
+
+            if ((v_type is ctypes.c_char_p) and (n_type is bytes)) or (
+                issubclass(v_type, _BaseCPointer) and (typ is ctypes.c_void_p)
+            ):
+                continue
+
+            raise InvalidBindingParameter(
+                f"argument {index + 1} got invalid type: expected {n_type.__name__}, got {v_type.__name__}"  # noqa
+            )
+
+
+def _base(
+    fn: "ctypes._NamedFuncPointer",
+    *args,
+    map_extra: Optional[StructMap] = None,
+) -> Any:
+    _validate_args(args, fn)
+    res = fn(*args)
+
+    return _decode_response(
+        res,
+        {**STRUCT_MAP, **(map_extra or {})},
+        fn,
+    )
+
+
 def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
+    if type(data) not in {VoidPointer, str, bytes}:
+        raise InvalidBindingParameter(
+            f"expected a string-like object, got {repr(data)}"  # noqa
+        )
+
     if isinstance(data, bytes):
         return data
 

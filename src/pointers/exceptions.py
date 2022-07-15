@@ -6,6 +6,7 @@ __all__ = (
     "DereferenceError",
     "FreedMemoryError",
     "InvalidSizeError",
+    "InvalidBindingParameter",
 )  # noqa
 
 
@@ -47,5 +48,11 @@ class FreedMemoryError(Exception):
 
 class InvalidSizeError(Exception):
     """Raised when trying to move an object of the wrong size to an allocation."""  # noqa
+
+    pass
+
+
+class InvalidBindingParameter(Exception):
+    """Raised when an invalid type is passed to the"""
 
     pass
