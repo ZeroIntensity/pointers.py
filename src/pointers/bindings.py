@@ -240,7 +240,8 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
 
     is_typed_ptr: bool = isinstance(data, TypedCPointer)
 
-    if isinstance(data, VoidPointer) or is_typed_ptr:
+    if isinstance(data, VoidPointer) or isinstance(data, TypedCPointer):
+        # mypy is forcing me to call this twice
         if is_typed_ptr and (data.type is not bytes):
             raise InvalidBindingParameter(
                 f"{data} does not point to bytes",

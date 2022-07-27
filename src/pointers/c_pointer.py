@@ -94,12 +94,12 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
         """Size of the pointer."""
         return self._size
 
-    @property
-    def type(self) -> T:
-        """Type of the pointer."""
-        return self._type
-
     # i need to repeat these for type safety
+    @property
+    def type(self) -> T:  # type: ignore
+        """Type of the pointer."""
+        return self._type  # type: ignore
+
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
         return iter({self.dereference()})
