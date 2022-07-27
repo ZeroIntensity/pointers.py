@@ -58,3 +58,8 @@ class Struct(ABC):
 
     def __repr__(self) -> str:
         return f"<struct {self.__class__.__name__} at {hex(ctypes.addressof(self._struct))}>"  # noqa
+
+    @property
+    def struct(self) -> ctypes.Structure:
+        """Raw internal Structure object."""
+        return self._struct

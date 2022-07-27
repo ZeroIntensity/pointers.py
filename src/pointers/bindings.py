@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 PointerLike = Union[TypedCPointer[Any], VoidPointer]
-StringLike = Union[str, bytes, VoidPointer]
+StringLike = Union[str, bytes, VoidPointer, TypedCPointer[bytes]]
 Format = Union[str, bytes, PointerLike]
 
 __all__ = (
@@ -149,6 +149,7 @@ __all__ = (
     "c_calloc",
     "c_realloc",
     "c_free",
+    "gmtime",
 )
 
 
@@ -176,7 +177,7 @@ def _decode_response(
         res = (
             TypedCPointer(ctypes.addressof(res), res_typ, ctypes.sizeof(res))
             if not issubclass(type(res.contents), ctypes.Structure)
-            else StructPointer(id(struct), type(_not_null(struct)))
+            else StructPointer(id(struct), type(_not_null(struct)), struct)
         )
     # type safety gets mad if i dont use elif here
     elif fn.restype is ctypes.c_void_p:
@@ -229,7 +230,7 @@ def _base(
 
 
 def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
-    if type(data) not in {VoidPointer, str, bytes}:
+    if type(data) not in {VoidPointer, str, bytes, TypedCPointer}:
         raise InvalidBindingParameter(
             f"expected a string-like object, got {repr(data)}"  # noqa
         )
@@ -237,7 +238,14 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
     if isinstance(data, bytes):
         return data
 
-    if isinstance(data, VoidPointer):
+    is_typed_ptr: bool = isinstance(data, TypedCPointer)
+
+    if isinstance(data, VoidPointer) or is_typed_ptr:
+        if is_typed_ptr and (data.type is not bytes):
+            raise InvalidBindingParameter(
+                f"{data} does not point to bytes",
+            )
+
         return ctypes.c_char_p(data.address)
 
     return data.encode()
@@ -809,12 +817,18 @@ def mktime(timeptr: StructPointer[Tm]) -> int:
 
 
 def strftime(
-    string: str,
+    string: StringLike,
     maxsize: int,
-    fmt: TypedCPointer[str],
+    fmt: StringLike,
     timeptr: StructPointer[Tm],
 ) -> int:
-    return _base(dll.strftime, string, maxsize, fmt, timeptr)
+    return _base(
+        dll.strftime,
+        _make_char_pointer(string),
+        maxsize,
+        _make_char_pointer(fmt),
+        timeptr,
+    )
 
 
 def time(timer: TypedCPointer[int]) -> int:
@@ -851,3 +865,7 @@ def c_realloc(ptr: PointerLike, size: int) -> VoidPointer:
 
 def c_free(ptr: PointerLike) -> None:
     return _base(_free, ptr)
+
+
+def gmtime(timer: PointerLike) -> StructPointer[Tm]:
+    return _base(dll.gmtime, timer)

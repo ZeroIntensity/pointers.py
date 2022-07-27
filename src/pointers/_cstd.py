@@ -523,7 +523,7 @@ dll.ctime.restype = ctypes.c_char_p
 dll.difftime.argtypes = (ctypes.c_int, ctypes.c_int)
 dll.difftime.restype = ctypes.c_double
 # struct tm* gmtime(const time_t* timer)
-dll.gmtime.argtypes = (ctypes.c_int,)
+dll.gmtime.argtypes = (ctypes.POINTER(ctypes.c_int),)
 dll.gmtime.restype = ctypes.POINTER(tm)
 # struct tm* localtime(const time_t* timer)
 dll.localtime.argtypes = (ctypes.c_int,)

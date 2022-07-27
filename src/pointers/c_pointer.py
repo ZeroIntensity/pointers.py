@@ -62,12 +62,26 @@ def attempt_decode(data: bytes) -> Union[str, bytes]:
 class StructPointer(Pointer[A]):
     """Class representing a pointer to a struct."""
 
-    def __init__(self, address: int, data_type: Type[A]):
+    def __init__(
+        self,
+        address: int,
+        data_type: Type[A],
+        existing: Optional["Struct"] = None,
+    ):
         super().__init__(address, data_type, True)
+        self._existing = existing
 
     @property
-    def _as_parameter_(self):
+    def _as_parameter_(self) -> Union[int, ctypes.pointer]:
+        existing = self._existing
+
+        if existing:
+            return ctypes.pointer(existing.struct)
+
         return self._address
+
+    def __repr__(self) -> str:
+        return f"<pointer to struct at {hex(self.address)}>"
 
 
 class _BaseCPointer(Pointer[Any], Generic[T]):
@@ -79,6 +93,11 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
     def size(self):
         """Size of the pointer."""
         return self._size
+
+    @property
+    def type(self) -> T:
+        """Type of the pointer."""
+        return self._type
 
     # i need to repeat these for type safety
     def __iter__(self) -> Iterator[T]:
@@ -147,8 +166,13 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
             return False
 
     @staticmethod
-    def get_py(data: Type["ctypes._CData"]) -> type:
+    def get_py(
+        data: Type["ctypes._CData"],
+    ) -> Type[Any]:
         """Map the specified C type to a Python type."""
+        if data.__name__.startswith("LP_"):
+            return Pointer
+
         types: Dict[Type["ctypes._CData"], type] = {
             ctypes.c_bool: bool,
             ctypes.c_char: bytes,
