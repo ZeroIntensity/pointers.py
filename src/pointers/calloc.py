@@ -77,7 +77,7 @@ class CallocPointer(MallocPointer, Generic[T]):
 
         if index not in self._chunk_cache:
             self._chunk_cache[index] = CallocPointer(
-                self.address + (amount * self.size),
+                self.ensure() + (amount * self.size),
                 self.chunks,
                 self.chunk_size,
                 index,
@@ -90,10 +90,10 @@ class CallocPointer(MallocPointer, Generic[T]):
         return self.__add__(-amount)
 
     def __repr__(self) -> str:
-        return f"<pointer to allocated chunk at {hex(self.address)}>"
+        return f"<pointer to allocated chunk at {str(self)}>"
 
     def __rich__(self) -> str:
-        return f"<pointer to [green]allocated chunk[/green] at [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        return f"<pointer to [green]allocated chunk[/green] at [cyan]{str(self)}[/cyan]>"  # noqa
 
     def __iter__(self) -> Iterator["CallocPointer"]:
         for i in range(self.current_index, self.chunks):

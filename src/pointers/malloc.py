@@ -53,7 +53,9 @@ class MallocPointer(Pointer, Generic[T]):
     @property
     def type(self) -> NoReturn:
         """Type of the pointer."""
-        raise IsMallocPointerError("malloc pointers do not have types")
+        raise IsMallocPointerError(
+            "malloc pointers do not have types",
+        )
 
     @property
     def size(self) -> int:
@@ -69,12 +71,10 @@ class MallocPointer(Pointer, Generic[T]):
         raise IsMallocPointerError("cannot assign to malloc pointer")
 
     def __repr__(self) -> str:
-        return (
-            f"<pointer to {self.size} bytes of memory at {hex(self.address)}>"  # noqa
-        )
+        return f"<pointer to {self.size} bytes of memory at {str(self)}>"
 
     def __rich__(self) -> str:
-        return f"<pointer to [green]{self.size} bytes[/green] of memory at [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        return f"<pointer to [green]{self.size} bytes[/green] of memory at [cyan]{str(self)}[/cyan]>"  # noqa
 
     def _make_stream_and_ptr(
         self,
@@ -84,7 +84,7 @@ class MallocPointer(Pointer, Generic[T]):
             raise FreedMemoryError("memory has been freed")
 
         bytes_a = (ctypes.c_ubyte * sys.getsizeof(~data)).from_address(
-            data.address
+            data.ensure()
         )  # fmt: off
 
         return self.make_ct_pointer(), bytes(bytes_a)
@@ -98,7 +98,7 @@ class MallocPointer(Pointer, Generic[T]):
 
     def make_ct_pointer(self):
         return ctypes.cast(
-            self.address,
+            self.ensure(),
             ctypes.POINTER(ctypes.c_char * self.size),
         )
 
@@ -117,10 +117,10 @@ class MallocPointer(Pointer, Generic[T]):
         return super().dereference()
 
     def __add__(self, amount: int):
-        return MallocPointer(self.address + amount, self.size, self.assigned)
+        return MallocPointer(self.ensure() + amount, self.size, self.assigned)
 
     def __sub__(self, amount: int):
-        return MallocPointer(self.address - amount, self.size, self.assigned)
+        return MallocPointer(self.ensure() - amount, self.size, self.assigned)
 
     def __del__(self):
         pass

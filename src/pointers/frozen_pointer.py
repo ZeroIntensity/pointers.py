@@ -1,5 +1,5 @@
 from .pointer import Pointer
-from typing import TypeVar, NoReturn, Any
+from typing import TypeVar, NoReturn, Any, Optional
 from .exceptions import IsFrozenError
 from _pointers import add_ref
 
@@ -10,7 +10,7 @@ T = TypeVar("T")
 
 
 class FrozenPointer(Pointer[T]):
-    def assign(self, _: Pointer[T]) -> NoReturn:
+    def assign(self, _: Optional[Pointer[T]]) -> NoReturn:
         """Point to a different address."""
         raise IsFrozenError("cannot assign to frozen pointer")
 

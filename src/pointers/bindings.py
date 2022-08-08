@@ -31,14 +31,16 @@ from .c_pointer import (
 import ctypes
 from . import _cstd
 from .exceptions import InvalidBindingParameter
+from .pointer import Pointer
 
 if TYPE_CHECKING:
     from .struct import Struct
 
 T = TypeVar("T")
-PointerLike = Union[TypedCPointer[Any], VoidPointer]
+PointerLike = Union[TypedCPointer[Any], VoidPointer, None]
 StringLike = Union[str, bytes, VoidPointer, TypedCPointer[bytes]]
-Format = Union[str, bytes, PointerLike]
+Format = Union[StringLike, PointerLike]
+TypedPtr = Optional[TypedCPointer[T]]
 
 __all__ = (
     "isalnum",
@@ -204,6 +206,19 @@ def _validate_args(
         if not isinstance(value, n_type):
             v_type = type(value)
 
+            if (n_type is Pointer) and (value is None):
+                continue
+
+            if (
+                typ
+                in {
+                    ctypes.c_char_p,
+                    ctypes.c_void_p,
+                    ctypes.POINTER,
+                }
+            ) and (value is None):
+                continue
+
             if ((v_type is ctypes.c_char_p) and (n_type is bytes)) or (
                 issubclass(v_type, _BaseCPointer) and (typ is ctypes.c_void_p)
             ):
@@ -317,7 +332,7 @@ def setlocale(category: int, locale: StringLike) -> str:
     return _base(dll.setlocale, category, _make_char_pointer(locale))
 
 
-def frexp(x: float, exponent: TypedCPointer[int]) -> int:
+def frexp(x: float, exponent: TypedPtr[int]) -> int:
     return _base(dll.frexp, x, exponent)
 
 
@@ -325,7 +340,7 @@ def ldexp(x: float, exponent: int) -> int:
     return _base(dll.ldexp, x, exponent)
 
 
-def modf(x: float, integer: TypedCPointer[float]) -> int:
+def modf(x: float, integer: TypedPtr[float]) -> int:
     return _base(dll.modf, x, integer)
 
 
@@ -362,7 +377,7 @@ def fopen(filename: StringLike, mode: StringLike) -> VoidPointer:
 
 
 def fread(
-    ptr: TypedCPointer[Any],
+    ptr: PointerLike,
     size: int,
     nmemb: int,
     stream: PointerLike,
@@ -396,7 +411,7 @@ def ftell(stream: PointerLike) -> int:
 
 
 def fwrite(
-    ptr: TypedCPointer[Any],
+    ptr: PointerLike,
     size: int,
     nmemb: int,
     stream: PointerLike,
@@ -544,13 +559,13 @@ def perror(string: StringLike) -> None:
     return _base(dll.perror, _make_char_pointer(string))
 
 
-def strtod(string: StringLike, endptr: TypedCPointer[str]) -> int:
+def strtod(string: StringLike, endptr: PointerLike) -> int:
     return _base(dll.strtod, _make_char_pointer(string), endptr)
 
 
 def strtol(
     string: StringLike,
-    endptr: TypedCPointer[str],
+    endptr: PointerLike,
     base: int,
 ) -> int:
     return _base(
@@ -563,7 +578,7 @@ def strtol(
 
 def strtoul(
     string: StringLike,
-    endptr: TypedCPointer[str],
+    endptr: PointerLike,
     base: int,
 ) -> int:
     return _base(
@@ -640,35 +655,35 @@ def wctomb(string: StringLike, wchar: str) -> int:
     return _base(dll.wctomb, _make_char_pointer(string), wchar)
 
 
-def memchr(string: TypedCPointer[Any], c: int, n: int) -> VoidPointer:
+def memchr(string: PointerLike, c: int, n: int) -> VoidPointer:
     return _base(dll.memchr, string, c, n)
 
 
 def memcmp(
-    str1: TypedCPointer[Any],
-    str2: TypedCPointer[Any],
+    str1: PointerLike,
+    str2: PointerLike,
     n: int,
 ) -> int:
     return _base(dll.memcmp, str1, str2, n)
 
 
 def memcpy(
-    dest: TypedCPointer[Any],
-    src: TypedCPointer[Any],
+    dest: PointerLike,
+    src: PointerLike,
     n: int,
 ) -> VoidPointer:
     return _base(dll.memcpy, dest, src, n)
 
 
 def memmove(
-    dest: TypedCPointer[Any],
-    src: TypedCPointer[Any],
+    dest: PointerLike,
+    src: PointerLike,
     n: int,
 ) -> VoidPointer:
     return _base(dll.memmove, dest, src, n)
 
 
-def memset(string: TypedCPointer[Any], c: int, n: int) -> VoidPointer:
+def memset(string: PointerLike, c: int, n: int) -> VoidPointer:
     return _base(dll.memset, string, c, n)
 
 
@@ -804,7 +819,7 @@ def clock() -> int:
     return _base(dll.clock)
 
 
-def ctime(timer: TypedCPointer[int]) -> str:
+def ctime(timer: TypedPtr[int]) -> str:
     return _base(dll.ctime, timer)
 
 
@@ -831,7 +846,7 @@ def strftime(
     )
 
 
-def time(timer: TypedCPointer[int]) -> int:
+def time(timer: TypedPtr[int]) -> int:
     return _base(dll.time, timer)
 
 

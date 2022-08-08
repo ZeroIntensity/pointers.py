@@ -78,10 +78,10 @@ class StructPointer(Pointer[A]):
         if existing:
             return ctypes.pointer(existing.struct)
 
-        return self._address
+        return self.ensure()
 
     def __repr__(self) -> str:
-        return f"<pointer to struct at {hex(self.address)}>"
+        return f"<pointer to struct at {str(self)}>"
 
 
 class _BaseCPointer(Pointer[Any], Generic[T]):
@@ -112,7 +112,7 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
         self,
         data: "_BaseCPointer",
     ) -> Tuple[ctypes.pointer, bytes]:
-        bytes_a = (ctypes.c_ubyte * data.size).from_address(data.address)
+        bytes_a = (ctypes.c_ubyte * data.size).from_address(data.ensure())
 
         return self.make_ct_pointer(), bytes(bytes_a)
 
@@ -128,7 +128,7 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
 
     def make_ct_pointer(self):
         return ctypes.cast(
-            self.address,
+            self.ensure(),
             ctypes.POINTER(ctypes.c_char * self.size),
         )
 
@@ -223,16 +223,14 @@ class VoidPointer(_BaseCPointer[int]):
 
     def dereference(self) -> Optional[int]:
         """Dereference the pointer."""
-        deref = ctypes.c_void_p.from_address(self.address)
+        deref = ctypes.c_void_p.from_address(self.ensure())
         return deref.value
 
     def __repr__(self) -> str:
-        return f"<void pointer to {hex(self.address)}>"  # noqa
+        return f"<void pointer to {str(self)}>"  # noqa
 
     def __rich__(self):
-        return (
-            f"<[green]void[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
-        )
+        return f"<[green]void[/green] pointer to [cyan]{str(self)}[/cyan]>"  # noqa
 
     def __del__(self):
         pass
@@ -257,14 +255,14 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
     @property
     def _as_parameter_(self) -> "ctypes.pointer[ctypes._CData]":
         ctype = self.get_mapped(self.type)
-        deref = ctype.from_address(self.address)
+        deref = ctype.from_address(self.ensure())
         return ctypes.pointer(deref)
 
     def dereference(self) -> T:
         """Dereference the pointer."""
         ctype = self.get_mapped(self.type)
         ptr = (
-            ctype.from_address(self.address)
+            ctype.from_address(self.ensure())
             if not self._alt
             else ctype(self.address)  # fmt: off
         )
@@ -278,10 +276,10 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
         super().move(data, unsafe)
 
     def __repr__(self) -> str:
-        return f"<typed c pointer to {hex(self.address)}>"  # noqa
+        return f"<typed c pointer to {str(self)}>"  # noqa
 
     def __rich__(self):
-        return f"<[green]typed c[/green] pointer to [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        return f"<[green]typed c[/green] pointer to [cyan]{str(self)}[/cyan]>"  # noqa
 
     def __del__(self):
         if (self.type is not str) and (self._decref):
@@ -291,7 +289,7 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
-    return TypedCPointer(ptr.address, data_type, ptr.size, decref=False)
+    return TypedCPointer(ptr.ensure(), data_type, ptr.size, decref=False)
 
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:

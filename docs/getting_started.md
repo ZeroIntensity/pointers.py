@@ -57,6 +57,16 @@ int main() {
 }
 ```
 
+## Using `_`
+
+Instead of using `to_ptr`, you can use pointers.py's `_` object to replicate C/C++'s address-of operator:
+
+```py
+from pointers import _
+
+ptr = _&"test"
+```
+
 ## Decaying
 
 While the pointer API is cool, having `to_ptr` everywhere isn't exactly great.

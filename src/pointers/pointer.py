@@ -1,15 +1,20 @@
 import ctypes
-from typing import Generic, TypeVar, Type, Iterator, Union, Any
+from typing import Generic, TypeVar, Type, Iterator, Union, Any, Optional
 from typing_extensions import ParamSpec
 from contextlib import suppress
 import faulthandler
 from io import UnsupportedOperation
 import sys
 from _pointers import add_ref, remove_ref, force_set_attr as _force_set_attr
-from .exceptions import InvalidSizeError
+from .exceptions import InvalidSizeError, NullPointerError
 
 
-__all__ = ("Pointer", "to_ptr", "dereference_address")
+__all__ = (
+    "Pointer",
+    "to_ptr",
+    "dereference_address",
+    "_",
+)
 
 T = TypeVar("T")
 A = TypeVar("A")
@@ -50,14 +55,14 @@ class Pointer(Generic[T]):
         typ: Type[T],
         increment_ref: bool = False,
     ) -> None:
-        self._address = address
+        self._address: Optional[int] = address
         self._type = typ
 
         if increment_ref:
             add_ref(~self)
 
     @property
-    def address(self) -> int:
+    def address(self) -> Optional[int]:
         """Address of the pointer."""
         return self._address
 
@@ -67,19 +72,17 @@ class Pointer(Generic[T]):
         return self._type
 
     def __repr__(self) -> str:
-        return (
-            f"<pointer to {self.type.__name__} object at {hex(self.address)}>"  # noqa
-        )
+        return f"<pointer to {self.type.__name__} object at {str(self)}>"  # noqa
 
     def __rich__(self):
-        return f"<pointer to [green]{self.type.__name__}[/green] object at [cyan]{hex(self.address)}[/cyan]>"  # noqa
+        return f"<pointer to [green]{self.type.__name__}[/green] object at [cyan]{str(self)}[/cyan]>"  # noqa
 
     def __str__(self) -> str:
-        return hex(self.address)
+        return hex(self.address or 0)
 
     def dereference(self) -> T:
         """Dereference the pointer."""
-        return dereference_address(self.address)
+        return dereference_address(self.ensure())
 
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
@@ -89,16 +92,31 @@ class Pointer(Generic[T]):
         """Dereference the pointer."""
         return self.dereference()
 
-    def assign(self, new: "Pointer[T]") -> None:
+    def assign(self, new: Optional["Pointer[T]"]) -> None:
         """Point to a different address."""
+        if not new:
+            self._address = None
+            return
+
         if new.type is not self.type:
             raise ValueError("new pointer must be the same type")
 
         self._address = new.address
 
-    def __rshift__(self, value: Union["Pointer[T]", T]):
+    def __rshift__(self, value: Optional[Union["Pointer[T]", T]]):
         """Point to a different address."""
-        self.assign(value if isinstance(value, Pointer) else to_ptr(value))
+        if not value:
+            self.assign(None)
+            return self
+
+        self.assign(
+            value
+            if isinstance(
+                value,
+                Pointer,
+            )
+            else to_ptr(value),
+        )
         return self
 
     def move(self, data: "Pointer[T]", unsafe: bool = False) -> None:
@@ -117,8 +135,8 @@ class Pointer(Generic[T]):
                 f"target size may not exceed current size ({size_a} < {size_b})",  # noqa
             )
 
-        bytes_a = (ctypes.c_ubyte * size_a).from_address(data.address)
-        bytes_b = (ctypes.c_ubyte * size_b).from_address(self.address)
+        bytes_a = (ctypes.c_ubyte * size_a).from_address(data.ensure())
+        bytes_b = (ctypes.c_ubyte * size_b).from_address(self.ensure())
 
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
@@ -131,7 +149,8 @@ class Pointer(Generic[T]):
         return self
 
     def __del__(self) -> None:
-        remove_ref(~self)
+        if self.address:
+            remove_ref(~self)
 
     def __eq__(self, data: object) -> bool:
         if not isinstance(data, Pointer):
@@ -146,8 +165,27 @@ class Pointer(Generic[T]):
 
         force_set_attr(v, key, value)
 
+    def ensure(self) -> int:
+        """Ensure that the pointer is not null."""
+        if not self._address:
+            raise NullPointerError(
+                "cannot perform operation when pointing to None",
+            )
+        return self._address
+
 
 def to_ptr(val: T) -> Pointer[T]:
     """Convert a value to a pointer."""
     add_ref(val)
     return Pointer(id(val), type(val))
+
+
+class _PointerOperatorMagic:
+    def __and__(self, obj: T) -> Pointer[T]:
+        return to_ptr(obj)
+
+    def __mul__(self, ptr: Pointer[T]) -> T:
+        return ~ptr
+
+
+_ = _PointerOperatorMagic()

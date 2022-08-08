@@ -7,7 +7,8 @@ __all__ = (
     "FreedMemoryError",
     "InvalidSizeError",
     "InvalidBindingParameter",
-)  # noqa
+    "NullPointerError",
+)
 
 
 class IsMallocPointerError(Exception):
@@ -54,5 +55,11 @@ class InvalidSizeError(Exception):
 
 class InvalidBindingParameter(Exception):
     """Raised when an invalid type is passed to the"""
+
+    pass
+
+
+class NullPointerError(Exception):
+    """Raised when a pointer is null."""
 
     pass

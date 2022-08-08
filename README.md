@@ -10,10 +10,10 @@ Why would you ever need this
 -   [Repository](https://github.com/ZeroIntensity/pointers.py)
 -   [PyPI](https://pypi.org/project/pointers.py)
 
-### Example
+### Examples
 
 ```py
-from pointers import to_ptr, Pointer, decay
+from pointers import Pointer, decay
 
 a: str = '123'
 b: str = 'abc'
@@ -26,12 +26,17 @@ move(a, b)
 print(a, b) # abc abc
 ```
 
-#### Example with bindings
+```py
+from pointers import _
+
+ptr = _&"hello world" # creates a new pointer object
+assert _*ptr == "hello world"
+```
 
 ```py
 from pointers import fopen, fprintf, fclose
 
-file = fopen("/dev/null", "w")
+file = fopen("/dev/null", "w") # assigns file to the c FILE* type
 fprintf(file, "hello world")
 fclose(file)
 ```

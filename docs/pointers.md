@@ -28,7 +28,7 @@ def test(ptr: Pointer[str])
     print(~ptr) # much shorter and easier to type
 ```
 
-Finally, you can use the `*` operator, like in low level languages:
+You can also use the `*` operator, like in low level languages:
 
 ```py
 from pointers import Pointer, decay
@@ -68,6 +68,17 @@ def test(ptr: Pointer[list])
     some_func(**ptr) # this is treated as a kwarg splat, raises a typeerror
 
 test([1, 2, 3])
+```
+
+## Using `_`
+
+Like with the address-of operator, you can use `_` for dereferencing as well:
+
+```py
+from pointers import _
+
+ptr = _&"hello world"
+print(_*ptr)
 ```
 
 ### Dereference Errors
@@ -159,7 +170,20 @@ int main() {
 }
 ```
 
+## Null Pointers
+
+To create a null pointer, simply assign an existing pointer to `None`:
+
+```py
+from pointers import to_ptr
+
+a = to_ptr("a")
+a >>= None
+print(~a)  # NullPointerError
+```
+
 ## Setting Attributes
+
 If you would like to force setting an attribute on the targets type (or itself if you are pointing to a type), you can use `Pointer.set_attr`:
 
 ```py

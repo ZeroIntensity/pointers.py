@@ -1,4 +1,4 @@
-from .pointer import Pointer, to_ptr, dereference_address, force_set_attr
+from .pointer import Pointer, to_ptr, dereference_address, force_set_attr, _
 from .malloc import (
     malloc,
     IsMallocPointerError,
