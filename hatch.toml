@@ -1,0 +1,20 @@
+[version]
+path = "src/pointers/version.py"
+
+[envs.default]
+dependencies = [
+  "pytest",
+]
+[envs.default.scripts]
+tests = "pytest"
+
+[envs.docs]
+dependencies = [
+  "mkdocs",
+]
+[envs.docs.scripts]
+build = "mkdocs build --clean"
+serve = "mkdocs serve --dev-addr localhost:8000"
+
+[[envs.test.matrix]]
+python = ["37", "38", "39", "310"]

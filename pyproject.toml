@@ -1,3 +1,31 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pointers.py"
+description = 'Bringing the hell of pointers to Python.'
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = ["python", "pointers"]
+authors = [
+    { name = "ZeroIntensity", email = "zintensitydev@gmail.com" },
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [
+    "typing_extensions",
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://pointers.zintensity.dev"
+Issues = "https://github.com/ZeroIntensity/pointers.py/issues"
+Source = "https://github.com/ZeroIntensity/pointers.py"

@@ -9,3 +9,4 @@ site/
 test.py
 .vscode/
 vgcore.*
+.venv/
