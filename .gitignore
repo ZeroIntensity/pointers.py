@@ -10,3 +10,4 @@ test.py
 .vscode/
 vgcore.*
 .venv/
+_pointers.cpython*
