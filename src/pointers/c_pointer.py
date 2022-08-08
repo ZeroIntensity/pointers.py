@@ -208,7 +208,7 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
 
         return res
 
-    def __lshift__(self, data: T):
+    def __lshift__(self, data: T):  # type: ignore
         """Move data from another pointer to this pointer."""  # noqa
         self.move(data if isinstance(data, _BaseCPointer) else to_c_ptr(data))
         return self
