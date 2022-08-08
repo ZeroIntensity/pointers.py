@@ -1,14 +1,9 @@
-from pointers import (
-    malloc,
-    free,
-    MallocPointer,
-    IsMallocPointerError,
-    realloc,
-    FreedMemoryError,
-    InvalidSizeError,
-    DereferenceError,
-)
 import pytest
+
+from pointers import (
+    DereferenceError, FreedMemoryError, InvalidSizeError, IsMallocPointerError,
+    MallocPointer, free, malloc, realloc
+)
 
 
 def test_malloc_pointer():

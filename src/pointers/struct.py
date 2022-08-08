@@ -1,8 +1,9 @@
 import ctypes
-from typing import get_type_hints, Any
 from abc import ABC
-from .c_pointer import TypedCPointer, attempt_decode
 from contextlib import suppress
+from typing import Any, get_type_hints
+
+from .c_pointer import TypedCPointer, attempt_decode
 
 
 class Struct(ABC):

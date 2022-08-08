@@ -1,7 +1,9 @@
-from .pointer import Pointer
-from typing import TypeVar, NoReturn, Any, Optional
-from .exceptions import IsFrozenError
+from typing import Any, NoReturn, Optional, TypeVar
+
 from _pointers import add_ref
+
+from .exceptions import IsFrozenError
+from .pointer import Pointer
 
 __all__ = ("FrozenPointer", "to_const_ptr")
 

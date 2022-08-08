@@ -1,5 +1,6 @@
-from pointers import calloc, NotEnoughChunks, free, FreedMemoryError
 import pytest
+
+from pointers import FreedMemoryError, NotEnoughChunks, calloc, free
 
 
 def test_calloc():

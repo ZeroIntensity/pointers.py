@@ -1,13 +1,6 @@
 from pointers import (
-    to_c_ptr,
-    StructPointer,
-    localeconv,
-    div,
-    strlen,
-    c_malloc,
-    c_free,
-    sprintf,
-    cast
+    StructPointer, c_free, c_malloc, cast, div, localeconv, sprintf, strlen,
+    to_c_ptr
 )
 from pointers._cstd import DivT
 

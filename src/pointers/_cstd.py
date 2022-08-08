@@ -1,7 +1,8 @@
 import ctypes
 from platform import system
-from .struct import Struct
 from typing import Dict, Type
+
+from .struct import Struct
 
 platforms = {
     "linux": "libc.so.6",

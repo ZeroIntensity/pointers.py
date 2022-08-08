@@ -1,5 +1,6 @@
-from pointers import binds, Struct, StructPointer
 import ctypes
+
+from pointers import Struct, StructPointer, binds
 
 dll = ctypes.CDLL("libc.so.6")
 

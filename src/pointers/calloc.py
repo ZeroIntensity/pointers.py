@@ -1,10 +1,8 @@
-from .exceptions import (
-    AllocationError,
-    NotEnoughChunks,
-)
-from .malloc import MallocPointer
+from typing import Dict, Generic, Iterator, Optional, TypeVar
+
 from ._cstd import c_calloc
-from typing import Iterator, Optional, Dict, TypeVar, Generic
+from .exceptions import AllocationError, NotEnoughChunks
+from .malloc import MallocPointer
 
 __all__ = ("CallocPointer", "calloc")
 

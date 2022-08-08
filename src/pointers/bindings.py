@@ -1,35 +1,17 @@
-from ._cstd import (
-    dll,
-    DivT,
-    Tm,
-    LDivT,
-    Lconv,
-    STRUCT_MAP,
-    c_raise as ct_raise,
-    c_malloc as _malloc,
-    c_calloc as _calloc,
-    c_realloc as _realloc,
-    c_free as _free,
-)
-from typing import (
-    Any,
-    Union,
-    TypeVar,
-    Optional,
-    TYPE_CHECKING,
-    Dict,
-    Type,
-    Iterator,
-    Tuple,
-)
-from .c_pointer import (
-    VoidPointer,
-    TypedCPointer,
-    StructPointer,
-    _BaseCPointer,
-)
 import ctypes
+from typing import (
+    TYPE_CHECKING, Any, Dict, Iterator, Optional, Tuple, Type, TypeVar, Union
+)
+
 from . import _cstd
+from ._cstd import STRUCT_MAP, DivT, Lconv, LDivT, Tm
+from ._cstd import c_calloc as _calloc
+from ._cstd import c_free as _free
+from ._cstd import c_malloc as _malloc
+from ._cstd import c_raise as ct_raise
+from ._cstd import c_realloc as _realloc
+from ._cstd import dll
+from .c_pointer import StructPointer, TypedCPointer, VoidPointer, _BaseCPointer
 from .exceptions import InvalidBindingParameter
 from .pointer import Pointer
 

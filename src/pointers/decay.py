@@ -1,10 +1,12 @@
 import inspect
-from functools import wraps
-from typing import get_type_hints, Callable, TypeVar
-from typing_extensions import ParamSpec
 from contextlib import suppress
-from .pointer import to_ptr, Pointer
-from .frozen_pointer import to_const_ptr, FrozenPointer
+from functools import wraps
+from typing import Callable, TypeVar, get_type_hints
+
+from typing_extensions import ParamSpec
+
+from .frozen_pointer import FrozenPointer, to_const_ptr
+from .pointer import Pointer, to_ptr
 
 T = TypeVar("T")
 P = ParamSpec("P")

@@ -1,15 +1,13 @@
 import ctypes
 import sys
-from .pointer import Pointer
+from typing import Generic, NoReturn, Tuple, TypeVar
+
 from ._cstd import c_free, c_malloc, c_realloc
-from typing import TypeVar, Generic, NoReturn, Tuple
-from .exceptions import (
-    IsMallocPointerError,
-    FreedMemoryError,
-    DereferenceError,
-    AllocationError,
-)
 from .c_pointer import _move
+from .exceptions import (
+    AllocationError, DereferenceError, FreedMemoryError, IsMallocPointerError
+)
+from .pointer import Pointer
 
 __all__ = ("MallocPointer", "malloc", "free", "realloc")
 

@@ -1,13 +1,16 @@
 import ctypes
-from typing import Generic, TypeVar, Type, Iterator, Union, Any, Optional
-from typing_extensions import ParamSpec
-from contextlib import suppress
 import faulthandler
-from io import UnsupportedOperation
 import sys
-from _pointers import add_ref, remove_ref, force_set_attr as _force_set_attr
-from .exceptions import InvalidSizeError, NullPointerError
+from contextlib import suppress
+from io import UnsupportedOperation
+from typing import Any, Generic, Iterator, Optional, Type, TypeVar, Union
 
+from _pointers import add_ref
+from _pointers import force_set_attr as _force_set_attr
+from _pointers import remove_ref
+from typing_extensions import ParamSpec
+
+from .exceptions import InvalidSizeError, NullPointerError
 
 __all__ = (
     "Pointer",

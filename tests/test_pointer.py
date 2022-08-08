@@ -1,12 +1,10 @@
-from pointers import (
-    to_ptr,
-    Pointer,
-    FrozenPointer,
-    to_const_ptr,
-    IsFrozenError,
-)
-import pytest
 from sys import getrefcount
+
+import pytest
+
+from pointers import (
+    FrozenPointer, IsFrozenError, Pointer, to_const_ptr, to_ptr
+)
 
 
 class SomeObj:

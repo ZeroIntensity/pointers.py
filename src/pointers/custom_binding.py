@@ -1,11 +1,14 @@
-from typing import Callable, TypeVar, TYPE_CHECKING, Optional, Type, Any
-from typing_extensions import ParamSpec
-from functools import wraps
-from .bindings import _base, _make_char_pointer
 import ctypes
+from functools import wraps
+from typing import TYPE_CHECKING, Any, Callable, Optional, Type, TypeVar
+
+from typing_extensions import ParamSpec
+
+from .bindings import _base, _make_char_pointer
 
 if TYPE_CHECKING:
     from ctypes import _NamedFuncPointer
+
     from .struct import Struct
 
 T = TypeVar("T")

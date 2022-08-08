@@ -1,4 +1,4 @@
-from pointers import decay, Pointer, FrozenPointer
+from pointers import FrozenPointer, Pointer, decay
 
 
 def test_decay():

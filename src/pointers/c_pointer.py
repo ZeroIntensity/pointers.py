@@ -1,19 +1,13 @@
-from .pointer import Pointer
 import ctypes
 from typing import (
-    Optional,
-    Any,
-    Dict,
-    Type,
-    TypeVar,
-    Generic,
-    TYPE_CHECKING,
-    Union,
-    Tuple,
-    Iterator,
+    TYPE_CHECKING, Any, Dict, Generic, Iterator, Optional, Tuple, Type,
+    TypeVar, Union
 )
-from .exceptions import InvalidSizeError
+
 from _pointers import add_ref, remove_ref
+
+from .exceptions import InvalidSizeError
+from .pointer import Pointer
 
 if TYPE_CHECKING:
     from .struct import Struct

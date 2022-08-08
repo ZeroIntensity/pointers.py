@@ -1,4 +1,4 @@
-from pointers import to_ptr, Pointer, decay
+from pointers import Pointer, decay
 
 a: str = "123"
 b: str = "abc"
