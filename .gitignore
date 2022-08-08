@@ -8,3 +8,4 @@ site/
 .pytest_cache/
 test.py
 .vscode/
+vgcore.*

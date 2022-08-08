@@ -254,10 +254,9 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
 
 def _make_format(*args: Format) -> Iterator[Format]:
     for i in args:
-        for x in {VoidPointer, str, bytes}:
-            if isinstance(i, x):
-                yield _make_char_pointer(i)  # type: ignore
-                continue
+        if isinstance(i, (VoidPointer, str, bytes)):
+            yield _make_char_pointer(i)  # type: ignore
+            continue
 
         yield i
 
@@ -466,7 +465,7 @@ def sprintf(string: StringLike, fmt: StringLike, *args: Format) -> int:
         dll.sprintf,
         _make_char_pointer(string),
         _make_char_pointer(fmt),
-        *args,
+        *_make_format(*args),
     )
 
 
@@ -475,7 +474,7 @@ def fscanf(stream: PointerLike, fmt: StringLike, *args: Format) -> int:
         dll.fscanf,
         stream,
         _make_char_pointer(fmt),
-        *args,
+        *_make_format(*args),
     )
 
 
@@ -488,7 +487,7 @@ def sscanf(string: StringLike, fmt: StringLike, *args: Format) -> int:
         dll.sscanf,
         _make_char_pointer(string),
         _make_char_pointer(fmt),
-        *args,
+        *_make_format(*args),
     )
 
 

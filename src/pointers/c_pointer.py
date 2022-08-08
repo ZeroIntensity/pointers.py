@@ -116,8 +116,8 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
 
         return self.make_ct_pointer(), bytes(bytes_a)
 
-    def move(self, data: Pointer[Any], unsafe: bool = False) -> None:
-        """Move data to the allocated memory."""
+    def move(self, data: Pointer[T], unsafe: bool = False) -> None:
+        """Move C data to the target memory."""
         if not isinstance(data, _BaseCPointer):
             raise ValueError(
                 f'"{type(data).__name__}" object is not a valid C pointer',
@@ -208,7 +208,7 @@ class _BaseCPointer(Pointer[Any], Generic[T]):
 
         return res
 
-    def __lshift__(self, data: Any):
+    def __lshift__(self, data: T):
         """Move data from another pointer to this pointer."""  # noqa
         self.move(data if isinstance(data, _BaseCPointer) else to_c_ptr(data))
         return self
@@ -218,8 +218,8 @@ class VoidPointer(_BaseCPointer[int]):
     """Class representing a void pointer to a C object."""
 
     @property
-    def _as_parameter_(self) -> int:
-        return self.address
+    def _as_parameter_(self) -> ctypes.c_void_p:
+        return ctypes.c_void_p(self.address)
 
     def dereference(self) -> Optional[int]:
         """Dereference the pointer."""
