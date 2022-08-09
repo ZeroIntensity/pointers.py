@@ -18,3 +18,6 @@ serve = "mkdocs serve --dev-addr localhost:8000"
 
 [[envs.test.matrix]]
 python = ["37", "38", "39", "310"]
+
+[build.targets.wheel]
+packages = ["src/pointers", "_pointers"]
