@@ -70,11 +70,3 @@ python3 -m pip install -U pointers.py
 ```
 py -3 -m pip install -U pointers.py
 ```
-
-### Running Documentation
-
-```
-$ git clone https://github.com/ZeroIntensity/pointers.py && cd pointers.py
-$ pip install -U mkdocs
-$ mkdocs serve
-```

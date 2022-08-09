@@ -40,7 +40,7 @@ b = to_ptr("abcdefg")
 a.move(b) # InvalidSizeError
 ```
 
-This can be bypassed by passing `unsafe = True` to `move`:
+This can be bypassed by passing `unsafe=True` to `move`:
 
 ```py
 a = to_ptr("test")
@@ -98,7 +98,7 @@ print(~ptr)
 
 ## Consequences
 
-After you are finished crying from accidentally overwriting your newborn child using this library, what actually happens when we break something with overwriting?
+What actually happens when we break something with overwriting?
 
 Lets use the following code as an example:
 
