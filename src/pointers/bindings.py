@@ -16,9 +16,11 @@ from ._cstd import c_malloc as _malloc
 from ._cstd import c_raise as ct_raise
 from ._cstd import c_realloc as _realloc
 from ._cstd import dll
-from .c_pointer import StructPointer, TypedCPointer, VoidPointer, _BaseCPointer
+from ._pointer import BaseCPointer, BasePointer
+from .c_pointer import TypedCPointer, VoidPointer
+from .c_utils import get_mapped, get_py
 from .exceptions import InvalidBindingParameter
-from .pointer import Pointer
+from .struct import StructPointer
 
 if TYPE_CHECKING:
     from .struct import Struct
@@ -239,14 +241,14 @@ def _process_args(
             typ,
             PyCFuncPtrType,
         )
-        n_type = VoidPointer.get_py(typ) if not is_c_func else FunctionType
+        n_type = get_py(typ) if not is_c_func else FunctionType
 
         is_type: bool = isinstance(value, type)
 
         if not (isinstance if not is_type else issubclass)(value, n_type):
             v_type = type(value) if not is_type else value
 
-            if (n_type is Pointer) and (value is None):
+            if (n_type is BasePointer) and (value is None):
                 continue
 
             if (n_type is FunctionType) and is_c_func:
@@ -263,7 +265,7 @@ def _process_args(
                 continue
 
             if ((v_type is ctypes.c_char_p) and (n_type is bytes)) or (
-                issubclass(v_type, _BaseCPointer) and (typ is ctypes.c_void_p)
+                issubclass(v_type, BaseCPointer) and (typ is ctypes.c_void_p)
             ):
                 continue
 
@@ -359,7 +361,7 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
 
     if isinstance(data, VoidPointer) or isinstance(data, TypedCPointer):
         # mypy is forcing me to call this twice
-        if is_typed_ptr and (data.type is not bytes):
+        if is_typed_ptr and (data.type is not bytes):  # type: ignore
             raise InvalidBindingParameter(
                 f"{data} does not point to bytes",
             )
@@ -1025,4 +1027,4 @@ def sizeof(obj: Any) -> int:
     try:
         return ctypes.sizeof(obj)
     except TypeError:
-        return ctypes.sizeof(VoidPointer.get_mapped(obj))
+        return ctypes.sizeof(get_mapped(obj))

@@ -5,8 +5,7 @@ from typing import Callable, TypeVar, get_type_hints
 
 from typing_extensions import ParamSpec
 
-from .frozen_pointer import FrozenPointer, to_const_ptr
-from .pointer import Pointer, to_ptr
+from .object_pointer import Pointer, to_ptr
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -36,14 +35,10 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
             if hasattr(value, "__origin__"):
                 origin = value.__origin__
 
-                if origin not in {Pointer, FrozenPointer}:
+                if origin is not Pointer:
                     continue
 
-                actual[key] = (
-                    to_ptr(actual[key])
-                    if origin is Pointer
-                    else to_const_ptr(actual[key])
-                )
+                actual[key] = to_ptr(actual[key])
 
         return func(**actual)  # type: ignore
 

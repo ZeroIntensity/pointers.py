@@ -54,7 +54,7 @@ class InvalidSizeError(Exception):
 
 
 class InvalidBindingParameter(Exception):
-    """Raised when an invalid type is passed to the"""
+    """Raised when an invalid type is passed to a binding."""
 
     pass
 
