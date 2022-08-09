@@ -11,3 +11,5 @@ test.py
 vgcore.*
 .venv/
 _pointers.cpython*
+*.egg-info/
+wheelhouse/

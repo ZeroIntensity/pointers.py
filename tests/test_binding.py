@@ -4,7 +4,6 @@ from pointers import (
 )
 from pointers._cstd import DivT
 
-# pytest breaks c pointers for whatever reason
 
 def test_bindings():
     assert type(localeconv()) is StructPointer
@@ -16,10 +15,12 @@ def test_bindings():
     assert r == 4
     assert type(r) is int
 
+
 def test_to_c_ptr():
-    a = to_c_ptr('test')
+    a = to_c_ptr("test")
     assert a.type is str
-    assert ~a == 'test'
+    assert ~a == "test"
+
 
 def test_strings():
     mem = c_malloc(2)
