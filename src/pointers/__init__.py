@@ -1,6 +1,7 @@
 from .bindings import *
 from .c_pointer import (
-    StructPointer, TypedCPointer, VoidPointer, cast, to_c_ptr, to_struct_ptr
+    StructPointer, TypedCPointer, VoidPointer, array, cast, to_c_ptr,
+    to_struct_ptr
 )
 from .calloc import CallocPointer, calloc
 from .custom_binding import binding, binds

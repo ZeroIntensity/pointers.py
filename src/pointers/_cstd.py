@@ -288,7 +288,6 @@ dll.fprintf.restype = ctypes.c_int
 # int printf(const char* format, ...)
 dll.printf.restype = ctypes.c_int
 # int sprintf(char* str, const char* format, ...)
-dll.sprintf.argtypes = (ctypes.c_char_p, ctypes.c_char_p)
 dll.sprintf.restype = ctypes.c_int
 # int vfprintf(FILE* stream, const char* format, va_list arg)
 # int vprintf(const char* format, va_list arg)
@@ -548,6 +547,45 @@ dll.strftime.restype = ctypes.c_size_t
 # time_t time(time_t* timer)
 dll.time.argtypes = (ctypes.POINTER(ctypes.c_int),)
 dll.time.restype = ctypes.c_int
+# void (*signal(int sig, void (*func)(int)))(int)
+dll.signal.argtypes = (ctypes.c_int, ctypes.CFUNCTYPE(None, ctypes.c_int))
+dll.signal.restype = None
+# void qsort(
+#   void *base,
+#   size_t nitems,
+#   size_t size,
+#   int (*compar)(const void *, const void*)
+# )
+dll.qsort.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_size_t,
+    ctypes.c_size_t,
+    ctypes.CFUNCTYPE(
+        ctypes.c_int,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+    ),
+)
+dll.qsort.restype = None
+# void *bsearch(
+#     const void *key,
+#     const void *base,
+#     size_t nitems,
+#     size_t size,
+#     int (*compar)(const void *, const void *)
+# )
+dll.bsearch.argtypes = (
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_size_t,
+    ctypes.c_size_t,
+    ctypes.CFUNCTYPE(
+        ctypes.c_int,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+    ),
+)
+dll.bsearch.restype = ctypes.c_void_p
 
 c_malloc = dll.malloc
 c_free = dll.free

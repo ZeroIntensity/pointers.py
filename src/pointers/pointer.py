@@ -61,7 +61,7 @@ class Pointer(Generic[T]):
         self._address: Optional[int] = address
         self._type = typ
 
-        if increment_ref:
+        if increment_ref and address:
             add_ref(~self)
 
     @property

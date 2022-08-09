@@ -1,7 +1,12 @@
 import ctypes
+import inspect
+from types import FunctionType
 from typing import (
-    TYPE_CHECKING, Any, Dict, Iterator, Optional, Tuple, Type, TypeVar, Union
+    TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optional, Sequence,
+    Type, TypeVar, Union
 )
+
+from _pointers import add_ref
 
 from . import _cstd
 from ._cstd import STRUCT_MAP, DivT, Lconv, LDivT, Tm
@@ -19,10 +24,12 @@ if TYPE_CHECKING:
     from .struct import Struct
 
 T = TypeVar("T")
+
 PointerLike = Union[TypedCPointer[Any], VoidPointer, None]
 StringLike = Union[str, bytes, VoidPointer, TypedCPointer[bytes]]
 Format = Union[StringLike, PointerLike]
 TypedPtr = Optional[TypedCPointer[T]]
+PyCFuncPtrType = type(ctypes.CFUNCTYPE(None))
 
 __all__ = (
     "isalnum",
@@ -134,6 +141,14 @@ __all__ = (
     "c_realloc",
     "c_free",
     "gmtime",
+    "signal",
+    "qsort",
+    "bsearch",
+    "sizeof",
+    "PointerLike",
+    "StringLike",
+    "Format",
+    "TypedPtr",
 )
 
 
@@ -145,10 +160,29 @@ def _not_null(data: Optional[T]) -> T:
 StructMap = Dict[Type[ctypes.Structure], Type["Struct"]]
 
 
-def _decode_response(
+class _CFuncTransport:
+    def __init__(
+        self,
+        c_func: "ctypes._FuncPointer",
+        py_func: Callable,
+    ) -> None:
+        add_ref(c_func)
+        self._c_func = c_func
+        self._py_func = py_func
+
+    @property
+    def c_func(self) -> "ctypes._FuncPointer":
+        return self._c_func
+
+    @property
+    def py_func(self) -> Callable:
+        return self._py_func
+
+
+def _decode_type(
     res: Any,
     struct_map: StructMap,
-    fn: "ctypes._NamedFuncPointer",
+    current: Optional[Type["ctypes._CData"]],
 ) -> Any:
     res_typ = type(res)
 
@@ -164,7 +198,7 @@ def _decode_response(
             else StructPointer(id(struct), type(_not_null(struct)), struct)
         )
     # type safety gets mad if i dont use elif here
-    elif fn.restype is ctypes.c_void_p:
+    elif current is ctypes.c_void_p:
         res = VoidPointer(res, ctypes.sizeof(ctypes.c_void_p(res)))
 
     elif issubclass(res_typ, ctypes.Structure):
@@ -175,20 +209,47 @@ def _decode_response(
     return res
 
 
-def _validate_args(
-    args: Tuple[Any, ...],
+def _decode_response(
+    res: Any,
+    struct_map: StructMap,
     fn: "ctypes._NamedFuncPointer",
+) -> Any:
+    return _decode_type(res, struct_map, fn.restype)  # type: ignore
+
+
+def _process_args(
+    args: Iterable[Any],
+    argtypes: Sequence[Type["ctypes._CData"]],
+    name: str,
 ) -> None:
-    if not fn.argtypes:
-        return
+    for index, (value, typ) in enumerate(zip(args, argtypes)):
+        if value is inspect._empty:
+            continue
 
-    for index, (value, typ) in enumerate(zip(args, fn.argtypes)):
-        n_type = VoidPointer.get_py(typ)
+        if isinstance(value, _CFuncTransport):
+            py_func = value.py_func
+            sig = inspect.signature(py_func)
+            _process_args(
+                [param.annotation for param in sig.parameters.values()],
+                value.c_func._argtypes_,  # type: ignore
+                py_func.__name__,
+            )
+            continue
+        is_c_func: bool = isinstance(
+            typ,
+            PyCFuncPtrType,
+        )
+        n_type = VoidPointer.get_py(typ) if not is_c_func else FunctionType
 
-        if not isinstance(value, n_type):
-            v_type = type(value)
+        is_type: bool = isinstance(value, type)
+
+        if not (isinstance if not is_type else issubclass)(value, n_type):
+            v_type = type(value) if not is_type else value
 
             if (n_type is Pointer) and (value is None):
+                continue
+
+            if (n_type is FunctionType) and is_c_func:
                 continue
 
             if (
@@ -207,8 +268,37 @@ def _validate_args(
                 continue
 
             raise InvalidBindingParameter(
-                f"argument {index + 1} got invalid type: expected {n_type.__name__}, got {v_type.__name__}"  # noqa
+                f"argument {index + 1} of {name} got invalid type: expected {n_type.__name__}, got {v_type.__name__}"  # noqa
             )
+
+
+def _validate_args(
+    args: Iterable[Any],
+    fn: "ctypes._NamedFuncPointer",
+) -> None:
+    if not fn.argtypes:
+        return
+
+    _process_args(args, fn.argtypes, fn.__name__)
+
+
+def _solve_func(
+    fn: Callable,
+    ct_fn: "ctypes._FuncPointer",
+    struct_map: StructMap,
+) -> _CFuncTransport:
+    at = ct_fn._argtypes_  # type: ignore
+
+    @ctypes.CFUNCTYPE(ct_fn._restype_, *at)  # type: ignore
+    def wrapper(*args):
+        callback_args = []
+
+        for value, ctype in zip(args, at):
+            callback_args.append(_decode_type(value, struct_map, ctype))
+
+        return fn(*callback_args)
+
+    return _CFuncTransport(wrapper, fn)
 
 
 def _base(
@@ -216,12 +306,42 @@ def _base(
     *args,
     map_extra: Optional[StructMap] = None,
 ) -> Any:
-    _validate_args(args, fn)
-    res = fn(*args)
+    smap = {**STRUCT_MAP, **(map_extra or {})}
+
+    validator_args = [
+        arg
+        if ((not callable(arg)) and (not isinstance(arg, PyCFuncPtrType)))
+        else _solve_func(
+            arg,
+            typ,  # type: ignore
+            smap,
+        )
+        for arg, typ in zip(
+            args,
+            fn.argtypes or [None for _ in args],  # type: ignore
+        )
+    ]
+
+    _validate_args(
+        validator_args,
+        fn,
+    )
+
+    res = fn(
+        *[
+            i
+            if not isinstance(
+                i,
+                _CFuncTransport,
+            )
+            else i.c_func
+            for i in validator_args
+        ]
+    )
 
     return _decode_response(
         res,
-        {**STRUCT_MAP, **(map_extra or {})},
+        smap,
         fn,
     )
 
@@ -246,7 +366,11 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
 
         return ctypes.c_char_p(data.address)
 
-    return data.encode()
+    if isinstance(data, str):
+        return data.encode()
+
+    assert isinstance(data, ctypes.c_char_p), f"{data} is not a char*"
+    return data
 
 
 def _make_format(*args: Format) -> Iterator[Format]:
@@ -866,3 +990,39 @@ def c_free(ptr: PointerLike) -> None:
 
 def gmtime(timer: PointerLike) -> StructPointer[Tm]:
     return _base(dll.gmtime, timer)
+
+
+def signal(signum: int, func: Callable[[int, None], int]) -> None:
+    return _base(dll.signal, signum, func)
+
+
+def qsort(
+    base: PointerLike,
+    nitem: int,
+    size: int,
+    compar: Callable[
+        [Any, Any],
+        int,
+    ],
+) -> None:
+    return _base(dll.qsort, base, nitem, size, compar)
+
+
+def bsearch(
+    key: PointerLike,
+    base: PointerLike,
+    nitems: int,
+    size: int,
+    compar: Callable[
+        [Any, Any],
+        int,
+    ],
+) -> VoidPointer:
+    return _base(dll.bsearch, key, base, nitems, size, compar)
+
+
+def sizeof(obj: Any) -> int:
+    try:
+        return ctypes.sizeof(obj)
+    except TypeError:
+        return ctypes.sizeof(VoidPointer.get_mapped(obj))

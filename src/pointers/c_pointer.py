@@ -1,6 +1,6 @@
 import ctypes
 from typing import (
-    TYPE_CHECKING, Any, Dict, Generic, Iterator, Optional, Tuple, Type,
+    TYPE_CHECKING, Any, Dict, Generic, Iterator, List, Optional, Tuple, Type,
     TypeVar, Union
 )
 
@@ -23,6 +23,7 @@ __all__ = (
     "to_c_ptr",
     "attempt_decode",
     "to_struct_ptr",
+    "array",
 )
 
 
@@ -230,7 +231,7 @@ class VoidPointer(_BaseCPointer[int]):
         pass
 
 
-class TypedCPointer(_BaseCPointer[T], Generic[T]):
+class _TypedPointer(_BaseCPointer[Any], Generic[T]):
     """Class representing a pointer with a known type."""
 
     def __init__(
@@ -238,29 +239,13 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
         address: int,
         data_type: Type[T],
         size: int,
-        alternate_method: bool = True,
+        void_p: bool = True,
         decref: bool = True,
     ):
-        self._alt = alternate_method
+        self._void_p = void_p
         super().__init__(address, size)
         self._type = data_type
         self._decref = decref
-
-    @property
-    def _as_parameter_(self) -> "ctypes.pointer[ctypes._CData]":
-        ctype = self.get_mapped(self.type)
-        deref = ctype.from_address(self.ensure())
-        return ctypes.pointer(deref)
-
-    def dereference(self) -> T:
-        """Dereference the pointer."""
-        ctype = self.get_mapped(self.type)
-        ptr = (
-            ctype.from_address(self.ensure())
-            if not self._alt
-            else ctype(self.address)  # fmt: off
-        )
-        return ptr.value  # type: ignore
 
     def move(self, data: Pointer, unsafe: bool = False) -> None:
         """Move data to the target C object."""
@@ -281,9 +266,95 @@ class TypedCPointer(_BaseCPointer[T], Generic[T]):
             remove_ref(~self)
 
 
+class TypedCPointer(_TypedPointer[T]):
+    """Class representing a pointer with a known type."""
+
+    @property
+    def _as_parameter_(self) -> "ctypes.pointer[ctypes._CData]":
+        ctype = self.get_mapped(self.type)
+        deref = ctype.from_address(self.ensure())
+        return ctypes.pointer(deref)
+
+    def dereference(self) -> T:
+        """Dereference the pointer."""
+        ctype = self.get_mapped(self.type)
+
+        if ctype is ctypes.c_char_p:
+            return ctypes.c_char_p(self.ensure()).value  # type: ignore
+
+        ptr = (
+            ctype.from_address(self.ensure())
+            if not self._void_p
+            else ctypes.cast(
+                ctypes.c_void_p(self.address), ctypes.POINTER(ctype)
+            )  # fmt: off
+        )
+        return ptr.value if not self._void_p else ptr.contents.value  # type: ignore # noqa
+
+    def __iter__(self) -> Iterator[T]:
+        """Dereference the pointer."""
+        return iter({self.dereference()})
+
+    def __invert__(self) -> T:
+        """Dereference the pointer."""
+        return self.dereference()
+
+
+class CArrayPointer(_TypedPointer[T], Generic[T]):
+    """Class representing a pointer with a known type."""
+
+    def __init__(
+        self,
+        address: int,
+        data_type: Type[T],
+        length: int,
+        size: int,
+        void_p: bool = False,
+        decref: bool = True,
+    ):
+        self._length = length
+        super().__init__(address, data_type, size, void_p, decref)
+
+    @property
+    def _as_parameter_(self) -> "ctypes.Array[ctypes._CData]":
+        ctype = self.get_mapped(self.type)
+
+        deref = (ctype * self._length).from_address(self.ensure())
+        return deref
+
+    def dereference(self) -> List[T]:
+        """Dereference the pointer."""
+        array = self._as_parameter_
+        return [array[i] for i in range(self._length)]  # type: ignore
+
+    def __repr__(self) -> str:
+        return f"<c array pointer to {str(self)}>"  # noqa
+
+    def __rich__(self):
+        return f"<[green]typed c[/green] pointer to [cyan]{str(self)}[/cyan]>"  # noqa
+
+    def __getitem__(self, index: int) -> T:
+        array = ~self
+        return array[index]
+
+    def __iter__(self) -> Iterator[List[T]]:
+        """Dereference the pointer."""
+        return iter({self.dereference()})
+
+    def __invert__(self) -> List[T]:
+        """Dereference the pointer."""
+        return self.dereference()
+
+
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
-    return TypedCPointer(ptr.ensure(), data_type, ptr.size, decref=False)
+    return TypedCPointer(
+        ptr.ensure(),
+        data_type,
+        ptr.size,
+        decref=False,
+        void_p=True,
+    )
 
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:
@@ -302,3 +373,25 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
 def to_struct_ptr(struct: A) -> StructPointer[A]:
     """Convert a struct to a pointer."""
     return StructPointer(id(struct), type(struct))
+
+
+def array(*seq: T) -> CArrayPointer[List[T]]:
+    f_type = type(seq[0])
+
+    for i in seq:
+        if type(i) is not f_type:  # dont use isinstance here
+            raise ValueError(
+                "all values in the array must be the same type",
+            )
+
+    length = len(seq)
+    ctype = _BaseCPointer.get_mapped(f_type)
+    arr = (ctype * length)(*seq)
+    add_ref(arr)
+
+    return CArrayPointer(  # type: ignore
+        ctypes.addressof(arr),
+        f_type,  # type: ignore
+        length,
+        ctypes.sizeof(ctype),
+    )
