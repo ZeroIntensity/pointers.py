@@ -37,6 +37,10 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
     def address(self) -> Optional[int]:
         return self._address
 
+    @address.setter
+    def address(self, value: int) -> None:
+        self._address = value
+
     def __repr__(self) -> str:
         return f"<pointer to {self.size} bytes of memory at {str(self)}>"
 
@@ -68,8 +72,13 @@ def malloc(size: int) -> AllocatedPointer[Any]:
     return AllocatedPointer(mem, size)
 
 
-def free(target: AllocatedPointer):
+def free(target: BaseAllocatedPointer):
     """Free allocated memory."""
+    if target.freed:
+        raise ValueError(
+            f"{target} has already been freed",
+        )
+
     ct_ptr = target.make_ct_pointer()
     c_free(ct_ptr)
     target.freed = True
@@ -77,9 +86,10 @@ def free(target: AllocatedPointer):
 
 def realloc(target: AllocatedPointer, size: int) -> None:
     """Resize a memory block created by malloc."""
-    mem = c_realloc(target.address, size)
+    addr = c_realloc(target.address, size)
 
-    if not mem:
+    if not addr:
         raise AllocationError("failed to resize memory")
 
     target.size = size
+    target.address = addr

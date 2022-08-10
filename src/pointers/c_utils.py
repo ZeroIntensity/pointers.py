@@ -1,6 +1,8 @@
 import ctypes
 from typing import Any, Dict, Type, Union
 
+from _pointers import force_set_attr as _force_set_attr
+
 from .exceptions import InvalidSizeError
 
 __all__ = (
@@ -22,15 +24,16 @@ def move_to_mem(
     target: str = "memory allocation",
 ):
     """Move data to a C pointer."""
-    try:
-        if not unsafe:
-            ptr.contents[:] = stream
-        else:
-            ctypes.memmove(ptr, stream, len(stream))
-    except ValueError as e:
+
+    slen = len(stream)
+    plen = len(ptr.contents)
+
+    if slen > plen:
         raise InvalidSizeError(
-            f"object is of size {len(stream)}, while {target} is {len(ptr.contents)}"  # noqa
-        ) from e
+            f"object is of size {slen}, while {target} is {plen}",
+        )
+
+    ctypes.memmove(ptr, stream, slen)
 
 
 def attempt_decode(data: bytes) -> Union[str, bytes]:
@@ -78,10 +81,10 @@ def get_py(
     data: Type["ctypes._CData"],
 ) -> Type[Any]:
     """Map the specified C type to a Python type."""
-    from ._pointer import BasePointer
+    from ._pointer import BaseCPointer
 
     if data.__name__.startswith("LP_"):
-        return BasePointer
+        return BaseCPointer
 
     types: Dict[Type["ctypes._CData"], type] = {
         ctypes.c_bool: bool,
@@ -122,3 +125,19 @@ def make_py(data: "ctypes._CData"):
         res = attempt_decode(res)
 
     return res
+
+
+def force_set_attr(typ: Type[Any], key: str, value: Any) -> None:
+    """Force setting an attribute on the target type."""
+
+    if not isinstance(typ, type):
+        raise ValueError(
+            f"{typ} does not derive from type (did you pass an instance and not a class)?",  # noqa
+        )
+
+    _force_set_attr(typ, key, value)
+
+
+def deref(address: int) -> Any:
+    """Get the value at the target address."""
+    return ctypes.cast(address, ctypes.py_object).value

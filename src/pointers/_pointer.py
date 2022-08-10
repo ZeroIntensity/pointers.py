@@ -10,9 +10,8 @@ from typing import (
 
 from _pointers import add_ref, remove_ref
 
-from .c_utils import move_to_mem
+from .c_utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
-from .utils import force_set_attr
 
 __all__ = (
     "BasePointer",
@@ -231,13 +230,14 @@ class BaseObjectPointer(Typed[T], BasePointer[T], ABC):
         return self._address
 
     def dereference(self) -> T:
-        return ctypes.cast(self.ensure(), ctypes.py_object).value
+        return deref(self.ensure())
 
     def __irshift__(
         self,
         value: Optional[Union["BaseObjectPointer[T]", T]],
-    ) -> None:
+    ):
         self.assign(value)
+        return self
 
     @classmethod
     @abstractmethod
@@ -321,6 +321,10 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
     def address(self) -> Optional[int]:
         ...
 
+    @address.setter
+    def address(self, value: int) -> None:
+        ...
+
     @property
     def freed(self) -> bool:
         """Whether the allocated memory has been freed."""
@@ -348,11 +352,6 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
 
         data_ptr = data if isinstance(data, BasePointer) else to_ptr(data)
 
-        if not isinstance(data_ptr, BaseAllocatedPointer):
-            raise ValueError(
-                f"{data_ptr} does not point to allocated memory",
-            )
-
         ptr, byte_stream = self._make_stream_and_ptr(
             sys.getsizeof(~data_ptr),
             data_ptr.ensure(),
@@ -372,7 +371,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
                 "cannot dereference allocated memory that has no value",
             )
 
-        return super().dereference()
+        return deref(self.ensure())
 
     @abstractmethod
     def __add__(self, amount: int) -> "BaseAllocatedPointer[Any]":

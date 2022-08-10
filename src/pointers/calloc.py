@@ -33,7 +33,7 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         if chunk_cache:
             self._chunk_cache[self.current_index] = self
 
-    @property
+    @property  # type: ignore
     def address(self) -> Optional[int]:
         return self._address
 

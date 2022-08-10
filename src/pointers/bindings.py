@@ -994,7 +994,7 @@ def gmtime(timer: PointerLike) -> StructPointer[Tm]:
     return _base(dll.gmtime, timer)
 
 
-def signal(signum: int, func: Callable[[int, None], int]) -> None:
+def signal(signum: int, func: Callable[[int], Any]) -> None:
     return _base(dll.signal, signum, func)
 
 
