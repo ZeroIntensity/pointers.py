@@ -2,9 +2,10 @@ import sys
 
 from ward import raises, test
 
+from pointers import InvalidBindingParameter
+from pointers import _cstd as std
 from pointers import (
-    InvalidBindingParameter, c_free, c_malloc, cast, div, signal, sprintf,
-    strcpy, strlen, time, to_c_ptr
+    binds, c_free, c_malloc, cast, div, signal, sprintf, strcpy, strlen
 )
 from pointers._cstd import DivT
 
@@ -54,3 +55,15 @@ def _():
     res = div(10, 1)
     assert type(res) is DivT
     assert res.quot == 10
+
+
+@test("custom bindings")
+def _():
+    @binds(std.dll.strlen)
+    def strlen(a: str):
+        ...
+
+    strlen("test")
+
+    with raises(InvalidBindingParameter):
+        strlen(1)  # type: ignore

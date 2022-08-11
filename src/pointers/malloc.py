@@ -8,6 +8,7 @@ __all__ = ("AllocatedPointer", "malloc", "free", "realloc")
 
 
 T = TypeVar("T")
+A = TypeVar("A", bound=BaseAllocatedPointer)
 
 
 class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
@@ -24,14 +25,6 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         self._freed = False
         self._assigned = assigned
         self._tracked = False
-
-    @property
-    def size(self) -> int:
-        return self._size
-
-    @size.setter
-    def size(self, value: int) -> None:
-        self._size = value
 
     @property
     def address(self) -> Optional[int]:
@@ -61,6 +54,11 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
             self.assigned,
         )
 
+    def free(self) -> None:
+        self.ensure_valid()
+        c_free(self.make_ct_pointer())
+        self.freed = True
+
 
 def malloc(size: int) -> AllocatedPointer[Any]:
     """Allocate memory for a given size."""
@@ -74,17 +72,10 @@ def malloc(size: int) -> AllocatedPointer[Any]:
 
 def free(target: BaseAllocatedPointer):
     """Free allocated memory."""
-    if target.freed:
-        raise ValueError(
-            f"{target} has already been freed",
-        )
-
-    ct_ptr = target.make_ct_pointer()
-    c_free(ct_ptr)
-    target.freed = True
+    target.free()
 
 
-def realloc(target: AllocatedPointer, size: int) -> None:
+def realloc(target: A, size: int) -> A:
     """Resize a memory block created by malloc."""
     addr = c_realloc(target.address, size)
 
@@ -93,3 +84,4 @@ def realloc(target: AllocatedPointer, size: int) -> None:
 
     target.size = size
     target.address = addr
+    return target

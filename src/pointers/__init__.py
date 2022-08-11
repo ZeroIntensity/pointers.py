@@ -9,8 +9,7 @@ from .custom_binding import binding, binds
 from .decay import decay
 from .exceptions import (
     AllocationError, DereferenceError, FreedMemoryError,
-    InvalidBindingParameter, InvalidSizeError, IsFrozenError,
-    IsMallocPointerError, NotEnoughChunks
+    InvalidBindingParameter, InvalidSizeError
 )
 from .magic import _
 from .malloc import AllocatedPointer, free, malloc, realloc

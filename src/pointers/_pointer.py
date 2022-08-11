@@ -177,7 +177,12 @@ class Sized(ABC):
         ...
 
 
-class BaseObjectPointer(Typed[T], BasePointer[T], ABC):
+class BaseObjectPointer(
+    IterDereferencable[T],
+    Typed[T],
+    BasePointer[T],
+    ABC,
+):
     def __init__(
         self,
         address: int,
@@ -348,6 +353,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         data: Union[BasePointer[T], T],
         unsafe: bool = False,
     ) -> None:
+        self.ensure_valid()
         from .object_pointer import to_ptr
 
         data_ptr = data if isinstance(data, BasePointer) else to_ptr(data)
@@ -394,3 +400,23 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
 
         bytes_a = (ctypes.c_ubyte * size).from_address(address)  # fmt: off
         return self.make_ct_pointer(), bytes(bytes_a)
+
+    @abstractmethod
+    def free(self) -> None:
+        """Free the memory."""
+        ...
+
+    def ensure_valid(self) -> None:
+        """Ensure the memory has not been freed."""
+        if self.freed:
+            raise FreedMemoryError(
+                f"{self} has been freed",
+            )
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @size.setter
+    def size(self, value: int) -> None:
+        self._size = value

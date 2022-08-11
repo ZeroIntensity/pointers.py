@@ -20,11 +20,11 @@ def _():
     with raises(FreedMemoryError):
         print(~ptr)
 
-    with raises(ValueError):
+    with raises(FreedMemoryError):
         free(ptr)
 
 
-@test("calloc and free")
+@test("calloc with enumerations")
 def _():
     ptr = calloc(4, 28)
 
@@ -37,6 +37,34 @@ def _():
 
     with raises(FreedMemoryError):
         print(~ptr)
+
+
+@test("calloc")
+def _():
+    ptr = calloc(4, 28)
+
+    with raises(InvalidSizeError):
+        ptr <<= "hello"
+
+    for index, value in enumerate(ptr):
+        value <<= index + 1
+
+    with raises(IndexError):
+        ptr -= 1
+
+    with raises(IndexError):
+        ptr += 10
+
+    assert ~ptr == 1
+    ptr += 1
+    assert ~ptr
+    free(ptr)
+
+    with raises(FreedMemoryError):
+        ptr -= 1
+
+    with raises(FreedMemoryError):
+        ptr <<= "test"
 
 
 @test("realloc")

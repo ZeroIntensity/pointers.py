@@ -195,7 +195,12 @@ def _decode_type(
         )  # fmt: off
 
         res = (
-            TypedCPointer(ctypes.addressof(res), res_typ, ctypes.sizeof(res))
+            TypedCPointer(
+                ctypes.addressof(res),
+                res_typ,
+                ctypes.sizeof(res),
+                alt=True,
+            )
             if not issubclass(type(res.contents), ctypes.Structure)
             else StructPointer(id(struct), type(_not_null(struct)), struct)
         )
@@ -366,7 +371,9 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
                 f"{data} does not point to bytes",
             )
 
-        return ctypes.c_char_p(data.address)
+        if is_typed_ptr and (not data.alt):  # type: ignore
+            return ctypes.c_char_p.from_address(data.ensure())
+        return ctypes.c_char_p(data.ensure())
 
     if isinstance(data, str):
         return data.encode()

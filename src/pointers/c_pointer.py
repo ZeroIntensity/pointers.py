@@ -75,11 +75,18 @@ class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
         size: int,
         void_p: bool = True,
         decref: bool = True,
+        alt: bool = False,
     ):
         self._void_p = void_p
         super().__init__(address, size)
         self._type = data_type
         self._decref = decref
+        self._alt = alt
+
+    @property
+    def alt(self) -> bool:
+        """Whether to use the alternative method for dereferencing."""
+        return self._alt
 
     @property
     def size(self) -> int:
@@ -137,8 +144,10 @@ class TypedCPointer(_TypedPointer[T]):
         """Dereference the pointer."""
         ctype = get_mapped(self.type)
 
-        if ctype is ctypes.c_char_p:
-            return ctypes.c_char_p(self.ensure()).value  # type: ignore
+        if (ctype is ctypes.c_char_p) and (self._alt):
+            res = ctypes.c_char_p(self.ensure()).value
+            assert res
+            return res  # type: ignore
 
         ptr = (
             ctype.from_address(self.ensure())
@@ -212,6 +221,7 @@ def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
         ptr.size,
         decref=False,
         void_p=True,
+        alt=True,
     )
 
 

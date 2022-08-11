@@ -2,7 +2,8 @@ from ward import raises, test
 
 from pointers import InvalidSizeError, Pointer
 from pointers import _ as m
-from pointers import to_c_ptr, to_ptr
+from pointers import strlen, to_c_ptr, to_ptr
+from pointers.exceptions import NullPointerError
 
 
 @test("creating pointers")
@@ -39,3 +40,33 @@ def _():
 
     with raises(InvalidSizeError):
         ptr <<= "hello world"
+
+
+@test("null pointers")
+def _():
+    ptr = to_ptr(0)
+    ptr >>= None
+
+    with raises(NullPointerError):
+        print(~ptr)
+
+    with raises(NullPointerError):
+        print(*ptr)
+
+
+@test("operating magic")
+def _():
+    ptr = m & "test"
+    assert type(ptr) is Pointer
+    assert m * ptr == "test"
+
+
+@test("c pointers")
+def _():
+    a = to_c_ptr("test")
+    assert ~a == "test"
+    b = to_c_ptr(b"test")
+    assert ~b == b"test"
+    c = to_c_ptr(1)
+    assert ~c == 1
+    assert strlen(b) == 4

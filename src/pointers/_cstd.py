@@ -1,4 +1,5 @@
 import ctypes
+from ctypes.util import find_library
 from platform import system
 from typing import Dict, Type
 
@@ -27,7 +28,7 @@ __all__ = (
     "Lconv",
 )
 
-dll = ctypes.CDLL(platforms[system().lower()])
+dll = ctypes.CDLL(platforms.get(system().lower()) or find_library("c"))
 
 
 class tm(ctypes.Structure):
