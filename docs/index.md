@@ -41,7 +41,8 @@ fclose(file)
 -   Reworked documentation
 -   Several bug fixes
 -   Optimized internal API
--   Better type safety
+-   Better and fixed type safety
+-   New memory safety features
 
 ### Features
 

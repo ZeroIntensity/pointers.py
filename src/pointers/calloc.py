@@ -1,7 +1,7 @@
 from typing import Dict, Iterator, Optional, TypeVar
 
 from ._cstd import c_calloc, c_free
-from ._pointer import BaseAllocatedPointer
+from .base_pointers import BaseAllocatedPointer
 from .exceptions import AllocationError
 
 __all__ = ("AllocatedArrayPointer", "calloc")

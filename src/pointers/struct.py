@@ -85,7 +85,9 @@ class StructPointer(Pointer[T]):
         super().__init__(address, data_type, True)
 
     @property
-    def _as_parameter_(self) -> Union[int, ctypes.pointer]:
+    def _as_parameter_(
+        self,
+    ) -> Union[int, ctypes._PointerLike]:
         existing = self._existing
 
         if existing:

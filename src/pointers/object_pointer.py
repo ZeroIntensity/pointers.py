@@ -2,7 +2,7 @@ import ctypes
 import sys
 from typing import TypeVar, Union
 
-from ._pointer import BaseObjectPointer, BasePointer
+from .base_pointers import BaseObjectPointer, BasePointer
 from .exceptions import InvalidSizeError
 
 T = TypeVar("T")

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
-    from ._pointer import BasePointer
+    from .base_pointers import BasePointer
     from .object_pointer import Pointer
 
 from .object_pointer import to_ptr

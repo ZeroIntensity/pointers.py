@@ -5,7 +5,8 @@ from ward import raises, test
 from pointers import InvalidBindingParameter
 from pointers import _cstd as std
 from pointers import (
-    binds, c_free, c_malloc, cast, div, signal, sprintf, strcpy, strlen
+    binds, c_free, c_malloc, cast, div, isspace, signal, sprintf, strcpy,
+    strlen, toupper
 )
 from pointers._cstd import DivT
 
@@ -42,10 +43,10 @@ def _():
     def bad(signum: str):
         ...
 
-    signal(13, sighandler)
+    signal(2, sighandler)
 
     with raises(InvalidBindingParameter):
-        signal(13, bad)  # type: ignore
+        signal(2, bad)  # type: ignore
 
     signal(2, lambda x: ...)
 
@@ -67,3 +68,17 @@ def _():
 
     with raises(InvalidBindingParameter):
         strlen(1)  # type: ignore
+
+
+@test("chars")
+def _():
+    assert toupper(97) == "A"
+    assert toupper("a") == "A"
+
+    with raises(InvalidBindingParameter):
+        isspace("hi")
+
+    with raises(InvalidBindingParameter):
+        isspace("")
+
+    assert isspace(" ") != 0

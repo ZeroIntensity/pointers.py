@@ -6,7 +6,7 @@ from typing import (
 
 from _pointers import add_ref, remove_ref
 
-from ._pointer import BaseCPointer, IterDereferencable, Typed
+from .base_pointers import BaseCPointer, IterDereferencable, Typed
 from .c_utils import get_mapped, map_type
 from .struct import StructPointer
 
@@ -135,7 +135,7 @@ class TypedCPointer(_TypedPointer[T]):
         return self._address
 
     @property
-    def _as_parameter_(self) -> "ctypes.pointer[ctypes._CData]":
+    def _as_parameter_(self):
         ctype = get_mapped(self.type)
         deref = ctype.from_address(self.ensure())
         return ctypes.pointer(deref)

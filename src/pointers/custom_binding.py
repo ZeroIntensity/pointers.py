@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Optional, Type, TypeVar
 
 from typing_extensions import ParamSpec
 
-from .bindings import _base, _make_char_pointer
+from .bindings import _base, _make_string
 
 if TYPE_CHECKING:
     from ctypes import _NamedFuncPointer
@@ -44,7 +44,7 @@ def binds(
                 *[
                     # fmt: off
                     i if not isinstance(i, str)
-                    else _make_char_pointer(i)
+                    else _make_string(i)
                     # fmt: on
                     for i in args  # type: ignore
                 ],

@@ -173,7 +173,7 @@ class Sized(ABC):
         self,
         size: int,
         address: int,
-    ) -> Tuple[ctypes.pointer, bytes]:
+    ) -> Tuple[ctypes._PointerLike, bytes]:
         ...
 
 
@@ -279,7 +279,7 @@ class BaseCPointer(IterDereferencable[T], BasicPointer, Sized, ABC):
         self,
         size: int,
         address: int,
-    ) -> Tuple[ctypes.pointer, bytes]:
+    ) -> Tuple[ctypes._PointerLike, bytes]:
         bytes_a = (ctypes.c_ubyte * size).from_address(address)
         return self.make_ct_pointer(), bytes(bytes_a)
 
@@ -394,7 +394,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         self,
         size: int,
         address: int,
-    ) -> Tuple[ctypes.pointer, bytes]:
+    ) -> Tuple[ctypes._PointerLike, bytes]:
         if self.freed:
             raise FreedMemoryError("memory has been freed")
 

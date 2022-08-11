@@ -1,3 +1,7 @@
+from .base_pointers import (
+    BaseAllocatedPointer, BaseCPointer, BaseObjectPointer, BasePointer,
+    BasicPointer, Dereferencable, IterDereferencable, Sized, Typed
+)
 from .bindings import *
 from .c_pointer import (
     StructPointer, TypedCPointer, VoidPointer, array, cast, to_c_ptr,

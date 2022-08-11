@@ -17,7 +17,7 @@ __all__ = (
 
 
 def move_to_mem(
-    ptr: ctypes.pointer,
+    ptr: ctypes._PointerLike,
     stream: bytes,
     *,
     unsafe: bool = False,
@@ -26,9 +26,9 @@ def move_to_mem(
     """Move data to a C pointer."""
 
     slen = len(stream)
-    plen = len(ptr.contents)
+    plen = len(ptr.contents)  # type: ignore
 
-    if slen > plen:
+    if (slen > plen) and (not unsafe):
         raise InvalidSizeError(
             f"object is of size {slen}, while {target} is {plen}",
         )
@@ -81,7 +81,7 @@ def get_py(
     data: Type["ctypes._CData"],
 ) -> Type[Any]:
     """Map the specified C type to a Python type."""
-    from ._pointer import BaseCPointer
+    from .base_pointers import BaseCPointer
 
     if data.__name__.startswith("LP_"):
         return BaseCPointer

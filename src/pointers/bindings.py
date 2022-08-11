@@ -16,7 +16,7 @@ from ._cstd import c_malloc as _malloc
 from ._cstd import c_raise as ct_raise
 from ._cstd import c_realloc as _realloc
 from ._cstd import dll
-from ._pointer import BaseCPointer, BasePointer
+from .base_pointers import BaseCPointer, BasePointer
 from .c_pointer import TypedCPointer, VoidPointer
 from .c_utils import get_mapped, get_py
 from .exceptions import InvalidBindingParameter
@@ -160,6 +160,7 @@ def _not_null(data: Optional[T]) -> T:
 
 
 StructMap = Dict[Type[ctypes.Structure], Type["Struct"]]
+CharLike = Union[StringLike, int]
 
 
 class _CFuncTransport:
@@ -212,6 +213,9 @@ def _decode_type(
         struct = struct_map.get(res_typ)
         if struct:
             res = struct.from_existing(res)
+
+    elif isinstance(res, bytes):
+        return res.decode()
 
     return res
 
@@ -353,7 +357,7 @@ def _base(
     )
 
 
-def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
+def _make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
     if type(data) not in {VoidPointer, str, bytes, TypedCPointer}:
         raise InvalidBindingParameter(
             f"expected a string-like object, got {repr(data)}"  # noqa
@@ -385,66 +389,88 @@ def _make_char_pointer(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
 def _make_format(*args: Format) -> Iterator[Format]:
     for i in args:
         if isinstance(i, (VoidPointer, str, bytes)):
-            yield _make_char_pointer(i)  # type: ignore
+            yield _make_string(i)  # type: ignore
             continue
 
         yield i
 
 
-def isalnum(c: int) -> int:
-    return _base(dll.isalnum, c)
+def _make_char(char: CharLike) -> bytes:
+    if isinstance(char, int):
+        return chr(char).encode()
+
+    charp = _make_string(char)
+    string = (
+        charp
+        if not isinstance(
+            charp,
+            ctypes.c_char_p,
+        )
+        else _not_null(charp.value)
+    )
+
+    if len(string) != 1:
+        raise InvalidBindingParameter(
+            f'"{string.decode()}" should have a length of 1',
+        )
+
+    return string
 
 
-def isalpha(c: int) -> int:
-    return _base(dll.isalpha, c)
+def isalnum(c: CharLike) -> int:
+    return _base(dll.isalnum, _make_char(c))
 
 
-def iscntrl(c: int) -> int:
-    return _base(dll.iscntrl, c)
+def isalpha(c: CharLike) -> int:
+    return _base(dll.isalpha, _make_char(c))
 
 
-def isdigit(c: int) -> int:
-    return _base(dll.isdigit, c)
+def iscntrl(c: CharLike) -> int:
+    return _base(dll.iscntrl, _make_char(c))
 
 
-def isgraph(c: int) -> int:
-    return _base(dll.isgraph, c)
+def isdigit(c: CharLike) -> int:
+    return _base(dll.isdigit, _make_char(c))
 
 
-def islower(c: int) -> int:
-    return _base(dll.islower, c)
+def isgraph(c: CharLike) -> int:
+    return _base(dll.isgraph, _make_char(c))
 
 
-def isprint(c: int) -> int:
-    return _base(dll.isprint, c)
+def islower(c: CharLike) -> int:
+    return _base(dll.islower, _make_char(c))
 
 
-def ispunct(c: int) -> int:
-    return _base(dll.ispunct, c)
+def isprint(c: CharLike) -> int:
+    return _base(dll.isprint, _make_char(c))
 
 
-def isspace(c: int) -> int:
-    return _base(dll.isspace, c)
+def ispunct(c: CharLike) -> int:
+    return _base(dll.ispunct, _make_char(c))
 
 
-def isupper(c: int) -> int:
-    return _base(dll.isupper, c)
+def isspace(c: CharLike) -> int:
+    return _base(dll.isspace, _make_char(c))
 
 
-def isxdigit(c: int) -> int:
-    return _base(dll.isxdigit, c)
+def isupper(c: CharLike) -> int:
+    return _base(dll.isupper, _make_char(c))
 
 
-def tolower(c: int) -> int:
-    return _base(dll.tolower, c)
+def isxdigit(c: CharLike) -> int:
+    return _base(dll.isxdigit, _make_char(c))
 
 
-def toupper(c: int) -> int:
-    return _base(dll.toupper, c)
+def tolower(c: CharLike) -> str:
+    return _base(dll.tolower, _make_char(c))
+
+
+def toupper(c: CharLike) -> str:
+    return _base(dll.toupper, _make_char(c))
 
 
 def setlocale(category: int, locale: StringLike) -> str:
-    return _base(dll.setlocale, category, _make_char_pointer(locale))
+    return _base(dll.setlocale, category, _make_string(locale))
 
 
 def frexp(x: float, exponent: TypedPtr[int]) -> int:
@@ -486,8 +512,8 @@ def fgetpos(stream: PointerLike, pos: PointerLike) -> int:
 def fopen(filename: StringLike, mode: StringLike) -> VoidPointer:
     return _base(
         dll.fopen,
-        _make_char_pointer(filename),
-        _make_char_pointer(mode),
+        _make_string(filename),
+        _make_string(mode),
     )
 
 
@@ -507,8 +533,8 @@ def freopen(
 ) -> VoidPointer:
     return _base(
         dll.freopen,
-        _make_char_pointer(filename),
-        _make_char_pointer(mode),
+        _make_string(filename),
+        _make_string(mode),
         stream,
     )
 
@@ -535,14 +561,14 @@ def fwrite(
 
 
 def remove(filename: StringLike) -> int:
-    return _base(dll.remove, _make_char_pointer(filename))
+    return _base(dll.remove, _make_string(filename))
 
 
 def rename(old_filename: StringLike, new_filename: StringLike) -> int:
     return _base(
         dll.rename,
-        _make_char_pointer(old_filename),
-        _make_char_pointer(new_filename),
+        _make_string(old_filename),
+        _make_string(new_filename),
     )
 
 
@@ -551,7 +577,7 @@ def rewind(stream: PointerLike) -> None:
 
 
 def setbuf(stream: PointerLike, buffer: StringLike) -> None:
-    return _base(dll.setbuf, stream, _make_char_pointer(buffer))
+    return _base(dll.setbuf, stream, _make_string(buffer))
 
 
 def setvbuf(
@@ -563,7 +589,7 @@ def setvbuf(
     return _base(
         dll.setvbuf,
         stream,
-        _make_char_pointer(buffer),
+        _make_string(buffer),
         mode,
         size,
     )
@@ -574,27 +600,27 @@ def tmpfile() -> VoidPointer:
 
 
 def tmpnam(string: str) -> str:
-    return _base(dll.tmpnam, _make_char_pointer(string))
+    return _base(dll.tmpnam, _make_string(string))
 
 
 def fprintf(stream: PointerLike, fmt: StringLike, *args: Format) -> int:
     return _base(
         dll.fprintf,
         stream,
-        _make_char_pointer(fmt),
+        _make_string(fmt),
         *_make_format(*args),
     )
 
 
 def printf(fmt: StringLike, *args: Format) -> int:
-    return _base(dll.printf, _make_char_pointer(fmt), *_make_format(*args))
+    return _base(dll.printf, _make_string(fmt), *_make_format(*args))
 
 
 def sprintf(string: StringLike, fmt: StringLike, *args: Format) -> int:
     return _base(
         dll.sprintf,
-        _make_char_pointer(string),
-        _make_char_pointer(fmt),
+        _make_string(string),
+        _make_string(fmt),
         *_make_format(*args),
     )
 
@@ -603,20 +629,20 @@ def fscanf(stream: PointerLike, fmt: StringLike, *args: Format) -> int:
     return _base(
         dll.fscanf,
         stream,
-        _make_char_pointer(fmt),
+        _make_string(fmt),
         *_make_format(*args),
     )
 
 
 def scanf(fmt: StringLike, *args: Format) -> int:
-    return _base(dll.scanf, _make_char_pointer(fmt), *_make_format(*args))
+    return _base(dll.scanf, _make_string(fmt), *_make_format(*args))
 
 
 def sscanf(string: StringLike, fmt: StringLike, *args: Format) -> int:
     return _base(
         dll.sscanf,
-        _make_char_pointer(string),
-        _make_char_pointer(fmt),
+        _make_string(string),
+        _make_string(fmt),
         *_make_format(*args),
     )
 
@@ -628,7 +654,7 @@ def fgetc(stream: PointerLike) -> int:
 def fgets(string: StringLike, n: int, stream: PointerLike) -> str:
     return _base(
         dll.fgets,
-        _make_char_pointer(string),
+        _make_string(string),
         n,
         stream,
     )
@@ -639,7 +665,7 @@ def fputc(char: int, stream: PointerLike) -> int:
 
 
 def fputs(string: StringLike, stream: PointerLike) -> int:
-    return _base(dll.fputs, _make_char_pointer(string), stream)
+    return _base(dll.fputs, _make_string(string), stream)
 
 
 def getc(stream: PointerLike) -> int:
@@ -651,7 +677,7 @@ def getchar() -> int:
 
 
 def gets(string: StringLike) -> str:
-    return _base(dll.gets, _make_char_pointer(string))
+    return _base(dll.gets, _make_string(string))
 
 
 def putc(char: int, stream: PointerLike) -> int:
@@ -663,7 +689,7 @@ def putchar(char: int) -> int:
 
 
 def puts(string: StringLike) -> int:
-    return _base(dll.puts, _make_char_pointer(string))
+    return _base(dll.puts, _make_string(string))
 
 
 def ungetc(char: int, stream: PointerLike) -> int:
@@ -671,11 +697,11 @@ def ungetc(char: int, stream: PointerLike) -> int:
 
 
 def perror(string: StringLike) -> None:
-    return _base(dll.perror, _make_char_pointer(string))
+    return _base(dll.perror, _make_string(string))
 
 
 def strtod(string: StringLike, endptr: PointerLike) -> int:
-    return _base(dll.strtod, _make_char_pointer(string), endptr)
+    return _base(dll.strtod, _make_string(string), endptr)
 
 
 def strtol(
@@ -685,7 +711,7 @@ def strtol(
 ) -> int:
     return _base(
         dll.strtol,
-        _make_char_pointer(string),
+        _make_string(string),
         endptr,
         base,
     )
@@ -698,7 +724,7 @@ def strtoul(
 ) -> int:
     return _base(
         dll.strtoul,
-        _make_char_pointer(string),
+        _make_string(string),
         endptr,
         base,
     )
@@ -713,11 +739,11 @@ def exit(status: int) -> None:
 
 
 def getenv(name: StringLike) -> str:
-    return _base(dll.getenv, _make_char_pointer(name))
+    return _base(dll.getenv, _make_string(name))
 
 
 def system(string: StringLike) -> int:
-    return _base(dll.system, _make_char_pointer(string))
+    return _base(dll.system, _make_string(string))
 
 
 def abs(x: int) -> int:
@@ -739,7 +765,7 @@ def srand(seed: int) -> None:
 def mblen(string: StringLike, n: int) -> int:
     return _base(
         dll.mblen,
-        _make_char_pointer(string),
+        _make_string(string),
         n,
     )
 
@@ -748,7 +774,7 @@ def mbstowcs(pwcs: StringLike, string: StringLike, n: int) -> int:
     return _base(
         dll.mbstowcs,
         pwcs,
-        _make_char_pointer(string),
+        _make_string(string),
         n,
     )
 
@@ -757,17 +783,17 @@ def mbtowc(pwc: StringLike, string: StringLike, n: int) -> int:
     return _base(
         dll.mbtowc,
         pwc,
-        _make_char_pointer(string),
+        _make_string(string),
         n,
     )
 
 
 def wcstombs(string: StringLike, pwcs: str, n: int) -> int:
-    return _base(dll.wcstombs, _make_char_pointer(string), pwcs, n)
+    return _base(dll.wcstombs, _make_string(string), pwcs, n)
 
 
 def wctomb(string: StringLike, wchar: str) -> int:
-    return _base(dll.wctomb, _make_char_pointer(string), wchar)
+    return _base(dll.wctomb, _make_string(string), wchar)
 
 
 def memchr(string: PointerLike, c: int, n: int) -> VoidPointer:
@@ -805,37 +831,37 @@ def memset(string: PointerLike, c: int, n: int) -> VoidPointer:
 def strcat(dest: StringLike, src: StringLike) -> str:
     return _base(
         dll.strcat,
-        _make_char_pointer(dest),
-        _make_char_pointer(src),
+        _make_string(dest),
+        _make_string(src),
     )
 
 
 def strncat(dest: StringLike, src: StringLike, n: int) -> str:
     return _base(
         dll.strncat,
-        _make_char_pointer(dest),
-        _make_char_pointer(src),
+        _make_string(dest),
+        _make_string(src),
         n,
     )
 
 
 def strchr(string: StringLike, c: int) -> str:
-    return _base(dll.strchr, _make_char_pointer(string), c)
+    return _base(dll.strchr, _make_string(string), c)
 
 
 def strcmp(str1: StringLike, str2: StringLike) -> int:
     return _base(
         dll.strcmp,
-        _make_char_pointer(str1),
-        _make_char_pointer(str2),
+        _make_string(str1),
+        _make_string(str2),
     )
 
 
 def strncmp(str1: StringLike, str2: StringLike, n: int) -> int:
     return _base(
         dll.strncmp,
-        _make_char_pointer(str1),
-        _make_char_pointer(str2),
+        _make_string(str1),
+        _make_string(str2),
         n,
     )
 
@@ -843,24 +869,24 @@ def strncmp(str1: StringLike, str2: StringLike, n: int) -> int:
 def strcoll(str1: StringLike, str2: StringLike) -> int:
     return _base(
         dll.strcoll,
-        _make_char_pointer(str1),
-        _make_char_pointer(str2),
+        _make_string(str1),
+        _make_string(str2),
     )
 
 
 def strcpy(dest: StringLike, src: StringLike) -> str:
     return _base(
         dll.strcpy,
-        _make_char_pointer(dest),
-        _make_char_pointer(src),
+        _make_string(dest),
+        _make_string(src),
     )
 
 
 def strncpy(dest: StringLike, src: StringLike, n: int) -> str:
     return _base(
         dll.strncpy,
-        _make_char_pointer(dest),
-        _make_char_pointer(src),
+        _make_string(dest),
+        _make_string(src),
         n,
     )
 
@@ -868,8 +894,8 @@ def strncpy(dest: StringLike, src: StringLike, n: int) -> str:
 def strcspn(str1: StringLike, str2: StringLike) -> int:
     return _base(
         dll.strcspn,
-        _make_char_pointer(str1),
-        _make_char_pointer(str2),
+        _make_string(str1),
+        _make_string(str2),
     )
 
 
@@ -878,50 +904,50 @@ def strerror(errnum: int) -> str:
 
 
 def strlen(string: StringLike) -> int:
-    return _base(dll.strlen, _make_char_pointer(string))
+    return _base(dll.strlen, _make_string(string))
 
 
 def strpbrk(str1: StringLike, str2: StringLike) -> str:
     return _base(
         dll.strpbrk,
-        _make_char_pointer(str1),
-        _make_char_pointer(str2),
+        _make_string(str1),
+        _make_string(str2),
     )
 
 
 def strrchr(string: StringLike, c: int) -> str:
-    return _base(dll.strrchr, _make_char_pointer(string), c)
+    return _base(dll.strrchr, _make_string(string), c)
 
 
 def strspn(str1: StringLike, str2: StringLike) -> int:
     return _base(
         dll.strspn,
-        _make_char_pointer(str1),
-        _make_char_pointer(str2),
+        _make_string(str1),
+        _make_string(str2),
     )
 
 
 def strstr(haystack: StringLike, needle: StringLike) -> str:
     return _base(
         dll.strstr,
-        _make_char_pointer(haystack),
-        _make_char_pointer(needle),
+        _make_string(haystack),
+        _make_string(needle),
     )
 
 
 def strtok(string: StringLike, delim: StringLike) -> str:
     return _base(
         dll.strtok,
-        _make_char_pointer(string),
-        _make_char_pointer(delim),
+        _make_string(string),
+        _make_string(delim),
     )
 
 
 def strxfrm(dest: StringLike, src: StringLike, n: int) -> int:
     return _base(
         dll.strxfrm,
-        _make_char_pointer(dest),
-        _make_char_pointer(src),
+        _make_string(dest),
+        _make_string(src),
         n,
     )
 
@@ -954,9 +980,9 @@ def strftime(
 ) -> int:
     return _base(
         dll.strftime,
-        _make_char_pointer(string),
+        _make_string(string),
         maxsize,
-        _make_char_pointer(fmt),
+        _make_string(fmt),
         timeptr,
     )
 

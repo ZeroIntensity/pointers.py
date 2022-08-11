@@ -144,44 +144,44 @@ dll.realloc.restype = ctypes.c_void_p
 dll.calloc.argtypes = (ctypes.c_size_t, ctypes.c_size_t)
 dll.calloc.restype = ctypes.c_void_p
 # int isalnum(int c)
-dll.isalnum.argtypes = (ctypes.c_int,)
+dll.isalnum.argtypes = (ctypes.c_char,)
 dll.isalnum.restype = ctypes.c_int
 # int isalpha(int c)
-dll.isalpha.argtypes = (ctypes.c_int,)
+dll.isalpha.argtypes = (ctypes.c_char,)
 dll.isalpha.restype = ctypes.c_int
 # int iscntrl(int c)
-dll.iscntrl.argtypes = (ctypes.c_int,)
+dll.iscntrl.argtypes = (ctypes.c_char,)
 dll.iscntrl.restype = ctypes.c_int
 # int isdigit(int c)
-dll.isdigit.argtypes = (ctypes.c_int,)
+dll.isdigit.argtypes = (ctypes.c_char,)
 dll.isdigit.restype = ctypes.c_int
 # int isgraph(int c)
-dll.isgraph.argtypes = (ctypes.c_int,)
+dll.isgraph.argtypes = (ctypes.c_char,)
 dll.isgraph.restype = ctypes.c_int
 # int islower(int c)
-dll.islower.argtypes = (ctypes.c_int,)
+dll.islower.argtypes = (ctypes.c_char,)
 dll.islower.restype = ctypes.c_int
 # int isprint(int c)
-dll.isprint.argtypes = (ctypes.c_int,)
+dll.isprint.argtypes = (ctypes.c_char,)
 dll.isprint.restype = ctypes.c_int
 # int ispunct(int c)
-dll.ispunct.argtypes = (ctypes.c_int,)
+dll.ispunct.argtypes = (ctypes.c_char,)
 dll.ispunct.restype = ctypes.c_int
 # int isspace(int c)
-dll.isspace.argtypes = (ctypes.c_int,)
+dll.isspace.argtypes = (ctypes.c_char,)
 dll.isspace.restype = ctypes.c_int
 # int isupper(int c)
-dll.isupper.argtypes = (ctypes.c_int,)
+dll.isupper.argtypes = (ctypes.c_char,)
 dll.isupper.restype = ctypes.c_int
 # int isxdigit(int c)
-dll.isxdigit.argtypes = (ctypes.c_int,)
+dll.isxdigit.argtypes = (ctypes.c_char,)
 dll.isxdigit.restype = ctypes.c_int
 # int tolower(int c)
-dll.tolower.argtypes = (ctypes.c_int,)
-dll.tolower.restype = ctypes.c_int
+dll.tolower.argtypes = (ctypes.c_char,)
+dll.tolower.restype = ctypes.c_char
 # int toupper(int c)
-dll.toupper.argtypes = (ctypes.c_int,)
-dll.toupper.restype = ctypes.c_int
+dll.toupper.argtypes = (ctypes.c_char,)
+dll.toupper.restype = ctypes.c_char
 # char* setlocale(int category, const char* locale)
 dll.setlocale.argtypes = (ctypes.c_int, ctypes.c_char_p)
 dll.setlocale.restype = ctypes.c_char_p

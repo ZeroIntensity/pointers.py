@@ -1,7 +1,7 @@
 from typing import Any, Optional, TypeVar
 
 from ._cstd import c_free, c_malloc, c_realloc
-from ._pointer import BaseAllocatedPointer, IterDereferencable
+from .base_pointers import BaseAllocatedPointer, IterDereferencable
 from .exceptions import AllocationError
 
 __all__ = ("AllocatedPointer", "malloc", "free", "realloc")

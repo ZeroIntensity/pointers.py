@@ -54,7 +54,7 @@ def _():
         print(*ptr)
 
 
-@test("operating magic")
+@test("operator magic")
 def _():
     ptr = m & "test"
     assert type(ptr) is Pointer
@@ -65,8 +65,6 @@ def _():
 def _():
     a = to_c_ptr("test")
     assert ~a == "test"
-    b = to_c_ptr(b"test")
-    assert ~b == b"test"
     c = to_c_ptr(1)
     assert ~c == 1
-    assert strlen(b) == 4
+    assert strlen(b"test") == 4
