@@ -6,4 +6,5 @@ nav:
     - Using Pointers: using_pointers.md
     - Allocation: allocation.md
     - C Bindings: bindings.md
+    - Making a Program: making_a_program.md
 theme: readthedocs

@@ -6,19 +6,19 @@ To get started with pointers.py, install the library:
 
 ### Linux/macOS
 
-```
+```bash
 $ python3 -m pip install -U pointers.py
 ```
 
 ### Windows
 
-```
+```bash
 $ py -3 -m pip install -U pointers.py
 ```
 
 ### From Source
 
-```
+```bash
 $ git clone https://github.com/ZeroIntensity/pointers.py && cd pointers.py
 $ pip install .
 ```
