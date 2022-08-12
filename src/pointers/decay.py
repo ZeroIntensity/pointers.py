@@ -1,9 +1,11 @@
 import inspect
 from contextlib import suppress
 from functools import wraps
-from typing import Any, Callable, Dict, Tuple, TypeVar, get_type_hints
+from typing import Any, Callable, Dict, Tuple, TypeVar
 
-from typing_extensions import Annotated, ParamSpec, get_args, get_origin
+from typing_extensions import (
+    Annotated, ParamSpec, get_args, get_origin, get_type_hints
+)
 
 from .object_pointer import Pointer, to_ptr
 
