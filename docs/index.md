@@ -2,7 +2,7 @@
 
 ## Bringing the hell of pointers to Python
 
--   [Repository](https://github.com/ZeroIntensity/pointers.py)
+-   [Source](https://github.com/ZeroIntensity/pointers.py)
 -   [PyPI](https://pypi.org/project/pointers.py)
 
 ### Examples
@@ -31,10 +31,18 @@ assert _*ptr == "hello world"
 ```py
 from pointers import fopen, fprintf, fclose
 
-file = fopen("/dev/null", "w") # assigns file to the c FILE* type
+file = fopen("/dev/null", "w") # assigns to the c FILE* type
 fprintf(file, "hello world")
 fclose(file)
 ```
+
+### What's new in 2.0.0?
+
+-   Reworked documentation
+-   Several bug fixes
+-   Optimized internal API
+-   Better and fixed type safety
+-   New memory safety features
 
 ### Features
 
@@ -47,7 +55,7 @@ fclose(file)
 
 The main purpose of pointers.py is to simply break the rules of Python, but has some other use cases:
 
--   Can help C/C++ developers get adjusted to Python
+-   Can help translate C/C++ code into Python
 -   Provides a nice learning environment for programmers learning how pointers work
 -   Makes it very easy to manipulate memory in Python
 -   Why _not_?

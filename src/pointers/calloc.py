@@ -1,16 +1,25 @@
-from typing import Dict, Generic, Iterator, Optional, TypeVar
+from typing import Dict, Iterator, Optional, TypeVar
 
-from ._cstd import c_calloc
-from .exceptions import AllocationError, NotEnoughChunks
-from .malloc import MallocPointer
+from ._cstd import c_calloc, c_free
+from .base_pointers import BaseAllocatedPointer
+from .exceptions import AllocationError
 
-__all__ = ("CallocPointer", "calloc")
+__all__ = ("AllocatedArrayPointer", "calloc")
 
 
 T = TypeVar("T")
 
+"""
+FOR FUTURE REFERENCE:
 
-class CallocPointer(MallocPointer, Generic[T]):
+_chunk_store is needed to hold each index in the pointer array accordingly.
+We can't just lookup each index via a memory offset, since we can't verify that the memory actually contains something.
+
+If the memory is empty, then Python will segfault as it can't convert it to a PyObject*.
+"""  # noqa
+
+
+class AllocatedArrayPointer(BaseAllocatedPointer[T]):
     """Class representing memory created by calloc()"""
 
     def __init__(
@@ -19,24 +28,27 @@ class CallocPointer(MallocPointer, Generic[T]):
         chunks: int,
         chunk_size: int,
         current_index: int,
-        chunk_cache: Optional[Dict[int, "CallocPointer"]] = None,
+        chunk_store: Optional[Dict[int, "AllocatedArrayPointer[T]"]] = None,
+        freed: bool = False,
+        origin_address: Optional[int] = None,
     ) -> None:
+        self._origin_address = origin_address or address
         self._address = address
-        self._chunk_size = chunk_size
+        self._size = chunk_size
         self._current_index = current_index
         self._chunks = chunks
-        self._chunk_cache = chunk_cache or {0: self}
+        self._chunk_store = chunk_store or {0: self}
         self._assigned = True
         self._tracked = False
-        self._freed = False
+        self._freed = freed
 
-        if chunk_cache:
-            self._chunk_cache[self.current_index] = self
+        if chunk_store:
+            self._chunk_store[self.current_index] = self
 
-    def dereference(self) -> T:
-        """Dereference the pointer."""
-
-        return super().dereference()
+    # https://github.com/python/mypy/issues/4125
+    @property  # type: ignore
+    def address(self) -> Optional[int]:
+        return self._address
 
     @property
     def current_index(self) -> int:
@@ -48,43 +60,33 @@ class CallocPointer(MallocPointer, Generic[T]):
         """Number of allocated chunks."""
         return self._chunks
 
-    @property
-    def chunk_size(self) -> int:
-        """Size of each chunk."""
-        return self._chunk_size
-
-    @property
-    def size(self) -> int:
-        """Size of the current chunk."""
-        return self._chunk_size
-
-    @size.setter
-    def size(self, value: int) -> None:
-        self._chunk_size = value  # this might break things but idk
-
-    def __add__(self, amount: int) -> "CallocPointer":
-        index: int = self.current_index + amount
-
+    def _get_chunk_at(self, index: int) -> "AllocatedArrayPointer[T]":
         if index > self.chunks:
-            raise NotEnoughChunks(
-                f"chunk index is {index}, while allocation is {self.chunks}"
+            raise IndexError(
+                f"index is {index}, while allocation is {self.chunks}",
             )
 
         if index < 0:  # for handling __sub__
-            raise IndexError("chunk index is below zero")
+            raise IndexError("index is below zero")
 
-        if index not in self._chunk_cache:
-            self._chunk_cache[index] = CallocPointer(
-                self.ensure() + (amount * self.size),
+        if index not in self._chunk_store:
+            self._chunk_store[index] = AllocatedArrayPointer(
+                self._origin_address + (index * self.size),
                 self.chunks,
-                self.chunk_size,
+                self.size,
                 index,
-                self._chunk_cache,  # type: ignore
+                self._chunk_store,
+                self._freed,
+                self._origin_address,
             )
 
-        return self._chunk_cache[index]
+        return self._chunk_store[index]
 
-    def __sub__(self, amount: int) -> "CallocPointer":
+    def __add__(self, amount: int) -> "AllocatedArrayPointer[T]":
+        self.ensure_valid()
+        return self._get_chunk_at(self._current_index + amount)
+
+    def __sub__(self, amount: int) -> "AllocatedArrayPointer[T]":
         return self.__add__(-amount)
 
     def __repr__(self) -> str:
@@ -93,16 +95,36 @@ class CallocPointer(MallocPointer, Generic[T]):
     def __rich__(self) -> str:
         return f"<pointer to [green]allocated chunk[/green] at [cyan]{str(self)}[/cyan]>"  # noqa
 
-    def __iter__(self) -> Iterator["CallocPointer"]:
+    def __iter__(self) -> Iterator["AllocatedArrayPointer[T]"]:
         for i in range(self.current_index, self.chunks):
             yield self + i
 
+    def __getitem__(self, index: int) -> "AllocatedArrayPointer[T]":
+        return self._get_chunk_at(index)
 
-def calloc(num: int, size: int) -> CallocPointer:
+    def __setitem__(self, index: int, value: T) -> None:
+        chunk = self._get_chunk_at(index)
+        chunk <<= value
+
+    def __del__(self):
+        pass
+
+    def free(self) -> None:
+        first = self[0]
+        first.ensure_valid()
+
+        for i in range(self._chunks):  # using __iter__ breaks here
+            chunk = self._get_chunk_at(i)
+            chunk.freed = True
+
+        c_free(first.make_ct_pointer())
+
+
+def calloc(num: int, size: int) -> AllocatedArrayPointer:
     """Allocate a number of blocks with a given size."""
     address: int = c_calloc(num, size)
 
     if not address:
         raise AllocationError("failed to allocate memory")
 
-    return CallocPointer(address, num, size, 0)
+    return AllocatedArrayPointer(address, num, size, 0)

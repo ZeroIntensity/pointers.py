@@ -1,59 +1,95 @@
-from sys import getrefcount
+from ward import raises, test
 
-import pytest
-
-from pointers import (
-    FrozenPointer, IsFrozenError, Pointer, to_const_ptr, to_ptr
-)
-
-
-class SomeObj:
-    pass
+from pointers import InvalidSizeError, Pointer
+from pointers import _ as m
+from pointers import strlen, to_c_ptr, to_ptr
+from pointers.exceptions import NullPointerError
 
 
-def test_to_ptr():
+@test("creating pointers")
+def _():
     assert type(to_ptr("a")) is Pointer
+    assert type(m & "a") is Pointer
 
 
-def test_assign():
-    a = to_ptr("a")
-    b = to_ptr("b")
-
-    a >>= b
-    assert b.address == a.address
-
-
-def test_move():
-    num: int = 4321545
-    target: int = 7676745
-    # ^^ some random numbers
-
-    a = to_ptr(target)
-    b = to_ptr(num)
-
-    a <<= b
-    assert num == target
+@test("dereferencing")
+def _():
+    ptr = to_ptr("test")
+    assert ~ptr == "test"
+    assert m * ptr == "test"
+    assert (*ptr,) == (~ptr,)
+    cptr = to_c_ptr("test")
+    assert ~cptr == "test"
 
 
-def test_frozen():
-    ptr = to_const_ptr("a")
+@test("assignment")
+def _():
+    ptr = to_ptr("test")
+    ptr.assign("a")
 
-    assert type(ptr) is FrozenPointer
+    assert ~ptr == "a"
+    ptr >>= "test"
+    assert ~ptr == "test"
 
-    with pytest.raises(IsFrozenError):
-        ptr >>= "abc"
+    with raises(TypeError):
+        ptr >>= 1  # type: ignore
 
 
-def test_ref_counts():
-    ptr = to_ptr(SomeObj())
-    assert type(~ptr) is SomeObj
-    assert getrefcount(~ptr) == 3
+@test("movement")
+def _():
+    a = "teststring"
+    ptr = to_ptr(a)
+    ptr <<= "hi"
 
-def test_set_attr():
-    ptr = to_ptr(str)
-    ptr.set_attr("a", "b")
+    assert a == "hi"
 
-    ptr2 = to_ptr("test")
-    ptr2.set_attr("b", "c")
-    assert str.a == "b"
-    assert str.b == "c"
+    with raises(InvalidSizeError):
+        ptr <<= "hello world"
+
+    with raises(TypeError):
+        ptr <<= 1  # type: ignore
+
+
+@test("assignment with tracked types")
+def _():
+    class A:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    obj = A("hello")
+    ptr = to_ptr(A("world"))
+    assert (~ptr).value == "world"
+
+    ptr >>= obj
+    assert (~ptr).value == "hello"
+    ptr2 = to_ptr(obj)
+    ptr2 >>= A("12345")
+    assert (~ptr2).value == "12345"
+
+
+@test("null pointers")
+def _():
+    ptr = to_ptr(0)
+    ptr >>= None
+
+    with raises(NullPointerError):
+        print(~ptr)
+
+    with raises(NullPointerError):
+        print(*ptr)
+
+
+@test("operator magic")
+def _():
+    ptr = m & "test"
+    assert type(ptr) is Pointer
+    assert m * ptr == "test"
+
+
+@test("c pointers")
+def _():
+    a = to_c_ptr("test")
+    assert ~a == "test"
+    c = to_c_ptr(1)
+    assert ~c == 1
+    assert strlen(b"test") == 4

@@ -1,8 +1,5 @@
 __all__ = (
-    "IsMallocPointerError",
     "AllocationError",
-    "NotEnoughChunks",
-    "IsFrozenError",
     "DereferenceError",
     "FreedMemoryError",
     "InvalidSizeError",
@@ -11,26 +8,8 @@ __all__ = (
 )
 
 
-class IsMallocPointerError(Exception):
-    """Raised when trying perform an operation on a malloc pointer that isn't supported."""  # noqa
-
-    pass
-
-
 class AllocationError(Exception):
     """Raised when a memory allocation fails."""
-
-    pass
-
-
-class NotEnoughChunks(Exception):
-    """Raised when there aren't enough chunks in a CallocPointer."""
-
-    pass
-
-
-class IsFrozenError(Exception):
-    """Raised when trying to move the address of a frozen pointer."""
 
     pass
 
@@ -54,7 +33,7 @@ class InvalidSizeError(Exception):
 
 
 class InvalidBindingParameter(Exception):
-    """Raised when an invalid type is passed to the"""
+    """Raised when an invalid type is passed to a binding."""
 
     pass
 

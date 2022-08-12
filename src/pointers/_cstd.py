@@ -1,7 +1,9 @@
 import ctypes
+from ctypes.util import find_library
 from platform import system
 from typing import Dict, Type
 
+from .std_structs import DivT, Lconv, LDivT, Tm
 from .struct import Struct
 
 platforms = {
@@ -21,13 +23,9 @@ __all__ = (
     "div_t",
     "ldiv_t",
     "STRUCT_MAP",
-    "Tm",
-    "DivT",
-    "LDivT",
-    "Lconv",
 )
 
-dll = ctypes.CDLL(platforms[system().lower()])
+dll = ctypes.CDLL(platforms.get(system().lower()) or find_library("c"))
 
 
 class tm(ctypes.Structure):
@@ -44,23 +42,6 @@ class tm(ctypes.Structure):
     ]
 
 
-class Tm(Struct):
-    tm_sec: int
-    tm_min: int
-    tm_hour: int
-    tm_mday: int
-    tm_mon: int
-    tm_year: int
-    tm_wday: int
-    tm_yday: int
-    tm_isdst: int
-
-
-class DivT(Struct):
-    quot: int
-    rem: int
-
-
 class div_t(ctypes.Structure):
     _fields_ = [
         ("quot", ctypes.c_int),
@@ -68,34 +49,11 @@ class div_t(ctypes.Structure):
     ]
 
 
-class LDivT(DivT):
-    pass
-
-
 class ldiv_t(ctypes.Structure):
     _fields_ = [
         ("quot", ctypes.c_long),
         ("rem", ctypes.c_long),
     ]
-
-
-class Lconv(Struct):
-    decimal_point: str
-    thousands_sep: str
-    grouping: str
-    int_curr_symbol: str
-    currency_symbol: str
-    mon_decimal_point: str
-    mon_thousands_sep: str
-    mon_grouping: str
-    positive_sign: str
-    negative_sign: str
-    frac_digits: str
-    p_cs_precedes: str
-    p_sep_by_space: str
-    n_sep_by_space: str
-    p_sign_posn: str
-    n_sign_posn: str
 
 
 class lconv(ctypes.Structure):
@@ -143,44 +101,44 @@ dll.realloc.restype = ctypes.c_void_p
 dll.calloc.argtypes = (ctypes.c_size_t, ctypes.c_size_t)
 dll.calloc.restype = ctypes.c_void_p
 # int isalnum(int c)
-dll.isalnum.argtypes = (ctypes.c_int,)
+dll.isalnum.argtypes = (ctypes.c_char,)
 dll.isalnum.restype = ctypes.c_int
 # int isalpha(int c)
-dll.isalpha.argtypes = (ctypes.c_int,)
+dll.isalpha.argtypes = (ctypes.c_char,)
 dll.isalpha.restype = ctypes.c_int
 # int iscntrl(int c)
-dll.iscntrl.argtypes = (ctypes.c_int,)
+dll.iscntrl.argtypes = (ctypes.c_char,)
 dll.iscntrl.restype = ctypes.c_int
 # int isdigit(int c)
-dll.isdigit.argtypes = (ctypes.c_int,)
+dll.isdigit.argtypes = (ctypes.c_char,)
 dll.isdigit.restype = ctypes.c_int
 # int isgraph(int c)
-dll.isgraph.argtypes = (ctypes.c_int,)
+dll.isgraph.argtypes = (ctypes.c_char,)
 dll.isgraph.restype = ctypes.c_int
 # int islower(int c)
-dll.islower.argtypes = (ctypes.c_int,)
+dll.islower.argtypes = (ctypes.c_char,)
 dll.islower.restype = ctypes.c_int
 # int isprint(int c)
-dll.isprint.argtypes = (ctypes.c_int,)
+dll.isprint.argtypes = (ctypes.c_char,)
 dll.isprint.restype = ctypes.c_int
 # int ispunct(int c)
-dll.ispunct.argtypes = (ctypes.c_int,)
+dll.ispunct.argtypes = (ctypes.c_char,)
 dll.ispunct.restype = ctypes.c_int
 # int isspace(int c)
-dll.isspace.argtypes = (ctypes.c_int,)
+dll.isspace.argtypes = (ctypes.c_char,)
 dll.isspace.restype = ctypes.c_int
 # int isupper(int c)
-dll.isupper.argtypes = (ctypes.c_int,)
+dll.isupper.argtypes = (ctypes.c_char,)
 dll.isupper.restype = ctypes.c_int
 # int isxdigit(int c)
-dll.isxdigit.argtypes = (ctypes.c_int,)
+dll.isxdigit.argtypes = (ctypes.c_char,)
 dll.isxdigit.restype = ctypes.c_int
 # int tolower(int c)
-dll.tolower.argtypes = (ctypes.c_int,)
-dll.tolower.restype = ctypes.c_int
+dll.tolower.argtypes = (ctypes.c_char,)
+dll.tolower.restype = ctypes.c_char
 # int toupper(int c)
-dll.toupper.argtypes = (ctypes.c_int,)
-dll.toupper.restype = ctypes.c_int
+dll.toupper.argtypes = (ctypes.c_char,)
+dll.toupper.restype = ctypes.c_char
 # char* setlocale(int category, const char* locale)
 dll.setlocale.argtypes = (ctypes.c_int, ctypes.c_char_p)
 dll.setlocale.restype = ctypes.c_char_p

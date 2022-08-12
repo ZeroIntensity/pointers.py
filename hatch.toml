@@ -3,10 +3,11 @@ path = "src/pointers/version.py"
 
 [envs.default]
 dependencies = [
-  "pytest",
+  "ward",
+  "typing_extensions",
 ]
 [envs.default.scripts]
-tests = "pytest"
+tests = "ward"
 
 [envs.docs]
 dependencies = [

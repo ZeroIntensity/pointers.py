@@ -1,9 +1,12 @@
 import ctypes
 from abc import ABC
 from contextlib import suppress
-from typing import Any, get_type_hints
+from typing import Any, Optional, Type, TypeVar, Union, get_type_hints
 
-from .c_pointer import TypedCPointer, attempt_decode
+from .c_utils import attempt_decode, get_mapped
+from .object_pointer import Pointer
+
+T = TypeVar("T", bound="Struct")
 
 
 class Struct(ABC):
@@ -15,7 +18,10 @@ class Struct(ABC):
 
         class _InternalStruct(ctypes.Structure):
             _fields_ = [
-                (name, TypedCPointer.get_mapped(typ))
+                (
+                    name,
+                    get_mapped(typ),
+                )
                 for name, typ in hints.items()  # fmt: off
             ]
 
@@ -64,3 +70,33 @@ class Struct(ABC):
     def struct(self) -> ctypes.Structure:
         """Raw internal Structure object."""
         return self._struct
+
+
+class StructPointer(Pointer[T]):
+    """Class representing a pointer to a struct."""
+
+    def __init__(
+        self,
+        address: int,
+        data_type: Type[T],
+        existing: Optional["Struct"] = None,
+    ):
+        self._existing = existing
+        super().__init__(address, data_type, True)
+
+    @property
+    def _as_parameter_(
+        self,
+    ) -> Union[int, "ctypes._PointerLike"]:
+        existing = self._existing
+
+        if existing:
+            return ctypes.pointer(existing.struct)
+
+        return self.ensure()
+
+    def __repr__(self) -> str:
+        return f"<pointer to struct at {str(self)}>"
+
+    def __rich__(self) -> str:
+        return f"<[bold blue]pointer[/] to struct at {str(self)}>"

@@ -1,163 +1,244 @@
-# Bindings
+# C Bindings
 
-**Warning:** This page assumes you are already familiar with the C programming language.
-
-On top of the basic memory functions, pointers.py provides Python bindings for almost the entire C standard library.
-
-To use one, simply import it:
+Pointers.py provides type safe bindings for most of the C standard library. We can use one by just importing it:
 
 ```py
-from pointers import strlen
+from pointers import printf
 
-print(strlen('hello')) # 5
+printf("hello world\n")
 ```
 
-Pointers.py will automatically convert the parameters to C values, and then convert the return value back to Python.
+## Collisions
 
-These bindings are also completely type safe, unlike trying to do something in a library like `ctypes`.
+Some names are either already used by python or used by pointers.py, so they are prefixed with `c_`.
 
-## Limitations
-
-### Functions
-
-As of now, there isn't really any good way to pass C functions from Python.
-
-Due to this, the `signal`, `qsort`, and `bsearch` functions are not supported by the pointers.py bindings.
-
-### Macros
-
-Since macros aren't stored in the C standard library DLL, we can't access any of those functions.
-
-This means functions like `setjmp` aren't supported either.
-
-### Name collison
-
-The C standard library has a function called `raise`, which terminates the program with a signal.
-
-Since the `raise` keyword prohibits naming a function `raise`, pointers.py had to name it `c_raise`:
+For example, `raise` and `malloc` are both used, so you can import their bindings by importing `c_raise` and `c_malloc`:
 
 ```py
-from pointers import c_raise
+from pointers import c_raise, c_malloc
 
-c_raise(11)
-# program terminated with signal 11, segmentation fault
+# ...
 ```
 
-Pointers.py also already provides APIs for dynamic memory functions (`malloc`, `free`, etc), so these are prefixed with `c_` as well:
+## Pointers
 
-```py
-a = c_malloc(2)
-sprintf(a, "%s", "b")
-printf("%s\n", a)
-c_free(a)
-```
-
-## Void Pointers
-
-Some types (such as `FILE`) cannot be converted to Python. Pointers.py resolves this by returning a `VoidPointer` object.
-
-```py
-from pointers import fopen, fclose, fprintf
-
-file = fopen('/dev/null', 'w')
-fprintf(file, "hello")
-fclose(file)
-```
-
-Although it won't be very useful, you can still dereference it:
-
-```py
-print(~file) # 4222428292
-```
-
-### Casting
-
-If you need to cast a void pointer to a typed pointer, you can use the `cast` function, like so:
-
-```py
-from pointers import fopen, fclose, fprintf, cast
-
-file = cast(fopen('/dev/null', 'w'), int) # type becomes TypedCPointer[int]
-fprintf(file, "hello")
-fclose(file)
-```
-
-### Typed vs void pointers
-
-`TypedCPointer` and `VoidPointer` inherit from the same base class, so most of the behavior is the same with 2 key differences:
-
--   `VoidPointer` always points to `int`, whereas `TypedCPointer` always points to `T`.
--   `TypedCPointer` forces the pointer to be the same type when using data movement, but `VoidPointer` will move any type.
-
-## Structs
-
-A few functions (such as `div`) return structs. Luckily, these are mappable to Python objects:
-
-```py
-from pointers import div
-
-div(10, 1) # returns type DivT, which maps to the C struct div_t
-```
-
-In fact, you can even create your own structs:
-
-```py
-from pointers import Struct
-
-class MyStruct(Struct):
-    a: str
-    b: str
-
-a = MyStruct('a', 'b')
-print(a.a) # a
-```
-
-### Struct Pointers
-
-Functions such as `localeconv` return pointers to structs. These are mapped as `StructPointer` objects, which can be used like any other pointer:
-
-```py
-from pointers import localeconv
-
-ptr = localeconv()
-print((~ptr).grouping)
-```
-
-You can also create a pointer to your own struct using the `to_struct_ptr` function:
-
-```py
-from pointers import Struct, to_struct_ptr
-
-class MyStruct(Struct):
-    a: str
-    b: str
-
-a = to_struct_ptr(MyStruct('a', 'b'))
-print((~a).a)
-```
-
-## Custom C Pointers
-
-There might be a case where you need to make a pointer object to a C type. For this, you can use the `to_c_ptr` function:
+Several things in the C standard library require pointers. To create your own, you can use `to_c_ptr`:
 
 ```py
 from pointers import to_c_ptr
 
-ptr = to_c_ptr(1) # becomes TypedCPointer[int]
+ptr = to_c_ptr(1)  # creates a pointer to the c integer 1
 ```
 
-You can then use this pointer in any binding:
+Then, we can just pass it to the binding:
 
 ```py
-from pointers import frexp, to_c_ptr
+from pointers import to_c_ptr, time
 
-ptr = to_c_ptr(10)
-print(frexp(8.0, ptr))
+ptr = to_c_ptr(1)
+time(ptr)
+print(time)  # unix timestamp
+```
+
+### Strings
+
+`to_c_ptr` automatically converts the passed type to a C type, but that can be misleading with strings.
+
+When you pass a `str`, pointers.py has to convert it to a `wchar_t*`, not `char*`.
+
+If you want a `char*`, you need to pass a `bytes` object:
+
+```py
+from pointers import to_c_ptr
+
+wcharp = to_c_ptr("test")  # wchar_t*
+charp = to_c_ptr(b"test")  # char*
+```
+
+This **is not** the same for the bindings though. Pointers.py is able to convert a `str` to `char*` just fine:
+
+```py
+from pointers import puts
+
+puts("a")  # no need for a bytes object here
+```
+
+**Note:** Any pointer object that derives from `BaseCPointer` may be passed to a binding. Otherwise, you have to manually convert it.
+
+## Void Pointers
+
+Some types cannot be convert to a Python type or they can point to anything. For this, pointers.py uses the `VoidPointer` class:
+
+```py
+from pointers import c_malloc
+
+ptr = c_malloc(0)  # ptr gets assigned to VoidPointer
+```
+
+`FILE*` is an example of a type that can't be converted:
+
+```py
+from pointers import fopen, fprintf, fclose
+
+file = fopen("/dev/null", "w") # assigns to the c FILE* type
+fprintf(file, "hello world")
+fclose(file)
+```
+
+You can pass void pointers the same way:
+
+```py
+from pointers import c_malloc, printf
+
+ptr = c_malloc(0)
+printf("%p\n", ptr)
+```
+
+If you try and derefernce a void pointer, it just returns its memory address:
+
+```py
+from pointers import c_malloc
+
+ptr = c_malloc(0)
+print(*ptr)
+```
+
+### Casting
+
+`VoidPointer` objects can be casted to a typed pointer with the `cast` function, like so:
+
+```py
+from pointers import c_malloc, printf, cast, strcpy, c_free
+
+ptr = c_malloc(3)
+strcpy(ptr, "hi")
+printf("%s\n", cast(ptr, bytes))  # bytes refers to char*, str refers to wchar_t*
+c_free(ptr)
+```
+
+You can even dereference a casted `VoidPointer` to get its actual value:
+
+```py
+ptr = c_malloc(3)
+strcpy(ptr, "hi")
+print(*cast(ptr, bytes))  # b'hi'
+c_free(ptr)
+```
+
+## Structs
+
+Some bindings, such as `div` return a struct. For this, pointers.py has its own `Struct` class:
+
+```py
+from pointers import div
+
+a = div(10, 1)  # type is DivT, which inherits from Struct
+print(a.quot)  # prints out 10
+```
+
+## Functions
+
+There are a few bindings which require a function. All you have to do is write a function, and then pass it to the binding:
+
+```py
+from pointers import c_raise, signal, exit
+
+def sighandler(signum: int):
+    print(f"handling signal {signum}")
+    exit(0)
+
+signal(2, sighandler)
+c_raise(2)  # send signal 2 to the program
+```
+
+## Custom Bindings
+
+You can create your own binding to a C function with `ctypes` and pointers.py.
+
+The recommended way to do it is via the `binds` function:
+
+```py
+from pointers import binds
+import ctypes
+
+dll = ctypes.CDLL("libc.so.6")  # c standard library for linux
+
+# specifying the argtypes and restype isnt always required, but its recommended that you add it
+dll.strlen.argtypes = (ctypes.c_char_p,)
+dll.strlen.restype = ctypes.c_int
+
+@binds(dll.strlen)
+def strlen(text: str):
+    ...
+```
+
+You can also use `binding`, but that isn't type safe:
+
+```py
+from pointers import binding
+import ctypes
+
+# ...
+
+strlen = binding(dll.strlen)  # no type safety when calling strlen!
+```
+
+### Structs
+
+We need to set the `restype` when returning a struct, so first you need to define a `ctypes.Structure` object:
+
+```py
+import ctypes
+
+dll = ctypes.CDLL("libc.so.6")
+
+class div_t(ctypes.Structure):
+    _fields_ = [
+        ("quot", ctypes.c_int),
+        ("rem", ctypes.c_int),
+    ]
+
+dll.div.restype = div_t
+```
+
+Then, we need to create a pointers.py `Struct` that corresponds:
+
+```py
+from pointers import Struct
+
+class DivT(Struct):
+    quot: int
+    rem: int
+```
+
+Then, we can finally define our binding:
+
+```py
+from pointers import binds, Struct
+import ctypes
+
+dll = ctypes.CDLL("libc.so.6")
+
+class div_t(ctypes.Structure):
+    _fields_ = [
+        ("quot", ctypes.c_int),
+        ("rem", ctypes.c_int),
+    ]
+
+class DivT(Struct):
+    quot: int
+    rem: int
+
+dll.div.restype = div_t
+
+@binds(dll.div, struct=DivT) # this tells pointers.py that this struct will be returned
+def div(numer: int, denom: int) -> DivT:
+    ...
 ```
 
 ## Why to use these bindings?
 
-The pointers.py bindings are must nicer to use opposed to something like `ctypes`:
+The pointers.py bindings are nicer to use opposed to something like `ctypes`:
 
 _Comparison between `ctypes` and `pointers.py`_
 
@@ -183,12 +264,6 @@ print(strlen("hello")) # type safe and doesnt force you to use bytes
 
 ## Why not to use these bindings?
 
-Versatility and speed. The pointers.py bindings can make it harder to use your own functions with, as it forces you to use it's pointer API.
+Versatility and speed. The pointers.py bindings can make it harder to use your own functions with, as it forces you to use its pointer API.
 
 On top of that, the bindings are built on top of `ctypes`, which means that it cannot be faster. They also go through many type conversions in order to provide a nice API for the end user, which can slow things down significantly.
-
-## Issues
-
-Since the signatures for these bindings were mostly autogenerated, there is a slight chance that one was created incorrectly, which may cause your program to crash or behave weirdly.
-
-**If you come across a problem, feel free to report it or make a pull request on the [repository](https://github.com/ZeroIntensity/pointers.py).**

@@ -1,12 +1,9 @@
 site_name: pointers.py
 site_url: https://pointerspy.netlify.app/
 nav:
-  - Home: index.md
-  - Getting Started: getting_started.md
-  - Using Pointers: pointers.md
-  - Data Movement: movement.md
-  - Memory Allocation: allocation.md
-  - Bindings: bindings.md
-  - Custom Bindings: custom_bindings.md
-  - Under The Hood: under_the_hood.md
+    - Home: index.md
+    - Getting Started: getting_started.md
+    - Using Pointers: using_pointers.md
+    - Allocation: allocation.md
+    - C Bindings: bindings.md
 theme: readthedocs
