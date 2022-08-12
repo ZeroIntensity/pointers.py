@@ -16,7 +16,7 @@ Why would you ever need this
 from pointers import _
 
 text: str = "hello world"
-ptr = _&text # creates a new pointer object
+ptr = _&text  # creates a new pointer object
 ptr <<= "world hello"
 print(text)  # world hello
 ```
