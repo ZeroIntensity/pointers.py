@@ -27,10 +27,10 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-PointerLike = Union[TypedCPointer[Any], VoidPointer, None]
+PointerLike = Union[TypedCPointer[T], VoidPointer, None]
 StringLike = Union[str, bytes, VoidPointer, TypedCPointer[bytes]]
 Format = Union[StringLike, PointerLike]
-TypedPtr = Optional[TypedCPointer[T]]
+TypedPtr = Optional[PointerLike[T]]
 PyCFuncPtrType = type(ctypes.CFUNCTYPE(None))
 
 __all__ = (

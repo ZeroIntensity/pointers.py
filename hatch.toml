@@ -4,6 +4,7 @@ path = "src/pointers/version.py"
 [envs.default]
 dependencies = [
   "ward",
+  "typing_extensions",
 ]
 [envs.default.scripts]
 tests = "ward"

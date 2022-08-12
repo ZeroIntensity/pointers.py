@@ -28,7 +28,7 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         chunks: int,
         chunk_size: int,
         current_index: int,
-        chunk_cache: Optional[Dict[int, "AllocatedArrayPointer[T]"]] = None,
+        chunk_store: Optional[Dict[int, "AllocatedArrayPointer[T]"]] = None,
         freed: bool = False,
         origin_address: Optional[int] = None,
     ) -> None:
@@ -37,12 +37,12 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         self._size = chunk_size
         self._current_index = current_index
         self._chunks = chunks
-        self._chunk_store = chunk_cache or {0: self}
+        self._chunk_store = chunk_store or {0: self}
         self._assigned = True
         self._tracked = False
         self._freed = freed
 
-        if chunk_cache:
+        if chunk_store:
             self._chunk_store[self.current_index] = self
 
     # https://github.com/python/mypy/issues/4125

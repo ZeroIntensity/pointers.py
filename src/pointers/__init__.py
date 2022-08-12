@@ -10,7 +10,7 @@ from .c_pointer import (
 from .c_utils import force_set_attr
 from .calloc import AllocatedArrayPointer, calloc
 from .custom_binding import binding, binds
-from .decay import decay
+from .decay import decay, decay_annotated, decay_wrapped
 from .exceptions import (
     AllocationError, DereferenceError, FreedMemoryError,
     InvalidBindingParameter, InvalidSizeError

@@ -17,7 +17,7 @@ __all__ = (
 
 
 def move_to_mem(
-    ptr: ctypes._PointerLike,
+    ptr: "ctypes._PointerLike",
     stream: bytes,
     *,
     unsafe: bool = False,

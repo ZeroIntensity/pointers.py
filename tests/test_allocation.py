@@ -75,7 +75,8 @@ def _():
     realloc(ptr, 30)
     assert ~ptr == 1
     target: str = "hello world"
-    realloc(ptr, sys.getsizeof(target) + 1)
+    nptr = realloc(ptr, sys.getsizeof(target) + 1)
+    assert nptr is ptr
 
     ptr <<= target
     assert ~ptr == target
