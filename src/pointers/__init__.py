@@ -18,5 +18,6 @@ from .exceptions import (
 from .magic import _
 from .malloc import AllocatedPointer, free, malloc, realloc
 from .object_pointer import Pointer, to_ptr
+from .std_structs import DivT, Lconv, LDivT, Tm
 from .struct import Struct
 from .version import __version__

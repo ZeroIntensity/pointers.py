@@ -102,6 +102,10 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
     def __getitem__(self, index: int) -> "AllocatedArrayPointer[T]":
         return self._get_chunk_at(index)
 
+    def __setitem__(self, index: int, value: T) -> None:
+        chunk = self._get_chunk_at(index)
+        chunk <<= value
+
     def __del__(self):
         pass
 

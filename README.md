@@ -13,32 +13,21 @@ Why would you ever need this
 ### Examples
 
 ```py
-from pointers import Pointer, decay
-
-a: str = '123'
-b: str = 'abc'
-
-@decay
-def move(ptr_a: Pointer[str], ptr_b: Pointer[str]):
-    ptr_a <<= ptr_b
-
-move(a, b)
-print(a, b) # abc abc
-```
-
-```py
 from pointers import _
 
-ptr = _&"hello world" # creates a new pointer object
-assert _*ptr == "hello world"
+text: str = "hello world"
+ptr = _&text # creates a new pointer object
+ptr <<= "world hello"
+print(text)  # world hello
 ```
 
 ```py
-from pointers import fopen, fprintf, fclose
+from pointers import c_malloc as malloc, c_free as free, strcpy, printf
 
-file = fopen("/dev/null", "w") # assigns to the c FILE* type
-fprintf(file, "hello world")
-fclose(file)
+ptr = malloc(3)
+strcpy(ptr, "hi")
+printf("%s\n", ptr)
+free(ptr)
 ```
 
 ### Features

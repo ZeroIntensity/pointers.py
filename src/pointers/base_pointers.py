@@ -191,9 +191,12 @@ class BaseObjectPointer(
     ) -> None:
         self._address: Optional[int] = address
         self._type: Type[T] = typ
+        obj = ~self
 
         if increment_ref and address:
-            add_ref(~self)
+            add_ref(obj)
+
+        self._origin_size = sys.getsizeof(obj)
 
     @property
     def type(self):
@@ -224,11 +227,12 @@ class BaseObjectPointer(
             )
 
         if new.type is not self.type:
-            raise ValueError(
-                "new address must be the same type",
+            raise TypeError(
+                f"new address must be the same type (pointer looks at {self.type.__name__}, target is {new.type.__name__})",  # noqa
             )
 
         self._address = new.address
+        add_ref(~self)
 
     @property
     def address(self) -> Optional[int]:
@@ -353,6 +357,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         data: Union[BasePointer[T], T],
         unsafe: bool = False,
     ) -> None:
+        add_ref(data)
         self.ensure_valid()
         from .object_pointer import to_ptr
 
@@ -365,6 +370,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
 
         move_to_mem(ptr, byte_stream, unsafe=unsafe)
         self.assigned = True
+        remove_ref(data)
 
     def dereference(self):
         if self.freed:

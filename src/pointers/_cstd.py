@@ -3,6 +3,7 @@ from ctypes.util import find_library
 from platform import system
 from typing import Dict, Type
 
+from .std_structs import DivT, Lconv, LDivT, Tm
 from .struct import Struct
 
 platforms = {
@@ -22,10 +23,6 @@ __all__ = (
     "div_t",
     "ldiv_t",
     "STRUCT_MAP",
-    "Tm",
-    "DivT",
-    "LDivT",
-    "Lconv",
 )
 
 dll = ctypes.CDLL(platforms.get(system().lower()) or find_library("c"))
@@ -45,23 +42,6 @@ class tm(ctypes.Structure):
     ]
 
 
-class Tm(Struct):
-    tm_sec: int
-    tm_min: int
-    tm_hour: int
-    tm_mday: int
-    tm_mon: int
-    tm_year: int
-    tm_wday: int
-    tm_yday: int
-    tm_isdst: int
-
-
-class DivT(Struct):
-    quot: int
-    rem: int
-
-
 class div_t(ctypes.Structure):
     _fields_ = [
         ("quot", ctypes.c_int),
@@ -69,34 +49,11 @@ class div_t(ctypes.Structure):
     ]
 
 
-class LDivT(DivT):
-    pass
-
-
 class ldiv_t(ctypes.Structure):
     _fields_ = [
         ("quot", ctypes.c_long),
         ("rem", ctypes.c_long),
     ]
-
-
-class Lconv(Struct):
-    decimal_point: str
-    thousands_sep: str
-    grouping: str
-    int_curr_symbol: str
-    currency_symbol: str
-    mon_decimal_point: str
-    mon_thousands_sep: str
-    mon_grouping: str
-    positive_sign: str
-    negative_sign: str
-    frac_digits: str
-    p_cs_precedes: str
-    p_sep_by_space: str
-    n_sep_by_space: str
-    p_sign_posn: str
-    n_sign_posn: str
 
 
 class lconv(ctypes.Structure):

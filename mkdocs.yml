@@ -3,4 +3,7 @@ site_url: https://pointerspy.netlify.app/
 nav:
     - Home: index.md
     - Getting Started: getting_started.md
+    - Using Pointers: using_pointers.md
+    - Allocation: allocation.md
+    - C Bindings: bindings.md
 theme: readthedocs

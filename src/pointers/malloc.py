@@ -1,8 +1,9 @@
+import sys
 from typing import Any, Optional, TypeVar
 
 from ._cstd import c_free, c_malloc, c_realloc
 from .base_pointers import BaseAllocatedPointer, IterDereferencable
-from .exceptions import AllocationError
+from .exceptions import AllocationError, InvalidSizeError
 
 __all__ = ("AllocatedPointer", "malloc", "free", "realloc")
 
@@ -77,6 +78,13 @@ def free(target: BaseAllocatedPointer):
 
 def realloc(target: A, size: int) -> A:
     """Resize a memory block created by malloc."""
+    tsize: int = sys.getsizeof(~target)
+
+    if target.assigned and (tsize > size):
+        raise InvalidSizeError(
+            f"object inside memory is of size {tsize}, so memory cannot be set to size {size}",  # noqa
+        )
+
     addr = c_realloc(target.address, size)
 
     if not addr:

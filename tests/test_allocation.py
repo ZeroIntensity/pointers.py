@@ -10,7 +10,10 @@ from pointers import (
 @test("malloc and free")
 def _():
     ptr = malloc(28)
+    assert ptr.freed is False
+    assert ptr.assigned is False
     ptr <<= 1
+    assert ptr.assigned is True
 
     with raises(InvalidSizeError):
         ptr <<= "hello"
@@ -22,6 +25,11 @@ def _():
 
     with raises(FreedMemoryError):
         free(ptr)
+
+    with raises(FreedMemoryError):
+        ptr.ensure_valid()
+
+    assert ptr.freed is True
 
 
 @test("calloc with enumerations")
@@ -42,6 +50,7 @@ def _():
 @test("calloc")
 def _():
     ptr = calloc(4, 28)
+    assert ptr.chunks == 4
 
     with raises(InvalidSizeError):
         ptr <<= "hello"
@@ -57,7 +66,12 @@ def _():
 
     assert ~ptr == 1
     ptr += 1
-    assert ~ptr
+    assert ptr.current_index == 1
+    assert ~ptr == 2
+
+    ptr[0] = 10
+    assert ~ptr[0] == 10
+
     free(ptr)
 
     with raises(FreedMemoryError):
@@ -80,3 +94,21 @@ def _():
 
     ptr <<= target
     assert ~ptr == target
+
+    with raises(InvalidSizeError):
+        realloc(ptr, 10)
+
+
+@test("allocation with tracked types")
+def _():
+    class A:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    obj = A("hello")
+    ptr = malloc(sys.getsizeof(obj))
+    ptr <<= obj
+
+    assert (~ptr).value == "hello"
+    free(ptr)
+    assert obj.value == "hello"

@@ -23,7 +23,7 @@ $ git clone https://github.com/ZeroIntensity/pointers.py && cd pointers.py
 $ pip install .
 ```
 
-**Python 3.6+ is required**
+**CPython 3.6+ is required**
 
 Now, to ensure everything is working properly we can run this simple program:
 
@@ -35,5 +35,3 @@ print(*ptr)
 ```
 
 Running this should print `hello world` into the console.
-
-Congratulations, you have written a program with the worst library every created!

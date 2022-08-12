@@ -154,3 +154,55 @@ ptr >>= "hello"  # equivalent to the above
 
 print(*ptr)  # prints out "hello"
 ```
+
+However, this **does not** change the original value. To do that, see the section below.
+
+## Movement
+
+Movement is somewhat complicated. In low level languages with pointers, you can use dereferencing assignment, like so:
+
+```c
+int* a = &1;
+*a = 2;
+```
+
+Unfortunately, this isn't really possible in Python. Instead, pointers.py has a feature called data movement. You can use it with `Pointer.move` or the more preffered `<<=` operator:
+
+```py
+from pointers import _
+
+text: str = "hello world"
+ptr = _&text
+ptr <<= "world hello"
+print(text)  # prints out "world hello"
+```
+
+**This is extremely dangerous.**
+
+We didn't overwrite the variable `text` with `"world hello"`, we overwrote the string itself. We can run the following to then demonstrate:
+
+```py
+# ^^ insert the code from above
+print("hello world")  # prints out "world hello", since we overwrote it
+```
+
+While pointers.py does its best to try and prevent segmentation faults, data movement can cause several problems, mainly with garbage collection and reference counting. If you don't know what those are, I highly recommend staying away from data movement.
+
+In fact, unless you are familiar with the CPython internal machinery, I wouldn't touch movement at all.
+
+### Bypassing size limits
+
+An important safety feature of movement is making sure that you can't move an object larger than the underlying value.
+
+This is important for several reasons, but if you truly need to bypass it you can use the `^=` operator, or pass `unsafe=True` to `move`:
+
+```py
+from pointers import _
+
+ptr = _&"123"
+ptr ^= "1234" # this is the same as ptr.move("1234", unsafe=True)
+```
+
+Doing this is strictly experimental, and may be removed in the future.
+
+Moving objects too large also makes your code vulnerable to [buffer overflow attacks](https://en.wikipedia.org/wiki/Buffer_overflow), along with a chance of segmentation faults.

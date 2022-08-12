@@ -5,8 +5,8 @@ from ward import raises, test
 from pointers import InvalidBindingParameter
 from pointers import _cstd as std
 from pointers import (
-    binds, c_free, c_malloc, cast, div, isspace, signal, sprintf, strcpy,
-    strlen, toupper
+    binds, c_free, c_malloc, cast, div, isspace, localeconv, signal, sprintf,
+    strcpy, strlen, toupper
 )
 from pointers._cstd import DivT
 
@@ -52,6 +52,13 @@ def _():
 
 
 @test("structs")
+def _():
+    res = div(10, 1)
+    assert type(res) is DivT
+    assert res.quot == 10
+
+
+@test("struct pointers")
 def _():
     res = div(10, 1)
     assert type(res) is DivT

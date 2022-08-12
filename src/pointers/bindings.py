@@ -155,7 +155,7 @@ __all__ = (
 
 
 def _not_null(data: Optional[T]) -> T:
-    assert data is not None
+    assert data is not None, f"{data} is None"
     return data
 
 

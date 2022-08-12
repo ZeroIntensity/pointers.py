@@ -16,6 +16,8 @@ def _():
 def _():
     ptr = to_ptr("test")
     assert ~ptr == "test"
+    assert m * ptr == "test"
+    assert (*ptr,) == (~ptr,)
     cptr = to_c_ptr("test")
     assert ~cptr == "test"
 
@@ -29,6 +31,9 @@ def _():
     ptr >>= "test"
     assert ~ptr == "test"
 
+    with raises(TypeError):
+        ptr >>= 1  # type: ignore
+
 
 @test("movement")
 def _():
@@ -40,6 +45,26 @@ def _():
 
     with raises(InvalidSizeError):
         ptr <<= "hello world"
+
+    with raises(TypeError):
+        ptr <<= 1  # type: ignore
+
+
+@test("assignment with tracked types")
+def _():
+    class A:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    obj = A("hello")
+    ptr = to_ptr(A("world"))
+    assert (~ptr).value == "world"
+
+    ptr >>= obj
+    assert (~ptr).value == "hello"
+    ptr2 = to_ptr(obj)
+    ptr2 >>= A("12345")
+    assert (~ptr2).value == "12345"
 
 
 @test("null pointers")

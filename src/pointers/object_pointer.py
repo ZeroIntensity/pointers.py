@@ -2,6 +2,8 @@ import ctypes
 import sys
 from typing import TypeVar, Union
 
+from _pointers import add_ref, remove_ref
+
 from .base_pointers import BaseObjectPointer, BasePointer
 from .exceptions import InvalidSizeError
 
@@ -29,7 +31,9 @@ class Pointer(BaseObjectPointer[T]):
             )
 
         if data.type is not self.type:
-            raise ValueError("pointer must be the same type")
+            raise TypeError(
+                f"target object is not the same type (pointer looks at {self.type.__name__}, target is {data.type.__name__})",  # noqa
+            )
 
         deref_a: T = ~data  # type: ignore
         deref_b: T = ~self
@@ -37,7 +41,7 @@ class Pointer(BaseObjectPointer[T]):
         size_a: int = sys.getsizeof(deref_a)
         size_b: int = sys.getsizeof(deref_b)
 
-        if (size_b < size_a) and (not unsafe):
+        if (self._origin_size < size_a) and (not unsafe):
             raise InvalidSizeError(
                 f"target size may not exceed current size ({size_a} < {size_b})",  # noqa
             )
@@ -45,6 +49,7 @@ class Pointer(BaseObjectPointer[T]):
         bytes_a = (ctypes.c_ubyte * size_a).from_address(data.ensure())
         bytes_b = (ctypes.c_ubyte * size_b).from_address(self.ensure())
 
+        self.assign(~data)
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
     @classmethod
@@ -58,4 +63,7 @@ class Pointer(BaseObjectPointer[T]):
 
 def to_ptr(obj: T) -> Pointer[T]:
     """Convert an object to a pointer."""
-    return Pointer.make_from(obj)
+    add_ref(obj)
+    ptr = Pointer.make_from(obj)
+    remove_ref(obj)
+    return ptr
