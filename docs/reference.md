@@ -4,7 +4,7 @@
 ::: pointers.base_pointers
 ::: pointers.c_pointer
 ::: pointers.decay
-::: pointers.struct
+::: pointers.structure
 ::: pointers.std_structs
 ::: pointers.malloc
 ::: pointers.calloc
