@@ -13,7 +13,7 @@ A = TypeVar("A", bound=BaseAllocatedPointer)
 
 
 class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
-    """Class representing a pointer created by malloc."""
+    """Pointer to allocated memory."""
 
     def __init__(
         self,
@@ -21,6 +21,12 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         size: int,
         assigned: bool = False,
     ) -> None:
+        """
+        Args:
+            address: Address of the allocated memory.
+            size: Size of the allocated memory.
+            assigned: Whether an object is currently inside the memory.
+        """
         self._address = address
         self._size = size
         self._freed = False
@@ -62,7 +68,22 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
 
 
 def malloc(size: int) -> AllocatedPointer[Any]:
-    """Allocate memory for a given size."""
+    """Allocate memory of a given size.
+
+    Args:
+        size: Allocation size.
+
+    Returns:
+        Pointer to allocated memory.
+
+    Raises:
+        AllocationError: Raised when allocation fails, presumably due to no memory.
+
+    Example:
+        ```py
+        ptr = malloc(1)
+        ```
+    """  # noqa
     mem = c_malloc(size)
 
     if not mem:
@@ -72,12 +93,39 @@ def malloc(size: int) -> AllocatedPointer[Any]:
 
 
 def free(target: BaseAllocatedPointer):
-    """Free allocated memory."""
+    """Equivalent to `target.free()`
+
+    Args:
+        target: Pointer to free.
+
+    Example:
+        ```py
+        ptr = malloc(1)
+        free(ptr)  # is the same as `ptr.free()`
+        ```"""
     target.free()
 
 
 def realloc(target: A, size: int) -> A:
-    """Resize a memory block created by malloc."""
+    """Resize a memory block created by malloc.
+
+    Args:
+        target: Pointer to reallocate.
+        size: New allocation size.
+
+    Returns:
+        Original object.
+
+    Raises:
+        InvalidSizeError: Object inside allocation is larger than attempted reallocation.
+        AllocationError: Raised when allocation fails, presumably due to no memory.
+
+    Example:
+        ```py
+        ptr = malloc(1)
+        realloc(ptr, 2)
+        ```
+    """  # noqa
     tsize: int = sys.getsizeof(~target)
 
     if target.assigned and (tsize > size):

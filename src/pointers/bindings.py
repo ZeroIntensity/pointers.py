@@ -16,14 +16,14 @@ from ._cstd import c_malloc as _malloc
 from ._cstd import c_raise as ct_raise
 from ._cstd import c_realloc as _realloc
 from ._cstd import dll
+from ._utils import get_mapped, get_py
 from .base_pointers import BaseCPointer, BasePointer
 from .c_pointer import TypedCPointer, VoidPointer
-from .c_utils import get_mapped, get_py
 from .exceptions import InvalidBindingParameter
-from .struct import StructPointer
+from .structure import StructPointer
 
 if TYPE_CHECKING:
-    from .struct import Struct
+    from .structure import Struct
 
 T = TypeVar("T")
 
@@ -210,9 +210,9 @@ def _decode_type(
         res = VoidPointer(res, ctypes.sizeof(ctypes.c_void_p(res)))
 
     elif issubclass(res_typ, ctypes.Structure):
-        struct = struct_map.get(res_typ)
-        if struct:
-            res = struct.from_existing(res)
+        st = struct_map.get(res_typ)
+        if st:
+            res = st.from_existing(res)
 
     elif isinstance(res, bytes):
         return res.decode()

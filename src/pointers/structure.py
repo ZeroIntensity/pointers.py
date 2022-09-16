@@ -3,10 +3,15 @@ from abc import ABC
 from contextlib import suppress
 from typing import Any, Optional, Type, TypeVar, Union, get_type_hints
 
-from .c_utils import attempt_decode, get_mapped
+from ._utils import attempt_decode, get_mapped
 from .object_pointer import Pointer
 
 T = TypeVar("T", bound="Struct")
+
+__all__ = (
+    "Struct",
+    "StructPointer",
+)
 
 
 class Struct(ABC):
@@ -36,7 +41,15 @@ class Struct(ABC):
         return self._struct
 
     @classmethod
-    def from_existing(cls, struct: ctypes.Structure):
+    def from_existing(cls, struct: ctypes.Structure) -> "Struct":
+        """Build a new struct from an existing ctypes structure.
+
+        Args:
+            struct: Existing `ctypes.Structure` object
+
+        Returns:
+            Created struct object.
+        """
         instance = cls(do_sync=False)
         instance._struct = struct
         instance._sync()

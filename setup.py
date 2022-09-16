@@ -27,7 +27,7 @@ if __name__ == "__main__":
         license="MIT",
         project_urls={
             "Source": "https://github.com/ZeroIntensity/pointers.py",
-            "Documentation": "https://pointerspy.netlify.app/",
+            "Documentation": "https://pointers.zintensity.dev/",
         },
         package_dir={"": "src"},
         ext_modules=[Extension("_pointers", ["./src/mod.c"])],

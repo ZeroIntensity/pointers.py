@@ -7,4 +7,11 @@ nav:
     - Allocation: allocation.md
     - C Bindings: bindings.md
     - Making a Program: making_a_program.md
+    - Reference: reference.md
 theme: readthedocs
+
+plugins:
+    - mkdocstrings:
+          handlers:
+              python:
+                  paths: [src] # search packages in the src folder

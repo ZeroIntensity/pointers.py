@@ -1,12 +1,10 @@
-import sys
-
 from ward import raises, test
 
 from pointers import InvalidBindingParameter
 from pointers import _cstd as std
 from pointers import (
-    binds, c_free, c_malloc, cast, div, isspace, localeconv, signal, sprintf,
-    strcpy, strlen, toupper
+    binds, c_free, c_malloc, cast, div, isspace, signal, sprintf, strcpy,
+    strlen, toupper
 )
 from pointers._cstd import DivT
 

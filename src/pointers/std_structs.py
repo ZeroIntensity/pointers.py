@@ -1,4 +1,4 @@
-from .struct import Struct
+from .structure import Struct
 
 __all__ = (
     "Tm",

@@ -1,16 +1,19 @@
 import ctypes
+import struct
 import sys
 from typing import TypeVar, Union
 
-from _pointers import add_ref, remove_ref
+from _pointers import add_ref, remove_ref, set_ref
 
-from .base_pointers import BaseObjectPointer, BasePointer
+from .base_pointers import NULL, BaseObjectPointer, BasePointer, Nullable
 from .exceptions import InvalidSizeError
 
 T = TypeVar("T")
 
 
 class Pointer(BaseObjectPointer[T]):
+    """Pointer to a `PyObject`"""
+
     def __repr__(self) -> str:
         return f"<pointer to {self.type.__name__} object at {str(self)}>"  # noqa
 
@@ -46,23 +49,43 @@ class Pointer(BaseObjectPointer[T]):
                 f"target size may not exceed current size ({size_a} < {size_b})",  # noqa
             )
 
+        current_address: int = self.ensure()
         bytes_a = (ctypes.c_ubyte * size_a).from_address(data.ensure())
-        bytes_b = (ctypes.c_ubyte * size_b).from_address(self.ensure())
+        (refcnt,) = struct.unpack(
+            "q", ctypes.string_at(current_address, 8)
+        )  # this might be overkill
+
+        bytes_b = (ctypes.c_ubyte * size_b).from_address(current_address)
+        set_ref(deref_a, sys.getrefcount(deref_a) - 1 + refcnt)
 
         self.assign(~data)
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
 
     @classmethod
-    def make_from(cls, obj: T) -> "Pointer[T]":
+    def make_from(cls, obj: Nullable[T]) -> "Pointer[T]":
         return Pointer(
-            id(obj),
-            type(obj),
+            id(obj) if obj is not NULL else None,
+            type(obj),  # type: ignore
             True,
         )
 
 
-def to_ptr(obj: T) -> Pointer[T]:
-    """Convert an object to a pointer."""
+def to_ptr(obj: Nullable[T]) -> Pointer[T]:
+    """Point to the underlying `PyObject`.
+
+    Args:
+        obj: Object to point to.
+
+    Returns:
+        Created pointer.
+
+    Example:
+        ```py
+        ptr = to_ptr(1)  # ptr now points to 1
+        something = 2
+        something_ptr = to_ptr(something)  # points to 2, not "something"
+        ```
+    """
     add_ref(obj)
     ptr = Pointer.make_from(obj)
     remove_ref(obj)

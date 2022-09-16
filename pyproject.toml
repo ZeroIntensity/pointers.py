@@ -23,9 +23,4 @@ classifiers = [
 dependencies = [
     "typing_extensions",
 ]
-version="2.0.0"
-
-[project.urls]
-Documentation = "https://pointers.zintensity.dev"
-Issues = "https://github.com/ZeroIntensity/pointers.py/issues"
-Source = "https://github.com/ZeroIntensity/pointers.py"
+version = "2.1.0"

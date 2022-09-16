@@ -12,6 +12,7 @@ tests = "ward"
 [envs.docs]
 dependencies = [
   "mkdocs",
+  "mkdocstrings[python]",
 ]
 [envs.docs.scripts]
 build = "mkdocs build --clean"

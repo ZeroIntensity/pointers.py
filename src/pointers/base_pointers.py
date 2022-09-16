@@ -10,20 +10,35 @@ from typing import (
 
 from _pointers import add_ref, remove_ref
 
-from .c_utils import deref, force_set_attr, move_to_mem
+from ._utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
 
 __all__ = (
     "BasePointer",
     "BaseObjectPointer",
+    "NULL",
+    "Nullable",
+    "BasicPointer",
+    "BaseCPointer",
+    "BaseAllocatedPointer",
+    "Dereferencable",
+    "IterDereferencable",
 )
 
 T = TypeVar("T")
+A = TypeVar("A", bound="BasicPointer")
 
 with suppress(
     UnsupportedOperation
 ):  # in case its running in idle or something like that
     faulthandler.enable()
+
+
+class NULL:
+    """Unique object representing a NULL address."""
+
+
+Nullable = Union[T, Type[NULL]]
 
 
 class BasicPointer(ABC):
@@ -57,18 +72,61 @@ class BasicPointer(ABC):
         return data.address == self.address
 
     def ensure(self) -> int:
-        """Ensure that the pointer is not null."""
+        """Ensure that the pointer is not null.
+
+        Raises:
+            NullPointerError: Address of pointer is `None`
+
+        Returns:
+            Address of the pointer.
+
+        Example:
+            ```py
+            ptr = to_ptr(NULL)
+            address = ptr.ensure()  # NullPointerError
+            ptr >>= 1
+            address = ptr.ensure()  # works just fine
+            ```"""
+
         if not self.address:
-            raise NullPointerError(
-                "cannot perform operation when pointing to None",
-            )
+            raise NullPointerError("pointer is NULL")
         return self.address
 
 
+class Movable(ABC, Generic[T, A]):
+    @abstractmethod
+    def move(
+        self,
+        data: Union[A, T],
+        *,
+        unsafe: bool = False,
+    ) -> None:
+        """Move data to the target address.
+
+        Args:
+            data: Pointer or object to move into the current data.
+            unsafe: Should buffer overflows be allowed.
+        """
+        ...
+
+    def __ilshift__(self, data: Union[A, T]):
+        self.move(data)
+        return self
+
+    def __ixor__(self, data: Union[A, T]):
+        self.move(data, unsafe=True)
+        return self
+
+
 class Dereferencable(ABC, Generic[T]):
+    """Abstract class for an object that may be dereferenced."""
+
     @abstractmethod
     def dereference(self) -> T:
-        """Dereference the pointer."""
+        """Dereference the pointer.
+
+        Returns:
+            Value at the pointers address."""
         ...
 
     def __invert__(self) -> T:
@@ -77,12 +135,22 @@ class Dereferencable(ABC, Generic[T]):
 
 
 class IterDereferencable(Dereferencable[T], Generic[T]):
+    """
+    Abstract class for an object that may be dereferenced via * (`__iter__`)
+    """
+
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
         return iter({self.dereference()})
 
 
-class BasePointer(Dereferencable[T], BasicPointer, ABC, Generic[T]):
+class BasePointer(
+    Dereferencable[T],
+    Movable[T, "BasePointer[T]"],
+    BasicPointer,
+    ABC,
+    Generic[T],
+):
     """Base class representing a pointer."""
 
     @property
@@ -103,24 +171,6 @@ class BasePointer(Dereferencable[T], BasicPointer, ABC, Generic[T]):
         return hex(self.address or 0)
 
     @abstractmethod
-    def move(
-        self,
-        data: Union["BasePointer[T]", T],
-        *,
-        unsafe: bool = False,
-    ) -> None:
-        """Move data to the target address."""
-        ...
-
-    def __ilshift__(self, data: Union["BasePointer[T]", T]):
-        self.move(data)
-        return self
-
-    def __ixor__(self, data: Union["BasePointer[T]", T]):
-        self.move(data, unsafe=True)
-        return self
-
-    @abstractmethod
     def __del__(self) -> None:
         ...
 
@@ -129,14 +179,6 @@ class BasePointer(Dereferencable[T], BasicPointer, ABC, Generic[T]):
             return False
 
         return data.address == self.address
-
-    def ensure(self) -> int:
-        """Ensure that the pointer is not null."""
-        if not self.address:
-            raise NullPointerError(
-                "cannot perform operation when pointing to None",
-            )
-        return self.address
 
 
 class Typed(ABC, Generic[T]):
@@ -162,7 +204,12 @@ class Sized(ABC):
         """Size of the target value."""
         ...
 
-    def make_ct_pointer(self):
+    def make_ct_pointer(self) -> "ctypes._PointerLike":
+        """Convert the address to a ctypes pointer.
+
+        Returns:
+            The created ctypes pointer.
+        """
         return ctypes.cast(
             self.ensure(),
             ctypes.POINTER(ctypes.c_char * self.size),
@@ -183,12 +230,20 @@ class BaseObjectPointer(
     BasePointer[T],
     ABC,
 ):
+    """Abstract class for a pointer to a Python object."""
+
     def __init__(
         self,
-        address: int,
+        address: Optional[int],
         typ: Type[T],
         increment_ref: bool = False,
     ) -> None:
+        """
+        Args:
+            address: Address of the underlying value.
+            typ: Type of the pointer.
+            increment_ref: Should the reference count on the target object get incremented.
+        """  # noqa
         self._address: Optional[int] = address
         self._type: Type[T] = typ
         obj = ~self
@@ -212,14 +267,18 @@ class BaseObjectPointer(
 
     def assign(
         self,
-        target: Optional[Union["BaseObjectPointer[T]", T]],
+        target: Nullable[Union["BaseObjectPointer[T]", T]],
     ) -> None:
-        """Point to a new address."""
-        if not target:
+        """Point to a new address.
+
+        Args:
+            target: New pointer or value to look at.
+        """
+        if target is NULL:
             self._address = None
             return
 
-        new: BasePointer[T] = self._get_ptr(target)
+        new: BasePointer[T] = self._get_ptr(target)  # type: ignore
 
         if not isinstance(new, BaseObjectPointer):
             raise ValueError(
@@ -228,9 +287,10 @@ class BaseObjectPointer(
 
         if new.type is not self.type:
             raise TypeError(
-                f"new address must be the same type (pointer looks at {self.type.__name__}, target is {new.type.__name__})",  # noqa
+                f"object at new address must be the same type (pointer looks at {self.type.__name__}, target is {new.type.__name__})",  # noqa
             )
 
+        remove_ref(~self)
         self._address = new.address
         add_ref(~self)
 
@@ -243,7 +303,7 @@ class BaseObjectPointer(
 
     def __irshift__(
         self,
-        value: Optional[Union["BaseObjectPointer[T]", T]],
+        value: Nullable[Union["BaseObjectPointer[T]", T]],
     ):
         self.assign(value)
         return self
@@ -251,7 +311,18 @@ class BaseObjectPointer(
     @classmethod
     @abstractmethod
     def make_from(cls, obj: T) -> "BaseObjectPointer[T]":
-        """Create a new instance of the pointer."""
+        """Create a new instance of the pointer.
+
+        Args:
+            obj: Object to create pointer to.
+
+        Returns:
+            Created pointer.
+
+        Example:
+            ```py
+            ptr = Pointer.make_from(1)
+            ```"""
         ...
 
     @classmethod
@@ -270,7 +341,13 @@ class BaseObjectPointer(
             remove_ref(~self)
 
 
-class BaseCPointer(IterDereferencable[T], BasicPointer, Sized, ABC):
+class BaseCPointer(
+    IterDereferencable[T],
+    Movable[T, "BaseCPointer[T]"],
+    BasicPointer,
+    Sized,
+    ABC,
+):
     def __init__(self, address: int, size: int):
         self._address = address
         self._size = size
@@ -372,7 +449,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         self.assigned = True
         remove_ref(data)
 
-    def dereference(self):
+    def dereference(self) -> T:
         if self.freed:
             raise FreedMemoryError(
                 "cannot dereference memory that has been freed",

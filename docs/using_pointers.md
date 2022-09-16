@@ -203,6 +203,30 @@ ptr = _&"123"
 ptr ^= "1234" # this is the same as ptr.move("1234", unsafe=True)
 ```
 
-Doing this is strictly experimental, and may be removed in the future.
+Doing this is strictly experimental.
 
 Moving objects too large also makes your code vulnerable to [buffer overflow attacks](https://en.wikipedia.org/wiki/Buffer_overflow), along with a chance of segmentation faults.
+
+## Null Pointers
+
+If you would like to point to nothing, you can use `NULL`.
+
+Note that you cannot dereference a `NULL` pointer:
+
+```py
+from pointers import NULL, to_ptr
+
+ptr = to_ptr(NULL)
+~ptr  # NullPointerError
+```
+
+You can also assign an existing pointer to `NULL`:
+
+```py
+from pointers import NULL, to_ptr
+
+ptr = to_ptr(1)
+~ptr  # works just fine
+ptr >>= NULL
+~ptr  # NullPointerError
+```

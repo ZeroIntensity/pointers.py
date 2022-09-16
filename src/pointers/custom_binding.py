@@ -9,7 +9,7 @@ from .bindings import _base, _make_string
 if TYPE_CHECKING:
     from ctypes import _NamedFuncPointer
 
-    from .struct import Struct
+    from .structure import Struct
 
 T = TypeVar("T")
 P = ParamSpec("P")

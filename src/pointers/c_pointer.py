@@ -6,12 +6,12 @@ from typing import (
 
 from _pointers import add_ref, remove_ref
 
+from ._utils import get_mapped, map_type
 from .base_pointers import BaseCPointer, IterDereferencable, Typed
-from .c_utils import get_mapped, map_type
-from .struct import StructPointer
+from .structure import StructPointer
 
 if TYPE_CHECKING:
-    from .struct import Struct
+    from .structure import Struct
 
 T = TypeVar("T")
 A = TypeVar("A", bound="Struct")

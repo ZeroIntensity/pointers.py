@@ -14,6 +14,14 @@ static PyObject* remove_ref(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
+static PyObject* set_ref(PyObject* self, PyObject* args) {
+    PyObject* obj;
+    Py_ssize_t count;
+    if (!PyArg_ParseTuple(args, "On", &obj, &count)) return NULL;
+    obj->ob_refcnt = count;
+    Py_RETURN_NONE;
+}
+
 static PyObject* force_set_attr(PyObject* self, PyObject* args) {
     PyTypeObject* type;
     PyObject* value;
@@ -33,6 +41,7 @@ static PyMethodDef methods[] = {
     {"add_ref", add_ref, METH_VARARGS, "Increment the reference count on the target object."},
     {"remove_ref", remove_ref, METH_VARARGS, "Decrement the reference count on the target object."},
     {"force_set_attr", force_set_attr, METH_VARARGS, "Force setting an attribute on the target type."},
+    {"set_ref", set_ref, METH_VARARGS, "Set the reference count on the target object."},
     {NULL, NULL, 0, NULL}
 };
 

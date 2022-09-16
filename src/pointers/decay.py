@@ -49,7 +49,17 @@ def _decay_params(
 
 
 def decay(func: Callable[P, T]) -> Callable[..., T]:
-    """Automatically convert values to pointers when called."""
+    """Automatically convert values to pointers when called.
+
+    Example:
+        ```py
+        @decay
+        def my_function(a: str, b: Pointer[str]):
+            print(a, *c)
+
+        my_function('a', 'b')
+        ```
+    """
 
     @wraps(func)
     def inner(*args: P.args, **kwargs: P.kwargs) -> T:
@@ -60,6 +70,17 @@ def decay(func: Callable[P, T]) -> Callable[..., T]:
 
 
 def decay_annotated(func: Callable[P, T]) -> Callable[P, T]:
+    """
+    Example:
+        ```py
+        @decay_annotated
+        def my_function(a: str, b: Annotated[str, Pointer]):
+            print(a, *c)
+
+        my_function('a', 'b')
+        ```
+    """
+
     @wraps(func)
     def wrapped(*args: P.args, **kwargs: P.kwargs):
         hints, actual = _make_func_params(func, args, kwargs)
@@ -78,7 +99,22 @@ def decay_annotated(func: Callable[P, T]) -> Callable[P, T]:
     return wrapped
 
 
-def decay_wrapped(wrapper: Callable[P, T]) -> Callable[..., Callable[P, T]]:
+def decay_wrapped(_: Callable[P, T]) -> Callable[..., Callable[P, T]]:
+    """
+    Example:
+        ```py
+        def my_function_wrapper(a: str, b: str, c: str) -> None:
+            ...
+
+        @decay_wrapped(my_function_wrapper)
+        def my_function(a: str, b: str, c: Pointer[str]):
+            print(a, b, *c)
+            print(a, b, ~c)
+
+        my_function('a', 'b', 'c')
+        ```
+    """
+
     def decorator(func: Callable[..., T]) -> Callable[P, T]:
         @wraps(func)
         def wrapped(*args: P.args, **kwargs: P.kwargs):

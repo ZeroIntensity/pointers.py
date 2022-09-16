@@ -4,7 +4,7 @@ from platform import system
 from typing import Dict, Type
 
 from .std_structs import DivT, Lconv, LDivT, Tm
-from .struct import Struct
+from .structure import Struct
 
 platforms = {
     "linux": "libc.so.6",

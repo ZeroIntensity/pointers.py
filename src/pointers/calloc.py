@@ -6,21 +6,24 @@ from .exceptions import AllocationError
 
 __all__ = ("AllocatedArrayPointer", "calloc")
 
-
 T = TypeVar("T")
 
-"""
-FOR FUTURE REFERENCE:
 
-_chunk_store is needed to hold each index in the pointer array accordingly.
-We can't just lookup each index via a memory offset, since we can't verify that the memory actually contains something.
+# FOR FUTURE REFERENCE:
 
-If the memory is empty, then Python will segfault as it can't convert it to a PyObject*.
-"""  # noqa
+# _chunk_store is needed to hold each index in the pointer array accordingly.
+# We can't just lookup each index via a memory offset,
+# since we can't verify that the memory actually contains something.
+
+# If the memory is empty, then Python will segfault as it can't convert it to
+# a PyObject*.
+
+
+# TODO: make this implementation better
 
 
 class AllocatedArrayPointer(BaseAllocatedPointer[T]):
-    """Class representing memory created by calloc()"""
+    """Pointer to an allocated array."""
 
     def __init__(
         self,
@@ -45,7 +48,6 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         if chunk_store:
             self._chunk_store[self.current_index] = self
 
-    # https://github.com/python/mypy/issues/4125
     @property  # type: ignore
     def address(self) -> Optional[int]:
         return self._address

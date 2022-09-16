@@ -1,6 +1,6 @@
 from ward import raises, test
 
-from pointers import InvalidSizeError, Pointer
+from pointers import NULL, InvalidSizeError, Pointer
 from pointers import _ as m
 from pointers import strlen, to_c_ptr, to_ptr
 from pointers.exceptions import NullPointerError
@@ -70,13 +70,16 @@ def _():
 @test("null pointers")
 def _():
     ptr = to_ptr(0)
-    ptr >>= None
+    ptr >>= NULL
 
     with raises(NullPointerError):
         print(~ptr)
 
     with raises(NullPointerError):
         print(*ptr)
+
+    with raises(NullPointerError):
+        print(~to_ptr(NULL))
 
 
 @test("operator magic")
