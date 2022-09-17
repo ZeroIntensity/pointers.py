@@ -10,6 +10,14 @@ on:
         branches:
             - master
 
+concurrency:
+    group: build-${{ github.head_ref }}
+    cancel-in-progress: true
+
+env:
+    CIBW_SKIP: >
+        pp*
+
 jobs:
     binary-wheels-standard:
         name: Binary wheels for ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
@@ -67,6 +75,7 @@ jobs:
             github.event_name == 'push'
             &&
             (github.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/tags'))
+
         steps:
             - uses: actions/checkout@v2
               with:
