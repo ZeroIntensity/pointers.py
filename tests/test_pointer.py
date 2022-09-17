@@ -81,6 +81,14 @@ def _():
     with raises(NullPointerError):
         print(~to_ptr(NULL))
 
+    ptr2 = to_ptr(NULL)
+    ptr2 >>= 1
+
+    with raises(TypeError):
+        ptr2 >>= ""
+
+    ptr2 >>= NULL
+
 
 @test("operator magic")
 def _():

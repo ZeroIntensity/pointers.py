@@ -15,6 +15,36 @@ __all__ = (
     "make_py",
 )
 
+_C_TYPES: Dict[type, Type["ctypes._CData"]] = {
+    bytes: ctypes.c_char_p,
+    str: ctypes.c_wchar_p,
+    int: ctypes.c_int,
+    float: ctypes.c_float,
+    bool: ctypes.c_bool,
+}
+
+_PY_TYPES: Dict[Type["ctypes._CData"], type] = {
+    ctypes.c_bool: bool,
+    ctypes.c_char: bytes,
+    ctypes.c_wchar: str,
+    ctypes.c_ubyte: int,
+    ctypes.c_short: int,
+    ctypes.c_int: int,
+    ctypes.c_uint: int,
+    ctypes.c_long: int,
+    ctypes.c_ulong: int,
+    ctypes.c_longlong: int,
+    ctypes.c_ulonglong: int,
+    ctypes.c_size_t: int,
+    ctypes.c_ssize_t: int,
+    ctypes.c_float: float,
+    ctypes.c_double: float,
+    ctypes.c_longdouble: float,
+    ctypes.c_char_p: bytes,
+    ctypes.c_wchar_p: str,
+    ctypes.c_void_p: int,
+}
+
 
 def move_to_mem(
     ptr: "ctypes._PointerLike",
@@ -52,15 +82,7 @@ def map_type(data: Any) -> "ctypes._CData":
 
 def get_mapped(typ: Any):
     """Get the C mapped value of the given type."""
-    types: Dict[type, Type["ctypes._CData"]] = {
-        bytes: ctypes.c_char_p,
-        str: ctypes.c_wchar_p,
-        int: ctypes.c_int,
-        float: ctypes.c_float,
-        bool: ctypes.c_bool,
-    }
-
-    res = types.get(typ)
+    res = _C_TYPES.get(typ)
 
     if not res:
         raise ValueError(f'"{typ.__name__}" is not mappable to a c type')
@@ -86,30 +108,8 @@ def get_py(
     if data.__name__.startswith("LP_"):
         return BaseCPointer
 
-    types: Dict[Type["ctypes._CData"], type] = {
-        ctypes.c_bool: bool,
-        ctypes.c_char: bytes,
-        ctypes.c_wchar: str,
-        ctypes.c_ubyte: int,
-        ctypes.c_short: int,
-        ctypes.c_int: int,
-        ctypes.c_uint: int,
-        ctypes.c_long: int,
-        ctypes.c_ulong: int,
-        ctypes.c_longlong: int,
-        ctypes.c_ulonglong: int,
-        ctypes.c_size_t: int,
-        ctypes.c_ssize_t: int,
-        ctypes.c_float: float,
-        ctypes.c_double: float,
-        ctypes.c_longdouble: float,
-        ctypes.c_char_p: bytes,
-        ctypes.c_wchar_p: str,
-        ctypes.c_void_p: int,
-    }
-
     try:
-        return types[data]
+        return _PY_TYPES[data]
     except KeyError as e:
         raise ValueError(
             f"{data} is not a valid ctypes type",

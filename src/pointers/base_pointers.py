@@ -246,12 +246,11 @@ class BaseObjectPointer(
         """  # noqa
         self._address: Optional[int] = address
         self._type: Type[T] = typ
-        obj = ~self
 
         if increment_ref and address:
-            add_ref(obj)
+            add_ref(~self)
 
-        self._origin_size = sys.getsizeof(obj)
+        self._origin_size = sys.getsizeof(~self if address else None)
 
     @property
     def type(self):
@@ -285,12 +284,17 @@ class BaseObjectPointer(
                 "can only point to object pointer",
             )
 
-        if new.type is not self.type:
+        if (new.type is not self.type) and self.address:
             raise TypeError(
                 f"object at new address must be the same type (pointer looks at {self.type.__name__}, target is {new.type.__name__})",  # noqa
             )
 
-        remove_ref(~self)
+        if not self.address:
+            self._type = new.type
+
+        with suppress(NullPointerError):
+            remove_ref(~self)
+
         self._address = new.address
         add_ref(~self)
 

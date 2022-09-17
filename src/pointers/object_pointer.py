@@ -63,10 +63,11 @@ class Pointer(BaseObjectPointer[T]):
 
     @classmethod
     def make_from(cls, obj: Nullable[T]) -> "Pointer[T]":
+        is_null = obj is NULL
         return Pointer(
-            id(obj) if obj is not NULL else None,
+            id(obj) if not is_null else None,
             type(obj),  # type: ignore
-            True,
+            not is_null,
         )
 
 
