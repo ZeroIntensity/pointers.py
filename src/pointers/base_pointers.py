@@ -11,13 +11,12 @@ from typing import (
 from _pointers import add_ref, remove_ref
 
 from ._utils import deref, force_set_attr, move_to_mem
+from .constants import NULL, Nullable
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
 
 __all__ = (
     "BasePointer",
     "BaseObjectPointer",
-    "NULL",
-    "Nullable",
     "BasicPointer",
     "BaseCPointer",
     "BaseAllocatedPointer",
@@ -32,13 +31,6 @@ with suppress(
     UnsupportedOperation
 ):  # in case its running in idle or something like that
     faulthandler.enable()
-
-
-class NULL:
-    """Unique object representing a NULL address."""
-
-
-Nullable = Union[T, Type[NULL]]
 
 
 class BasicPointer(ABC):
@@ -226,7 +218,7 @@ class Sized(ABC):
 
 class BaseObjectPointer(
     IterDereferencable[T],
-    Typed[T],
+    Typed[Type[T]],
     BasePointer[T],
     ABC,
 ):
@@ -253,8 +245,7 @@ class BaseObjectPointer(
         self._origin_size = sys.getsizeof(~self if address else None)
 
     @property
-    def type(self):
-        """Type of the value at the target address."""
+    def type(self) -> Type[T]:
         return self._type
 
     def set_attr(self, key: str, value: Any) -> None:

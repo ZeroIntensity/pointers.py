@@ -15,12 +15,13 @@ __all__ = (
     "make_py",
 )
 
-_C_TYPES: Dict[type, Type["ctypes._CData"]] = {
+_C_TYPES: Dict[Type[Any], Type["ctypes._CData"]] = {
     bytes: ctypes.c_char_p,
     str: ctypes.c_wchar_p,
     int: ctypes.c_int,
     float: ctypes.c_float,
     bool: ctypes.c_bool,
+    Any: ctypes.c_void_p,  # type: ignore
 }
 
 _PY_TYPES: Dict[Type["ctypes._CData"], type] = {
@@ -43,6 +44,7 @@ _PY_TYPES: Dict[Type["ctypes._CData"], type] = {
     ctypes.c_char_p: bytes,
     ctypes.c_wchar_p: str,
     ctypes.c_void_p: int,
+    ctypes.py_object: Any,  # type: ignore
 }
 
 
@@ -77,17 +79,12 @@ def attempt_decode(data: bytes) -> Union[str, bytes]:
 def map_type(data: Any) -> "ctypes._CData":
     """Map the specified data to a C type."""
     typ = get_mapped(type(data))
-    return typ(data)
+    return typ(data)  # type: ignore
 
 
-def get_mapped(typ: Any):
+def get_mapped(typ: Any) -> "Type[ctypes._CData]":
     """Get the C mapped value of the given type."""
-    res = _C_TYPES.get(typ)
-
-    if not res:
-        raise ValueError(f'"{typ.__name__}" is not mappable to a c type')
-
-    return res
+    return _C_TYPES.get(typ) or ctypes.py_object
 
 
 def is_mappable(typ: Any) -> bool:

@@ -9,7 +9,6 @@ from typing import (
 from _pointers import add_ref
 
 from . import _cstd
-from ._cstd import STRUCT_MAP, DivT, Lconv, LDivT, Tm
 from ._cstd import c_calloc as _calloc
 from ._cstd import c_free as _free
 from ._cstd import c_malloc as _malloc
@@ -20,6 +19,7 @@ from ._utils import get_mapped, get_py
 from .base_pointers import BaseCPointer, BasePointer
 from .c_pointer import TypedCPointer, VoidPointer
 from .exceptions import InvalidBindingParameter
+from .std_structs import STRUCT_MAP, DivT, Lconv, LDivT, Tm
 from .structure import StructPointer
 
 if TYPE_CHECKING:
@@ -254,6 +254,9 @@ def _process_args(
 
         is_type: bool = isinstance(value, type)
 
+        if n_type is Any:
+            continue
+
         if not (isinstance if not is_type else issubclass)(value, n_type):
             v_type = type(value) if not is_type else value
 
@@ -312,7 +315,7 @@ def _solve_func(
     return _CFuncTransport(wrapper, fn)
 
 
-def _base(
+def binding_base(
     fn: "ctypes._NamedFuncPointer",
     *args,
     map_extra: Optional[StructMap] = None,
@@ -321,7 +324,10 @@ def _base(
 
     validator_args = [
         arg
-        if ((not callable(arg)) and (not isinstance(arg, PyCFuncPtrType)))
+        if (
+            (not isinstance(arg, FunctionType))
+            and (not isinstance(arg, PyCFuncPtrType))
+        )
         else _solve_func(
             arg,
             typ,  # type: ignore
@@ -357,7 +363,7 @@ def _base(
     )
 
 
-def _make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
+def make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
     if type(data) not in {VoidPointer, str, bytes, TypedCPointer}:
         raise InvalidBindingParameter(
             f"expected a string-like object, got {repr(data)}"  # noqa
@@ -386,20 +392,20 @@ def _make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
     return data
 
 
-def _make_format(*args: Format) -> Iterator[Format]:
+def make_format(*args: Format) -> Iterator[Format]:
     for i in args:
         if isinstance(i, (VoidPointer, str, bytes)):
-            yield _make_string(i)  # type: ignore
+            yield make_string(i)  # type: ignore
             continue
 
         yield i
 
 
-def _make_char(char: CharLike) -> bytes:
+def make_char(char: CharLike) -> bytes:
     if isinstance(char, int):
         return chr(char).encode()
 
-    charp = _make_string(char)
+    charp = make_string(char)
     string = (
         charp
         if not isinstance(
@@ -418,102 +424,102 @@ def _make_char(char: CharLike) -> bytes:
 
 
 def isalnum(c: CharLike) -> int:
-    return _base(dll.isalnum, _make_char(c))
+    return binding_base(dll.isalnum, make_char(c))
 
 
 def isalpha(c: CharLike) -> int:
-    return _base(dll.isalpha, _make_char(c))
+    return binding_base(dll.isalpha, make_char(c))
 
 
 def iscntrl(c: CharLike) -> int:
-    return _base(dll.iscntrl, _make_char(c))
+    return binding_base(dll.iscntrl, make_char(c))
 
 
 def isdigit(c: CharLike) -> int:
-    return _base(dll.isdigit, _make_char(c))
+    return binding_base(dll.isdigit, make_char(c))
 
 
 def isgraph(c: CharLike) -> int:
-    return _base(dll.isgraph, _make_char(c))
+    return binding_base(dll.isgraph, make_char(c))
 
 
 def islower(c: CharLike) -> int:
-    return _base(dll.islower, _make_char(c))
+    return binding_base(dll.islower, make_char(c))
 
 
 def isprint(c: CharLike) -> int:
-    return _base(dll.isprint, _make_char(c))
+    return binding_base(dll.isprint, make_char(c))
 
 
 def ispunct(c: CharLike) -> int:
-    return _base(dll.ispunct, _make_char(c))
+    return binding_base(dll.ispunct, make_char(c))
 
 
 def isspace(c: CharLike) -> int:
-    return _base(dll.isspace, _make_char(c))
+    return binding_base(dll.isspace, make_char(c))
 
 
 def isupper(c: CharLike) -> int:
-    return _base(dll.isupper, _make_char(c))
+    return binding_base(dll.isupper, make_char(c))
 
 
 def isxdigit(c: CharLike) -> int:
-    return _base(dll.isxdigit, _make_char(c))
+    return binding_base(dll.isxdigit, make_char(c))
 
 
 def tolower(c: CharLike) -> str:
-    return _base(dll.tolower, _make_char(c))
+    return binding_base(dll.tolower, make_char(c))
 
 
 def toupper(c: CharLike) -> str:
-    return _base(dll.toupper, _make_char(c))
+    return binding_base(dll.toupper, make_char(c))
 
 
 def setlocale(category: int, locale: StringLike) -> str:
-    return _base(dll.setlocale, category, _make_string(locale))
+    return binding_base(dll.setlocale, category, make_string(locale))
 
 
 def frexp(x: float, exponent: TypedPtr[int]) -> int:
-    return _base(dll.frexp, x, exponent)
+    return binding_base(dll.frexp, x, exponent)
 
 
 def ldexp(x: float, exponent: int) -> int:
-    return _base(dll.ldexp, x, exponent)
+    return binding_base(dll.ldexp, x, exponent)
 
 
 def modf(x: float, integer: TypedPtr[float]) -> int:
-    return _base(dll.modf, x, integer)
+    return binding_base(dll.modf, x, integer)
 
 
 def fclose(stream: PointerLike) -> int:
-    return _base(dll.fclose, stream)
+    return binding_base(dll.fclose, stream)
 
 
 def clearerr(stream: PointerLike) -> None:
-    return _base(dll.clearerr, stream)
+    return binding_base(dll.clearerr, stream)
 
 
 def feof(stream: PointerLike) -> int:
-    return _base(dll.feof, stream)
+    return binding_base(dll.feof, stream)
 
 
 def ferror(stream: PointerLike) -> int:
-    return _base(dll.ferror, stream)
+    return binding_base(dll.ferror, stream)
 
 
 def fflush(stream: PointerLike) -> int:
-    return _base(dll.fflush, stream)
+    return binding_base(dll.fflush, stream)
 
 
 def fgetpos(stream: PointerLike, pos: PointerLike) -> int:
-    return _base(dll.fgetpos, stream, pos)
+    return binding_base(dll.fgetpos, stream, pos)
 
 
 def fopen(filename: StringLike, mode: StringLike) -> VoidPointer:
-    return _base(
+    return binding_base(
         dll.fopen,
-        _make_string(filename),
-        _make_string(mode),
+        make_string(filename),
+        make_string(mode),
     )
 
 
@@ -523,7 +529,7 @@ def fread(
     nmemb: int,
     stream: PointerLike,
 ) -> int:
-    return _base(dll.fread, ptr, size, nmemb, stream)
+    return binding_base(dll.fread, ptr, size, nmemb, stream)
 
 
 def freopen(
@@ -531,24 +537,24 @@ def freopen(
     mode: StringLike,
     stream: PointerLike,
 ) -> VoidPointer:
-    return _base(
+    return binding_base(
         dll.freopen,
-        _make_string(filename),
-        _make_string(mode),
+        make_string(filename),
+        make_string(mode),
         stream,
     )
 
 
 def fseek(stream: PointerLike, offset: int, whence: int) -> int:
-    return _base(dll.fseek, stream, offset, whence)
+    return binding_base(dll.fseek, stream, offset, whence)
 
 
 def fsetpos(stream: PointerLike, pos: PointerLike) -> int:
-    return _base(dll.fsetpos, stream, pos)
+    return binding_base(dll.fsetpos, stream, pos)
 
 
 def ftell(stream: PointerLike) -> int:
-    return _base(dll.ftell, stream)
+    return binding_base(dll.ftell, stream)
 
 
 def fwrite(
@@ -557,27 +563,27 @@ def fwrite(
     nmemb: int,
     stream: PointerLike,
 ) -> int:
-    return _base(dll.fwrite, ptr, size, nmemb, stream)
+    return binding_base(dll.fwrite, ptr, size, nmemb, stream)
 
 
 def remove(filename: StringLike) -> int:
-    return _base(dll.remove, _make_string(filename))
+    return binding_base(dll.remove, make_string(filename))
 
 
 def rename(old_filename: StringLike, new_filename: StringLike) -> int:
-    return _base(
+    return binding_base(
         dll.rename,
-        _make_string(old_filename),
-        _make_string(new_filename),
+        make_string(old_filename),
+        make_string(new_filename),
     )
 
 
 def rewind(stream: PointerLike) -> None:
-    return _base(dll.rewind, stream)
+    return binding_base(dll.rewind, stream)
 
 
 def setbuf(stream: PointerLike, buffer: StringLike) -> None:
-    return _base(dll.setbuf, stream, _make_string(buffer))
+    return binding_base(dll.setbuf, stream, make_string(buffer))
 
 
 def setvbuf(
@@ -586,122 +592,122 @@ def setvbuf(
     mode: int,
     size: int,
 ) -> int:
-    return _base(
+    return binding_base(
         dll.setvbuf,
         stream,
-        _make_string(buffer),
+        make_string(buffer),
         mode,
         size,
     )
 
 
 def tmpfile() -> VoidPointer:
-    return _base(dll.tmpfile)
+    return binding_base(dll.tmpfile)
 
 
 def tmpnam(string: str) -> str:
-    return _base(dll.tmpnam, _make_string(string))
+    return binding_base(dll.tmpnam, make_string(string))
 
 
 def fprintf(stream: PointerLike, fmt: StringLike, *args: Format) -> int:
-    return _base(
+    return binding_base(
         dll.fprintf,
         stream,
-        _make_string(fmt),
-        *_make_format(*args),
+        make_string(fmt),
+        *make_format(*args),
     )
 
 
 def printf(fmt: StringLike, *args: Format) -> int:
-    return _base(dll.printf, _make_string(fmt), *_make_format(*args))
+    return binding_base(dll.printf, make_string(fmt), *make_format(*args))
 
 
 def sprintf(string: StringLike, fmt: StringLike, *args: Format) -> int:
-    return _base(
+    return binding_base(
         dll.sprintf,
-        _make_string(string),
-        _make_string(fmt),
-        *_make_format(*args),
+        make_string(string),
+        make_string(fmt),
+        *make_format(*args),
     )
 
 
 def fscanf(stream: PointerLike, fmt: StringLike, *args: Format) -> int:
-    return _base(
+    return binding_base(
         dll.fscanf,
         stream,
-        _make_string(fmt),
-        *_make_format(*args),
+        make_string(fmt),
+        *make_format(*args),
     )
 
 
 def scanf(fmt: StringLike, *args: Format) -> int:
-    return _base(dll.scanf, _make_string(fmt), *_make_format(*args))
+    return binding_base(dll.scanf, make_string(fmt), *make_format(*args))
 
 
 def sscanf(string: StringLike, fmt: StringLike, *args: Format) -> int:
-    return _base(
+    return binding_base(
         dll.sscanf,
-        _make_string(string),
-        _make_string(fmt),
-        *_make_format(*args),
+        make_string(string),
+        make_string(fmt),
+        *make_format(*args),
     )
 
 
 def fgetc(stream: PointerLike) -> int:
-    return _base(dll.fgetc, stream)
+    return binding_base(dll.fgetc, stream)
 
 
 def fgets(string: StringLike, n: int, stream: PointerLike) -> str:
-    return _base(
+    return binding_base(
         dll.fgets,
-        _make_string(string),
+        make_string(string),
         n,
         stream,
     )
 
 
 def fputc(char: int, stream: PointerLike) -> int:
-    return _base(dll.fputc, char, stream)
+    return binding_base(dll.fputc, char, stream)
 
 
 def fputs(string: StringLike, stream: PointerLike) -> int:
-    return _base(dll.fputs, _make_string(string), stream)
+    return binding_base(dll.fputs, make_string(string), stream)
 
 
 def getc(stream: PointerLike) -> int:
-    return _base(dll.getc, stream)
+    return binding_base(dll.getc, stream)
 
 
 def getchar() -> int:
-    return _base(dll.getchar)
+    return binding_base(dll.getchar)
 
 
 def gets(string: StringLike) -> str:
-    return _base(dll.gets, _make_string(string))
+    return binding_base(dll.gets, make_string(string))
 
 
 def putc(char: int, stream: PointerLike) -> int:
-    return _base(dll.putc, char, stream)
+    return binding_base(dll.putc, char, stream)
 
 
 def putchar(char: int) -> int:
-    return _base(dll.putchar, char)
+    return binding_base(dll.putchar, char)
 
 
 def puts(string: StringLike) -> int:
-    return _base(dll.puts, _make_string(string))
+    return binding_base(dll.puts, make_string(string))
 
 
 def ungetc(char: int, stream: PointerLike) -> int:
-    return _base(dll.ungetc, char, stream)
+    return binding_base(dll.ungetc, char, stream)
 
 
 def perror(string: StringLike) -> None:
-    return _base(dll.perror, _make_string(string))
+    return binding_base(dll.perror, make_string(string))
 
 
 def strtod(string: StringLike, endptr: PointerLike) -> int:
-    return _base(dll.strtod, _make_string(string), endptr)
+    return binding_base(dll.strtod, make_string(string), endptr)
 
 
 def strtol(
@@ -709,9 +715,9 @@ def strtol(
     endptr: PointerLike,
     base: int,
 ) -> int:
-    return _base(
+    return binding_base(
         dll.strtol,
-        _make_string(string),
+        make_string(string),
         endptr,
         base,
     )
@@ -722,82 +728,82 @@ def strtoul(
     endptr: PointerLike,
     base: int,
 ) -> int:
-    return _base(
+    return binding_base(
         dll.strtoul,
-        _make_string(string),
+        make_string(string),
         endptr,
         base,
     )
 
 
 def abort() -> None:
-    return _base(dll.abort)
+    return binding_base(dll.abort)
 
 
 def exit(status: int) -> None:
-    return _base(dll.exit, status)
+    return binding_base(dll.exit, status)
 
 
 def getenv(name: StringLike) -> str:
-    return _base(dll.getenv, _make_string(name))
+    return binding_base(dll.getenv, make_string(name))
 
 
 def system(string: StringLike) -> int:
-    return _base(dll.system, _make_string(string))
+    return binding_base(dll.system, make_string(string))
 
 
 def abs(x: int) -> int:
-    return _base(dll.abs, x)
+    return binding_base(dll.abs, x)
 
 
 def labs(x: int) -> int:
-    return _base(dll.labs, x)
+    return binding_base(dll.labs, x)
 
 
 def rand() -> int:
-    return _base(dll.rand)
+    return binding_base(dll.rand)
 
 
 def srand(seed: int) -> None:
-    return _base(dll.srand, seed)
+    return binding_base(dll.srand, seed)
 
 
 def mblen(string: StringLike, n: int) -> int:
-    return _base(
+    return binding_base(
         dll.mblen,
-        _make_string(string),
+        make_string(string),
         n,
     )
 
 
 def mbstowcs(pwcs: StringLike, string: StringLike, n: int) -> int:
-    return _base(
+    return binding_base(
         dll.mbstowcs,
         pwcs,
-        _make_string(string),
+        make_string(string),
         n,
     )
 
 
 def mbtowc(pwc: StringLike, string: StringLike, n: int) -> int:
-    return _base(
+    return binding_base(
         dll.mbtowc,
         pwc,
-        _make_string(string),
+        make_string(string),
         n,
     )
 
 
 def wcstombs(string: StringLike, pwcs: str, n: int) -> int:
-    return _base(dll.wcstombs, _make_string(string), pwcs, n)
+    return binding_base(dll.wcstombs, make_string(string), pwcs, n)
 
 
 def wctomb(string: StringLike, wchar: str) -> int:
-    return _base(dll.wctomb, _make_string(string), wchar)
+    return binding_base(dll.wctomb, make_string(string), wchar)
 
 
 def memchr(string: PointerLike, c: int, n: int) -> VoidPointer:
-    return _base(dll.memchr, string, c, n)
+    return binding_base(dll.memchr, string, c, n)
 
 
 def memcmp(
@@ -805,7 +811,7 @@ def memcmp(
     str2: PointerLike,
     n: int,
 ) -> int:
-    return _base(dll.memcmp, str1, str2, n)
+    return binding_base(dll.memcmp, str1, str2, n)
 
 
 def memcpy(
@@ -813,7 +819,7 @@ def memcpy(
     src: PointerLike,
     n: int,
 ) -> VoidPointer:
-    return _base(dll.memcpy, dest, src, n)
+    return binding_base(dll.memcpy, dest, src, n)
 
 
 def memmove(
@@ -821,155 +827,155 @@ def memmove(
     src: PointerLike,
     n: int,
 ) -> VoidPointer:
-    return _base(dll.memmove, dest, src, n)
+    return binding_base(dll.memmove, dest, src, n)
 
 
 def memset(string: PointerLike, c: int, n: int) -> VoidPointer:
-    return _base(dll.memset, string, c, n)
+    return binding_base(dll.memset, string, c, n)
 
 
 def strcat(dest: StringLike, src: StringLike) -> str:
-    return _base(
+    return binding_base(
         dll.strcat,
-        _make_string(dest),
-        _make_string(src),
+        make_string(dest),
+        make_string(src),
     )
 
 
 def strncat(dest: StringLike, src: StringLike, n: int) -> str:
-    return _base(
+    return binding_base(
         dll.strncat,
-        _make_string(dest),
-        _make_string(src),
+        make_string(dest),
+        make_string(src),
         n,
     )
 
 
 def strchr(string: StringLike, c: int) -> str:
-    return _base(dll.strchr, _make_string(string), c)
+    return binding_base(dll.strchr, make_string(string), c)
 
 
 def strcmp(str1: StringLike, str2: StringLike) -> int:
-    return _base(
+    return binding_base(
         dll.strcmp,
-        _make_string(str1),
-        _make_string(str2),
+        make_string(str1),
+        make_string(str2),
     )
 
 
 def strncmp(str1: StringLike, str2: StringLike, n: int) -> int:
-    return _base(
+    return binding_base(
         dll.strncmp,
-        _make_string(str1),
-        _make_string(str2),
+        make_string(str1),
+        make_string(str2),
         n,
     )
 
 
 def strcoll(str1: StringLike, str2: StringLike) -> int:
-    return _base(
+    return binding_base(
         dll.strcoll,
-        _make_string(str1),
-        _make_string(str2),
+        make_string(str1),
+        make_string(str2),
     )
 
 
 def strcpy(dest: StringLike, src: StringLike) -> str:
-    return _base(
+    return binding_base(
         dll.strcpy,
-        _make_string(dest),
-        _make_string(src),
+        make_string(dest),
+        make_string(src),
     )
 
 
 def strncpy(dest: StringLike, src: StringLike, n: int) -> str:
-    return _base(
+    return binding_base(
         dll.strncpy,
-        _make_string(dest),
-        _make_string(src),
+        make_string(dest),
+        make_string(src),
         n,
     )
 
 
 def strcspn(str1: StringLike, str2: StringLike) -> int:
-    return _base(
+    return binding_base(
         dll.strcspn,
-        _make_string(str1),
-        _make_string(str2),
+        make_string(str1),
+        make_string(str2),
     )
 
 
 def strerror(errnum: int) -> str:
-    return _base(dll.strerror, errnum)
+    return binding_base(dll.strerror, errnum)
 
 
 def strlen(string: StringLike) -> int:
-    return _base(dll.strlen, _make_string(string))
+    return binding_base(dll.strlen, make_string(string))
 
 
 def strpbrk(str1: StringLike, str2: StringLike) -> str:
-    return _base(
+    return binding_base(
         dll.strpbrk,
-        _make_string(str1),
-        _make_string(str2),
+        make_string(str1),
+        make_string(str2),
     )
 
 
 def strrchr(string: StringLike, c: int) -> str:
-    return _base(dll.strrchr, _make_string(string), c)
+    return binding_base(dll.strrchr, make_string(string), c)
 
 
 def strspn(str1: StringLike, str2: StringLike) -> int:
-    return _base(
+    return binding_base(
         dll.strspn,
-        _make_string(str1),
-        _make_string(str2),
+        make_string(str1),
+        make_string(str2),
     )
 
 
 def strstr(haystack: StringLike, needle: StringLike) -> str:
-    return _base(
+    return binding_base(
         dll.strstr,
-        _make_string(haystack),
-        _make_string(needle),
+        make_string(haystack),
+        make_string(needle),
     )
 
 
 def strtok(string: StringLike, delim: StringLike) -> str:
-    return _base(
+    return binding_base(
         dll.strtok,
-        _make_string(string),
-        _make_string(delim),
+        make_string(string),
+        make_string(delim),
     )
 
 
 def strxfrm(dest: StringLike, src: StringLike, n: int) -> int:
-    return _base(
+    return binding_base(
         dll.strxfrm,
-        _make_string(dest),
-        _make_string(src),
+        make_string(dest),
+        make_string(src),
         n,
     )
 
 
 def asctime(timeptr: StructPointer[Tm]) -> str:
-    return _base(dll.asctime, timeptr)
+    return binding_base(dll.asctime, timeptr)
 
 
 def clock() -> int:
-    return _base(dll.clock)
+    return binding_base(dll.clock)
 
 
 def ctime(timer: TypedPtr[int]) -> str:
-    return _base(dll.ctime, timer)
+    return binding_base(dll.ctime, timer)
 
 
 def difftime(time1: int, time2: int) -> int:
-    return _base(dll.difftime, time1, time2)
+    return binding_base(dll.difftime, time1, time2)
 
 
 def mktime(timeptr: StructPointer[Tm]) -> int:
-    return _base(dll.mktime, timeptr)
+    return binding_base(dll.mktime, timeptr)
 
 
 def strftime(
@@ -978,57 +984,57 @@ def strftime(
     fmt: StringLike,
     timeptr: StructPointer[Tm],
 ) -> int:
-    return _base(
+    return binding_base(
         dll.strftime,
-        _make_string(string),
+        make_string(string),
         maxsize,
-        _make_string(fmt),
+        make_string(fmt),
         timeptr,
     )
 
 
 def time(timer: TypedPtr[int]) -> int:
-    return _base(dll.time, timer)
+    return binding_base(dll.time, timer)
 
 
 def div(numer: int, denom: int) -> DivT:
-    return _base(dll.div, numer, denom)
+    return binding_base(dll.div, numer, denom)
 
 
 def ldiv(numer: int, denom: int) -> LDivT:
-    return _base(dll.ldiv, numer, denom)
+    return binding_base(dll.ldiv, numer, denom)
 
 
 def localeconv() -> StructPointer[Lconv]:
-    return _base(dll.localeconv)
+    return binding_base(dll.localeconv)
 
 
 def c_raise(sig: int) -> int:
-    return _base(ct_raise, sig)
+    return binding_base(ct_raise, sig)
 
 
 def c_malloc(size: int) -> VoidPointer:
-    return _base(_malloc, size)
+    return binding_base(_malloc, size)
 
 
 def c_calloc(items: int, size: int) -> VoidPointer:
-    return _base(_calloc, items, size)
+    return binding_base(_calloc, items, size)
 
 
 def c_realloc(ptr: PointerLike, size: int) -> VoidPointer:
-    return _base(_realloc, ptr, size)
+    return binding_base(_realloc, ptr, size)
 
 
 def c_free(ptr: PointerLike) -> None:
-    return _base(_free, ptr)
+    return binding_base(_free, ptr)
 
 
 def gmtime(timer: PointerLike) -> StructPointer[Tm]:
-    return _base(dll.gmtime, timer)
+    return binding_base(dll.gmtime, timer)
 
 
 def signal(signum: int, func: Callable[[int], Any]) -> None:
-    return _base(dll.signal, signum, func)
+    return binding_base(dll.signal, signum, func)
 
 
 def qsort(
@@ -1040,7 +1046,7 @@ def qsort(
         int,
     ],
 ) -> None:
-    return _base(dll.qsort, base, nitem, size, compar)
+    return binding_base(dll.qsort, base, nitem, size, compar)
 
 
 def bsearch(
@@ -1053,7 +1059,7 @@ def bsearch(
         int,
     ],
 ) -> VoidPointer:
-    return _base(dll.bsearch, key, base, nitems, size, compar)
+    return binding_base(dll.bsearch, key, base, nitems, size, compar)
 
 
 def sizeof(obj: Any) -> int:

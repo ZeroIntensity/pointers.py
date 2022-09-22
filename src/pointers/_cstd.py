@@ -1,10 +1,6 @@
 import ctypes
 from ctypes.util import find_library
 from platform import system
-from typing import Dict, Type
-
-from .std_structs import DivT, Lconv, LDivT, Tm
-from .structure import Struct
 
 platforms = {
     "linux": "libc.so.6",
@@ -22,7 +18,6 @@ __all__ = (
     "lconv",
     "div_t",
     "ldiv_t",
-    "STRUCT_MAP",
 )
 
 dll = ctypes.CDLL(platforms.get(system().lower()) or find_library("c"))
@@ -76,14 +71,6 @@ class lconv(ctypes.Structure):
         ("p_sign_posn", ctypes.c_char),
         ("n_sign_posn", ctypes.c_char),
     ]
-
-
-STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
-    tm: Tm,
-    div_t: DivT,
-    ldiv_t: LDivT,
-    lconv: Lconv,
-}
 
 
 c_raise = getattr(dll, "raise")

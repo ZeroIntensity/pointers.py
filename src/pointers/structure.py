@@ -1,9 +1,10 @@
 import ctypes
-from abc import ABC
 from contextlib import suppress
 from typing import Any, Optional, Type, TypeVar, Union, get_type_hints
 
 from ._utils import attempt_decode, get_mapped
+from .c_pointer import BaseCPointer
+from .constants import RawType
 from .object_pointer import Pointer
 
 T = TypeVar("T", bound="Struct")
@@ -14,26 +15,50 @@ __all__ = (
 )
 
 
-class Struct(ABC):
+def _get_type(
+    class_: Type["Struct"],
+    ct: Type["ctypes._CData"],
+    name: str,
+) -> Type["ctypes._CData"]:
+    attr = getattr(class_, name, None)
+
+    if isinstance(attr, RawType):
+        return attr.tp
+
+    return ct
+
+
+class Struct:
     """Abstract class representing a struct."""
 
-    def __init__(self, *args, **kwargs):
-        hints = get_type_hints(self.__class__)
+    def __init__(self, *args: Any, do_sync: bool = True):
+        class_typ: Type[Struct] = type(self)
+
+        if class_typ is Struct:
+            raise Exception(
+                "cannot instantiate Struct directly",
+            )
+
+        hints = get_type_hints(class_typ)
         self._hints = hints
 
         class _InternalStruct(ctypes.Structure):
             _fields_ = [
                 (
                     name,
-                    get_mapped(typ),
+                    _get_type(class_typ, get_mapped(typ), name),
                 )
                 for name, typ in hints.items()  # fmt: off
             ]
 
-        self._struct = _InternalStruct(*args, **kwargs)
-        do_sync = kwargs.get("do_sync")
+        self._struct = _InternalStruct(
+            *[
+                i if not isinstance(i, BaseCPointer) else i._as_parameter_
+                for i in args  # fmt: off
+            ]
+        )
 
-        if (kwargs.get("do_sync") is None) or (do_sync):
+        if do_sync:
             self._sync()
 
     @property
@@ -51,7 +76,8 @@ class Struct(ABC):
             Created struct object.
         """
         instance = cls(do_sync=False)
-        instance._struct = struct
+        instance._struct = struct  # type: ignore
+        # mypy is getting angry here for whatever reason
         instance._sync()
 
         return instance
@@ -77,7 +103,7 @@ class Struct(ABC):
             setattr(self, name, getattr(self._struct, name))
 
     def __repr__(self) -> str:
-        return f"<struct {self.__class__.__name__} at {hex(ctypes.addressof(self._struct))}>"  # noqa
+        return f"<struct {type(self).__name__} at {hex(ctypes.addressof(self._struct))}>"  # noqa
 
     @property
     def struct(self) -> ctypes.Structure:

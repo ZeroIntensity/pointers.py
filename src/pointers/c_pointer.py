@@ -8,10 +8,9 @@ from _pointers import add_ref, remove_ref
 
 from ._utils import get_mapped, map_type
 from .base_pointers import BaseCPointer, IterDereferencable, Typed
-from .structure import StructPointer
 
 if TYPE_CHECKING:
-    from .structure import Struct
+    from .structure import Struct, StructPointer
 
 T = TypeVar("T")
 A = TypeVar("A", bound="Struct")
@@ -19,6 +18,11 @@ A = TypeVar("A", bound="Struct")
 __all__ = (
     "TypedCPointer",
     "VoidPointer",
+    "to_c_ptr",
+    "cast",
+    "to_voidp",
+    "array",
+    "to_struct_ptr",
 )
 
 
@@ -168,7 +172,7 @@ class TypedCPointer(_TypedPointer[T]):
 
 
 class CArrayPointer(_CDeref[List[T]], Typed[T], BaseCPointer[List[T]]):
-    """Class representing a pointer with a known type."""
+    """Class representing a pointer to a C array."""
 
     def __init__(
         self,
@@ -215,6 +219,7 @@ class CArrayPointer(_CDeref[List[T]], Typed[T], BaseCPointer[List[T]]):
 
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
+
     return TypedCPointer(
         ptr.ensure(),
         data_type,
@@ -223,6 +228,12 @@ def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
         void_p=True,
         alt=True,
     )
+
+
+def to_voidp(ptr: TypedCPointer[Any]) -> VoidPointer:
+    """Cast a typed pointer to a void pointer."""
+
+    return VoidPointer(ptr.ensure(), ptr.size)
 
 
 def to_c_ptr(data: T) -> TypedCPointer[T]:
@@ -236,8 +247,10 @@ def to_c_ptr(data: T) -> TypedCPointer[T]:
     return TypedCPointer(address, typ, ctypes.sizeof(ct), False)
 
 
-def to_struct_ptr(struct: A) -> StructPointer[A]:
+def to_struct_ptr(struct: A) -> "StructPointer[A]":
     """Convert a struct to a pointer."""
+    from .structure import StructPointer
+
     return StructPointer(id(struct), type(struct))
 
 
@@ -252,7 +265,7 @@ def array(*seq: T) -> CArrayPointer[T]:
 
     length = len(seq)
     ctype = get_mapped(f_type)
-    arr = (ctype * length)(*seq)
+    arr = (ctype * length)(*seq)  # type: ignore
     add_ref(arr)
 
     return CArrayPointer(

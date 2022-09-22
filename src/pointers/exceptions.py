@@ -5,6 +5,7 @@ __all__ = (
     "InvalidSizeError",
     "InvalidBindingParameter",
     "NullPointerError",
+    "InvalidVersionError",
 )
 
 
@@ -40,5 +41,11 @@ class InvalidBindingParameter(Exception):
 
 class NullPointerError(Exception):
     """Raised when a pointer is null."""
+
+    pass
+
+
+class InvalidVersionError(Exception):
+    """Python version is not high enough."""
 
     pass
