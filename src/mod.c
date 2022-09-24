@@ -18,7 +18,7 @@ static PyObject* set_ref(PyObject* self, PyObject* args) {
     PyObject* obj;
     Py_ssize_t count;
     if (!PyArg_ParseTuple(args, "On", &obj, &count)) return NULL;
-    Py_SET_REFCNT(obj, count);
+    obj->ob_refcnt = count; // i dont care
     Py_RETURN_NONE;
 }
 
