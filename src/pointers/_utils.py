@@ -21,7 +21,6 @@ _C_TYPES: Dict[Type[Any], Type["ctypes._CData"]] = {
     int: ctypes.c_int,
     float: ctypes.c_float,
     bool: ctypes.c_bool,
-    Any: ctypes.c_void_p,  # type: ignore
 }
 
 _PY_TYPES: Dict[Type["ctypes._CData"], type] = {
@@ -84,7 +83,11 @@ def map_type(data: Any) -> "ctypes._CData":
 
 def get_mapped(typ: Any) -> "Type[ctypes._CData]":
     """Get the C mapped value of the given type."""
-    return _C_TYPES.get(typ) or ctypes.py_object
+    from .c_pointer import VoidPointer
+
+    return {**_C_TYPES, VoidPointer: ctypes.c_void_p}.get(  # type: ignore
+        typ,
+    ) or ctypes.py_object
 
 
 def is_mappable(typ: Any) -> bool:

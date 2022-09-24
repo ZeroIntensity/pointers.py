@@ -1,12 +1,14 @@
 from ward import raises, test
 
-from pointers import InvalidBindingParameter
+from pointers import (
+    InvalidBindingParameter, Struct, StructPointer, TypedCPointer, VoidPointer
+)
 from pointers import _cstd as std
 from pointers import (
     binds, c_free, c_malloc, cast, div, isspace, signal, sprintf, strcpy,
-    strlen, toupper
+    strlen, to_c_ptr, to_struct_ptr, to_voidp, toupper
 )
-from pointers._cstd import DivT
+from pointers.std_structs import DivT
 
 
 @test("c strings")
@@ -55,12 +57,44 @@ def _():
     assert type(res) is DivT
     assert res.quot == 10
 
+    class A(Struct):
+        one: int
+        two: int
 
-@test("struct pointers")
-def _():
-    res = div(10, 1)
-    assert type(res) is DivT
-    assert res.quot == 10
+    a = A(1, 2)
+
+    class MyStruct(Struct):
+        a: str
+        b: str
+        c: StructPointer[A]
+        d: TypedCPointer[int]
+        e: VoidPointer
+
+    s = MyStruct(
+        "a",
+        "b",
+        to_struct_ptr(a),
+        to_c_ptr(1),
+        to_voidp(
+            to_c_ptr("hello"),
+        ),
+    )
+
+    assert s.a == "a"
+    assert type(s.c) is StructPointer
+    assert type(s.d) is TypedCPointer
+    assert type(s.e) is VoidPointer
+
+    assert (~s.c) is a
+    assert (~s.c).one == a.one
+    assert ~s.d == 1
+    assert ~cast(s.e, str) == "hello"
+
+    class Foo(Struct):
+        bar: TypedCPointer
+
+    with raises(TypeError):
+        Foo()
 
 
 @test("custom bindings")
@@ -87,3 +121,20 @@ def _():
         isspace("")
 
     assert isspace(" ") != 0
+
+
+@test("c pointers")
+def _():
+    ptr = to_c_ptr(1)
+    ptr2 = to_c_ptr("hi")
+
+    assert ~ptr == 1
+    assert ~ptr2 == "hi"
+
+    double_ptr = to_c_ptr(to_c_ptr(1))
+    assert type(~double_ptr) is TypedCPointer
+    assert ~(~double_ptr) == 1
+    voidp = to_voidp(to_c_ptr(1))
+    assert type(voidp) is VoidPointer
+
+    assert ~cast(voidp, int) == 1

@@ -1,9 +1,12 @@
 import ctypes
-from typing import Any, Dict, Type
+from typing import TYPE_CHECKING, Dict, Type
 
 from ._cstd import div_t, lconv, ldiv_t, tm
-from ._pyapi import PyType_Slot
-from .structure import Struct
+from ._pyapi import PyType_Slot, PyType_Spec
+from .structure import Struct, StructPointer
+
+if TYPE_CHECKING:
+    from .c_pointer import VoidPointer
 
 __all__ = (
     "Tm",
@@ -56,7 +59,15 @@ class Lconv(Struct):
 
 class PyTypeSlot(Struct):
     slot: int
-    pfunc: Any
+    pfunc: "VoidPointer"
+
+
+class PyTypeSpec(Struct):
+    name: bytes
+    basic_size: int
+    itemsize: int
+    flags: int
+    slots: StructPointer[PyTypeSlot]
 
 
 STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
@@ -65,4 +76,5 @@ STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     ldiv_t: LDivT,
     lconv: Lconv,
     PyType_Slot: PyTypeSlot,
+    PyType_Spec: PyTypeSpec,
 }

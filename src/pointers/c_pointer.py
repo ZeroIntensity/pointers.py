@@ -142,6 +142,11 @@ class TypedCPointer(_TypedPointer[T]):
     def _as_parameter_(self):
         ctype = get_mapped(self.type)
         deref = ctype.from_address(self.ensure())
+        value = deref.value  # type: ignore
+
+        if isinstance(value, (TypedCPointer, VoidPointer)):
+            return ctypes.pointer(value._as_parameter_)
+
         return ctypes.pointer(deref)
 
     def dereference(self) -> T:
