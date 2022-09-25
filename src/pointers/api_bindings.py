@@ -110,33 +110,48 @@ class PyBuffer(_CallBase):
     # PyBuffer_FillInfo
     @staticmethod
     def fill_info(
-        view: PyObjectLike, exporter: PointerLike, buf: int, len: int, readonly: int
+        view: PointerLike,
+        exporter: PyObjectLike,
+        buf: PointerLike,
+        len: int,
+        readonly: int,
+        flags: int,
     ) -> int:
         return api_binding_base(
             API_FUNCS["PyBuffer_FillInfo"],
-            _deref_maybe(view),
-            exporter,
+            view,
+            _deref_maybe(exporter),
             buf,
             len,
             readonly,
+            flags,
         )
 
     # PyBuffer_FromContiguous
     @staticmethod
-    def from_contiguous(view: PointerLike, buf: int, len: CharLike) -> int:
+    def from_contiguous(
+        view: PointerLike, buf: PointerLike, len: int, fort: CharLike
+    ) -> int:
         return api_binding_base(
-            API_FUNCS["PyBuffer_FromContiguous"], view, buf, make_char(len)
+            API_FUNCS["PyBuffer_FromContiguous"], view, buf, len, make_char(fort)
         )
 
     # PyBuffer_GetPointer
     @staticmethod
-    def get_pointer(view: PointerLike) -> PointerLike:
-        return api_binding_base(API_FUNCS["PyBuffer_GetPointer"], view)
+    def get_pointer(view: PointerLike, indices: PointerLike) -> PointerLike:
+        return api_binding_base(API_FUNCS["PyBuffer_GetPointer"], view, indices)
 
     # PyBuffer_IsContiguous
     @staticmethod
-    def is_contiguous(view: CharLike) -> int:
-        return api_binding_base(API_FUNCS["PyBuffer_IsContiguous"], make_char(view))
+    def is_contiguous(view: PointerLike, order: CharLike) -> int:
+        return api_binding_base(
+            API_FUNCS["PyBuffer_IsContiguous"], view, make_char(order)
+        )
+
+    # PyBuffer_Release
+    @staticmethod
+    def release(view: PointerLike) -> None:
+        return api_binding_base(API_FUNCS["PyBuffer_Release"], view)
 
     # PyBuffer_SizeFromFormat
     @staticmethod
@@ -147,9 +162,11 @@ class PyBuffer(_CallBase):
 
     # PyBuffer_ToContiguous
     @staticmethod
-    def to_contiguous(buf: PointerLike, src: int, len: CharLike) -> int:
+    def to_contiguous(
+        buf: PointerLike, src: PointerLike, len: int, order: CharLike
+    ) -> int:
         return api_binding_base(
-            API_FUNCS["PyBuffer_ToContiguous"], buf, src, make_char(len)
+            API_FUNCS["PyBuffer_ToContiguous"], buf, src, len, make_char(order)
         )
 
 
@@ -1612,6 +1629,11 @@ class PyMem(_CallBase):
 class PyMemoryView(_CallBase):
     """Namespace containing API functions prefixed with `PyMemoryView_`"""
 
+    # PyMemoryView_FromBuffer
+    @staticmethod
+    def from_buffer(view: PointerLike) -> PyObjectLike:
+        return api_binding_base(API_FUNCS["PyMemoryView_FromBuffer"], view)
+
     # PyMemoryView_FromMemory
     @staticmethod
     def from_memory(mem: StringLike, size: int, flags: int) -> PyObjectLike:
@@ -2154,6 +2176,11 @@ class PyObject(_CallBase):
     def check_read_buffer(o: PyObjectLike) -> int:
         return api_binding_base(API_FUNCS["PyObject_CheckReadBuffer"], _deref_maybe(o))
 
+    # PyObject_CopyData
+    @staticmethod
+    def copy_data(dest: PointerLike, src: PointerLike) -> int:
+        return api_binding_base(API_FUNCS["PyObject_CopyData"], dest, src)
+
     # PyObject_DelItem
     @staticmethod
     def del_item(o: PyObjectLike, key: PyObjectLike) -> int:
@@ -2255,9 +2282,9 @@ class PyObject(_CallBase):
 
     # PyObject_GetBuffer
     @staticmethod
-    def get_buffer(exporter: PyObjectLike, view: int) -> int:
+    def get_buffer(exporter: PyObjectLike, view: PointerLike, flags: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_GetBuffer"], _deref_maybe(exporter), view
+            API_FUNCS["PyObject_GetBuffer"], _deref_maybe(exporter), view, flags
         )
 
     # PyObject_GetItem
@@ -2284,6 +2311,18 @@ class PyObject(_CallBase):
     def has_attr_string(o: PyObjectLike, attr_name: StringLike) -> int:
         return api_binding_base(
             API_FUNCS["PyObject_HasAttrString"], _deref_maybe(o), make_string(attr_name)
+        )
+
+    # PyObject_Hash
+    @staticmethod
+    def hash(o: PyObjectLike) -> int:
+        return api_binding_base(API_FUNCS["PyObject_Hash"], _deref_maybe(o))
+
+    # PyObject_HashNotImplemented
+    @staticmethod
+    def hash_not_implemented(o: PyObjectLike) -> int:
+        return api_binding_base(
+            API_FUNCS["PyObject_HashNotImplemented"], _deref_maybe(o)
         )
 
     # PyObject_Init
@@ -2799,10 +2838,35 @@ class PyThread(_CallBase):
     def set_key_value(key: int, value: PointerLike) -> int:
         return api_binding_base(API_FUNCS["PyThread_set_key_value"], key, value)
 
+    # PyThread_tss_create
+    @staticmethod
+    def tss_create(key: PointerLike) -> int:
+        return api_binding_base(API_FUNCS["PyThread_tss_create"], key)
+
+    # PyThread_tss_delete
+    @staticmethod
+    def tss_delete(key: PointerLike) -> None:
+        return api_binding_base(API_FUNCS["PyThread_tss_delete"], key)
+
+    # PyThread_tss_free
+    @staticmethod
+    def tss_free(key: PointerLike) -> None:
+        return api_binding_base(API_FUNCS["PyThread_tss_free"], key)
+
+    # PyThread_tss_get
+    @staticmethod
+    def tss_get(key: PointerLike) -> PointerLike:
+        return api_binding_base(API_FUNCS["PyThread_tss_get"], key)
+
+    # PyThread_tss_is_created
+    @staticmethod
+    def tss_is_created(key: PointerLike) -> int:
+        return api_binding_base(API_FUNCS["PyThread_tss_is_created"], key)
+
     # PyThread_tss_set
     @staticmethod
-    def tss_set(key: PointerLike) -> int:
-        return api_binding_base(API_FUNCS["PyThread_tss_set"], key)
+    def tss_set(key: PointerLike, value: PointerLike) -> int:
+        return api_binding_base(API_FUNCS["PyThread_tss_set"], key, value)
 
 
 class PyTuple(_CallBase):
@@ -2843,18 +2907,26 @@ class PyType(_CallBase):
 
     # PyType_FromModuleAndSpec
     @staticmethod
-    def from_module_and_spec(module: PyObjectLike, spec: PyObjectLike) -> PyObjectLike:
+    def from_module_and_spec(
+        module: PyObjectLike, spec: PointerLike, bases: PyObjectLike
+    ) -> PyObjectLike:
         return api_binding_base(
             API_FUNCS["PyType_FromModuleAndSpec"],
             _deref_maybe(module),
-            _deref_maybe(spec),
+            spec,
+            _deref_maybe(bases),
         )
+
+    # PyType_FromSpec
+    @staticmethod
+    def from_spec(spec: PointerLike) -> PyObjectLike:
+        return api_binding_base(API_FUNCS["PyType_FromSpec"], spec)
 
     # PyType_FromSpecWithBases
     @staticmethod
-    def from_spec_with_bases(spec: PyObjectLike) -> PyObjectLike:
+    def from_spec_with_bases(spec: PointerLike, bases: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyType_FromSpecWithBases"], _deref_maybe(spec)
+            API_FUNCS["PyType_FromSpecWithBases"], spec, _deref_maybe(bases)
         )
 
     # PyType_GenericAlloc
@@ -3462,7 +3534,7 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_EncodeFSDefault
     @staticmethod
-    def encode_fs_default(unicode: PyObjectLike) -> PyObjectLike:
+    def encode_fs__default(unicode: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
             API_FUNCS["PyUnicode_EncodeFSDefault"], _deref_maybe(unicode)
         )
@@ -3478,14 +3550,14 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_FSConverter
     @staticmethod
-    def fs_converter(obj: PyObjectLike, result: PointerLike) -> int:
+    def fs__converter(obj: PyObjectLike, result: PointerLike) -> int:
         return api_binding_base(
             API_FUNCS["PyUnicode_FSConverter"], _deref_maybe(obj), result
         )
 
     # PyUnicode_FSDecoder
     @staticmethod
-    def fs_decoder(obj: PyObjectLike, result: PointerLike) -> int:
+    def fs__decoder(obj: PyObjectLike, result: PointerLike) -> int:
         return api_binding_base(
             API_FUNCS["PyUnicode_FSDecoder"], _deref_maybe(obj), result
         )

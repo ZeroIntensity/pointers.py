@@ -1,8 +1,6 @@
 import ctypes
 from abc import ABC, abstractmethod
-from typing import (
-    TYPE_CHECKING, Any, Iterator, List, Optional, Type, TypeVar, Union
-)
+from typing import TYPE_CHECKING, Any, Iterator, List, Optional, Type, TypeVar
 
 from _pointers import add_ref, remove_ref
 
@@ -43,12 +41,12 @@ class VoidPointer(BaseCPointer[Any]):
         return deref.value
 
     def __repr__(self) -> str:
-        return f"<void pointer to {str(self)}>"  # noqa
+        return f"<void pointer to {self}>"
 
     def __rich__(self):
-        return f"<[green]void[/green] pointer to [cyan]{str(self)}[/cyan]>"  # noqa
+        return f"<[bold green]void[/] pointer to [cyan]{self}[/cyan]>"
 
-    def __del__(self):
+    def _cleanup(self) -> None:
         pass
 
 
@@ -63,9 +61,9 @@ class _CDeref(Typed[T], IterDereferencable[T], ABC):
         """Whether the target objects reference count should be decremented when the pointer is garbage collected."""  # noqa
         ...
 
-    def __del__(self):
-        if (self.type is not str) and (self.decref):
-            if self.address:
+    def _cleanup(self):
+        if self.address:
+            if (type(~self) is not str) and (self.decref):
                 remove_ref(~self)
 
 
@@ -104,31 +102,15 @@ class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
     def type(self):
         return self._type
 
-    def move(
-        self,
-        data: Union[BaseCPointer[T], T],
-        *,
-        unsafe: bool = False,
-    ) -> None:
-        """Move data to the target C object."""
-        if not isinstance(data, _TypedPointer):
-            raise ValueError(
-                f"{data} does not point to a c object",
-            )
-
-        if data.type is not self.type:
-            raise ValueError("pointer must be the same type")
-
-        super().move(
-            data,
-            unsafe=unsafe,
-        )
-
     def __repr__(self) -> str:
-        return f"<typed c pointer to {str(self)}>"  # noqa
+        tp = self._as_parameter_
+        obj = tp.__name__.replace("c_", "")
+        return f"<pointer to {obj} at {self}>"
 
     def __rich__(self):
-        return f"<[green]typed c[/green] pointer to [cyan]{str(self)}[/cyan]>"  # noqa
+        tp = self._as_parameter_
+        obj = tp.__name__.replace("c_", "")
+        return f"<pointer to [bold green]{obj}[/] at [cyan]{self}[/]>"
 
 
 class TypedCPointer(_TypedPointer[T]):
@@ -176,7 +158,7 @@ class TypedCPointer(_TypedPointer[T]):
         return self.dereference()
 
 
-class CArrayPointer(_CDeref[List[T]], Typed[T], BaseCPointer[List[T]]):
+class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
     """Class representing a pointer to a C array."""
 
     def __init__(
@@ -212,10 +194,10 @@ class CArrayPointer(_CDeref[List[T]], Typed[T], BaseCPointer[List[T]]):
         return [array[i] for i in range(self._length)]  # type: ignore
 
     def __repr__(self) -> str:
-        return f"<c array pointer to {str(self)}>"  # noqa
+        return f"<pointer to array at {str(self)}>"
 
     def __rich__(self):
-        return f"<[green]typed c[/green] pointer to [cyan]{str(self)}[/cyan]>"  # noqa
+        return f"<pointer to [bold green]array[/] [cyan]{str(self)}[/]>"
 
     def __getitem__(self, index: int) -> T:
         array = ~self

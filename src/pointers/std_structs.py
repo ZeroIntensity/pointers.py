@@ -1,12 +1,11 @@
 import ctypes
-from typing import TYPE_CHECKING, Dict, Type
+from typing import Dict, Type
 
 from ._cstd import div_t, lconv, ldiv_t, tm
-from ._pyapi import PyType_Slot, PyType_Spec
+from ._pyapi import Py_buffer, PyType_Slot, PyType_Spec
+from .c_pointer import TypedCPointer, VoidPointer
+from .constants import raw_type
 from .structure import Struct, StructPointer
-
-if TYPE_CHECKING:
-    from .c_pointer import VoidPointer
 
 __all__ = (
     "Tm",
@@ -39,27 +38,27 @@ class LDivT(DivT):
 
 
 class Lconv(Struct):
-    decimal_point: str
-    thousands_sep: str
-    grouping: str
-    int_curr_symbol: str
-    currency_symbol: str
-    mon_decimal_point: str
-    mon_thousands_sep: str
-    mon_grouping: str
-    positive_sign: str
-    negative_sign: str
-    frac_digits: str
-    p_cs_precedes: str
-    p_sep_by_space: str
-    n_sep_by_space: str
-    p_sign_posn: str
-    n_sign_posn: str
+    decimal_point: bytes
+    thousands_sep: bytes
+    grouping: bytes
+    int_curr_symbol: bytes
+    currency_symbol: bytes
+    mon_decimal_point: bytes
+    mon_thousands_sep: bytes
+    mon_grouping: bytes
+    positive_sign: bytes
+    negative_sign: bytes
+    frac_digits: bytes
+    p_cs_precedes: bytes
+    p_sep_by_space: bytes
+    n_sep_by_space: bytes
+    p_sign_posn: bytes
+    n_sign_posn: bytes
 
 
 class PyTypeSlot(Struct):
     slot: int
-    pfunc: "VoidPointer"
+    pfunc: VoidPointer
 
 
 class PyTypeSpec(Struct):
@@ -70,6 +69,20 @@ class PyTypeSpec(Struct):
     slots: StructPointer[PyTypeSlot]
 
 
+class PyBuffer(Struct):
+    buf: VoidPointer
+    obj: VoidPointer
+    len: int
+    readonly: int
+    itemsize: int
+    format: bytes
+    ndim: int
+    shape: TypedCPointer[int] = raw_type(ctypes.POINTER(ctypes.c_ssize_t))
+    strides: TypedCPointer[int] = raw_type(ctypes.POINTER(ctypes.c_ssize_t))
+    suboffsets: TypedCPointer[int] = raw_type(ctypes.POINTER(ctypes.c_ssize_t))
+    internal: VoidPointer
+
+
 STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     tm: Tm,
     div_t: DivT,
@@ -77,4 +90,5 @@ STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     lconv: Lconv,
     PyType_Slot: PyTypeSlot,
     PyType_Spec: PyTypeSpec,
+    Py_buffer: PyBuffer,
 }

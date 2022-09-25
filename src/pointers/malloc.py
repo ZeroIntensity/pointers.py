@@ -42,10 +42,10 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         self._address = value
 
     def __repr__(self) -> str:
-        return f"<pointer to {self.size} bytes of memory at {str(self)}>"
+        return f"<pointer to {self.size} bytes of memory at {self}>"
 
     def __rich__(self) -> str:
-        return f"<pointer to [green]{self.size} bytes[/green] of memory at [cyan]{str(self)}[/cyan]>"  # noqa
+        return f"<pointer to [bold green]{self.size} bytes[/] of memory at [cyan]{self}[/]>"  # noqa
 
     def __add__(self, amount: int):
         return AllocatedPointer(

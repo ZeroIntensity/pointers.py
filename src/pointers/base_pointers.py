@@ -1,6 +1,8 @@
 import ctypes
 import faulthandler
 import sys
+import warnings
+import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from io import UnsupportedOperation
@@ -23,6 +25,8 @@ __all__ = (
     "Dereferencable",
     "IterDereferencable",
 )
+
+warnings.simplefilter("always", DeprecationWarning)
 
 T = TypeVar("T")
 A = TypeVar("A", bound="BasicPointer")
@@ -54,7 +58,7 @@ class BasicPointer(ABC):
         return hex(self.address or 0)
 
     @abstractmethod
-    def __del__(self) -> None:
+    def _cleanup(self) -> None:
         ...
 
     def __eq__(self, data: object) -> bool:
@@ -163,7 +167,7 @@ class BasePointer(
         return hex(self.address or 0)
 
     @abstractmethod
-    def __del__(self) -> None:
+    def _cleanup(self) -> None:
         ...
 
     def __eq__(self, data: object) -> bool:
@@ -217,8 +221,8 @@ class Sized(ABC):
 
 
 class BaseObjectPointer(
-    IterDereferencable[T],
     Typed[Type[T]],
+    IterDereferencable[T],
     BasePointer[T],
     ABC,
 ):
@@ -243,9 +247,15 @@ class BaseObjectPointer(
             add_ref(~self)
 
         self._origin_size = sys.getsizeof(~self if address else None)
+        weakref.finalize(self, self._cleanup)
 
     @property
     def type(self) -> Type[T]:
+        warnings.warn(
+            "BaseObjectPointer.type is deprecated, please use type(~ptr) instead",  # noqa
+            DeprecationWarning,
+        )
+
         return self._type
 
     def set_attr(self, key: str, value: Any) -> None:
@@ -274,14 +284,6 @@ class BaseObjectPointer(
             raise ValueError(
                 "can only point to object pointer",
             )
-
-        if (new.type is not self.type) and self.address:
-            raise TypeError(
-                f"object at new address must be the same type (pointer looks at {self.type.__name__}, target is {new.type.__name__})",  # noqa
-            )
-
-        if not self.address:
-            self._type = new.type
 
         with suppress(NullPointerError):
             remove_ref(~self)
@@ -331,7 +333,7 @@ class BaseObjectPointer(
             else cls.make_from(obj)
         )
 
-    def __del__(self):
+    def _cleanup(self):
         if self.address:
             remove_ref(~self)
 
@@ -346,6 +348,7 @@ class BaseCPointer(
     def __init__(self, address: int, size: int):
         self._address = address
         self._size = size
+        weakref.finalize(self, self._cleanup)
 
     @property
     def address(self) -> Optional[int]:
@@ -391,8 +394,13 @@ class BaseCPointer(
             ctypes.POINTER(ctypes.c_char * self.size),
         )
 
+    @abstractmethod
     def _as_parameter_(self) -> "ctypes._CData":
         """Convert the pointer to a ctypes pointer."""
+        ...
+
+    @abstractmethod
+    def _cleanup(self) -> None:
         ...
 
 
@@ -465,7 +473,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
     def __sub__(self, amount: int) -> "BaseAllocatedPointer[Any]":
         ...
 
-    def __del__(self):
+    def _cleanup(self) -> None:
         pass
 
     def _make_stream_and_ptr(

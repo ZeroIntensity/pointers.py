@@ -23,4 +23,4 @@ classifiers = [
 dependencies = [
     "typing_extensions",
 ]
-version = "2.2.0-a2"
+version = "2.2.0-a3"

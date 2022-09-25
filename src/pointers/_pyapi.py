@@ -71,6 +71,33 @@ class PyType_Spec(ctypes.Structure):
     ]
 
 
+class Py_tss_t(ctypes.Structure):
+    pass
+
+
+class Py_buffer(ctypes.Structure):
+    _fields_ = [
+        ("buf", ctypes.c_void_p),
+        ("obj", ctypes.c_void_p),
+        ("len", ctypes.c_ssize_t),
+        ("readonly", ctypes.c_int),
+        ("itemsize", ctypes.c_ssize_t),
+        ("format", ctypes.c_char_p),
+        ("ndim", ctypes.c_int),
+        ("shape", ctypes.POINTER(ctypes.c_ssize_t)),
+        ("strides", ctypes.POINTER(ctypes.c_ssize_t)),
+        ("suboffsets", ctypes.POINTER(ctypes.c_ssize_t)),
+        ("internal", ctypes.c_void_p),
+    ]
+
+
+class PyModuleDef(ctypes.Structure):
+    _fields_ = [
+        ("m_base", ctypes.c_char_p),
+        ("pfunc", ctypes.c_void_p),
+    ]
+
+
 Py_UCS4 = ctypes.c_uint32
 
 
@@ -131,6 +158,7 @@ _register(
     "PyBuffer_FillInfo",
     ctypes.c_int,
     (
+        ctypes.POINTER(Py_buffer),
         ctypes.py_object,
         ctypes.c_void_p,
         ctypes.c_ssize_t,
@@ -143,17 +171,32 @@ _register(
     "PyBuffer_FromContiguous",
     ctypes.c_int,
     (
+        ctypes.POINTER(Py_buffer),
         ctypes.c_void_p,
         ctypes.c_ssize_t,
         ctypes.c_char,
     ),
 )
 # void* PyBuffer_GetPointer(const Py_buffer* view, const Py_ssize_t* indices)
-_register("PyBuffer_GetPointer", ctypes.c_void_p, (ctypes.POINTER(ctypes.c_ssize_t),))
+_register(
+    "PyBuffer_GetPointer",
+    ctypes.c_void_p,
+    (
+        ctypes.POINTER(Py_buffer),
+        ctypes.POINTER(ctypes.c_ssize_t),
+    ),
+)
 # int PyBuffer_IsContiguous(const Py_buffer* view, char order)
-_register("PyBuffer_IsContiguous", ctypes.c_int, (ctypes.c_char,))
+_register(
+    "PyBuffer_IsContiguous",
+    ctypes.c_int,
+    (
+        ctypes.POINTER(Py_buffer),
+        ctypes.c_char,
+    ),
+)
 # void PyBuffer_Release(Py_buffer* view)
-_register("PyBuffer_Release", None, ())
+_register("PyBuffer_Release", None, (ctypes.POINTER(Py_buffer),))
 # Py_ssize_t PyBuffer_SizeFromFormat(const char* format)
 _register(
     "PyBuffer_SizeFromFormat",
@@ -167,6 +210,7 @@ _register(
     ctypes.c_int,
     (
         ctypes.c_void_p,
+        ctypes.POINTER(Py_buffer),
         ctypes.c_ssize_t,
         ctypes.c_char,
     ),
@@ -1450,7 +1494,7 @@ _register(
     ),
 )
 # PyObject* PyMemoryView_FromBuffer(const Py_buffer* view)
-_register("PyMemoryView_FromBuffer", ctypes.py_object, ())
+_register("PyMemoryView_FromBuffer", ctypes.py_object, (ctypes.POINTER(Py_buffer),))
 # PyObject* PyMemoryView_FromMemory(char* mem, Py_ssize_t size, int flags)
 _register(
     "PyMemoryView_FromMemory",
@@ -2034,7 +2078,14 @@ _register("PyObject_CheckBuffer", ctypes.c_int, (ctypes.py_object,))
 # int PyObject_CheckReadBuffer(PyObject* o)
 _register("PyObject_CheckReadBuffer", ctypes.c_int, (ctypes.py_object,))
 # int PyObject_CopyData(Py_buffer* dest, Py_buffer* src)
-_register("PyObject_CopyData", ctypes.c_int, ())
+_register(
+    "PyObject_CopyData",
+    ctypes.c_int,
+    (
+        ctypes.POINTER(Py_buffer),
+        ctypes.POINTER(Py_buffer),
+    ),
+)
 # int PyObject_DelItem(PyObject* o, PyObject* key)
 _register(
     "PyObject_DelItem",
@@ -2139,6 +2190,7 @@ _register(
     ctypes.c_int,
     (
         ctypes.py_object,
+        ctypes.POINTER(Py_buffer),
         ctypes.c_int,
     ),
 )
@@ -2171,6 +2223,10 @@ _register(
         ctypes.c_char_p,
     ),
 )
+# Py_hash_t PyObject_Hash(PyObject* o)
+_register("PyObject_Hash", ctypes.c_ssize_t, (ctypes.py_object,))
+# Py_hash_t PyObject_HashNotImplemented(PyObject* o)
+_register("PyObject_HashNotImplemented", ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PyObject_Init(PyObject* op, PyTypeObject* type)
 _register(
     "PyObject_Init",
@@ -2697,18 +2753,27 @@ _register(
         ctypes.c_void_p,
     ),
 )
+# Py_tss_t* PyThread_tss_alloc()
+_register("PyThread_tss_alloc", ctypes.POINTER(Py_tss_t), ())
 # int PyThread_tss_create(Py_tss_t* key)
-_register("PyThread_tss_create", ctypes.c_int, ())
+_register("PyThread_tss_create", ctypes.c_int, (ctypes.POINTER(Py_tss_t),))
 # void PyThread_tss_delete(Py_tss_t* key)
-_register("PyThread_tss_delete", None, ())
+_register("PyThread_tss_delete", None, (ctypes.POINTER(Py_tss_t),))
 # void PyThread_tss_free(Py_tss_t* key)
-_register("PyThread_tss_free", None, ())
+_register("PyThread_tss_free", None, (ctypes.POINTER(Py_tss_t),))
 # void* PyThread_tss_get(Py_tss_t* key)
-_register("PyThread_tss_get", ctypes.c_void_p, ())
+_register("PyThread_tss_get", ctypes.c_void_p, (ctypes.POINTER(Py_tss_t),))
 # int PyThread_tss_is_created(Py_tss_t* key)
-_register("PyThread_tss_is_created", ctypes.c_int, ())
+_register("PyThread_tss_is_created", ctypes.c_int, (ctypes.POINTER(Py_tss_t),))
 # int PyThread_tss_set(Py_tss_t* key, void* value)
-_register("PyThread_tss_set", ctypes.c_int, (ctypes.c_void_p,))
+_register(
+    "PyThread_tss_set",
+    ctypes.c_int,
+    (
+        ctypes.POINTER(Py_tss_t),
+        ctypes.c_void_p,
+    ),
+)
 # PyObject* PyTuple_GetItem(PyObject* p, Py_ssize_t pos)
 _register(
     "PyTuple_GetItem",
@@ -2752,17 +2817,21 @@ _register(
     ctypes.py_object,
     (
         ctypes.py_object,
+        ctypes.POINTER(PyType_Spec),
         ctypes.py_object,
     ),
     minver="3.9",
 )
 # PyObject* PyType_FromSpec(PyType_Spec* spec)
-_register("PyType_FromSpec", ctypes.py_object, ())
+_register("PyType_FromSpec", ctypes.py_object, (ctypes.POINTER(PyType_Spec),))
 # PyObject* PyType_FromSpecWithBases(PyType_Spec* spec, PyObject* bases)
 _register(
     "PyType_FromSpecWithBases",
     ctypes.py_object,
-    (ctypes.py_object,),
+    (
+        ctypes.POINTER(PyType_Spec),
+        ctypes.py_object,
+    ),
     minver="3.3",
 )
 # PyObject* PyType_GenericAlloc(PyTypeObject* type, Py_ssize_t nitems)

@@ -1,6 +1,6 @@
 import ctypes
 from contextlib import suppress
-from typing import Any, List, Optional, Type, TypeVar, Union, get_type_hints
+from typing import Any, List, Optional, Type, TypeVar, Union
 
 from _pointers import add_ref
 
@@ -61,7 +61,7 @@ class Struct:
                 "cannot instantiate Struct directly",
             )
 
-        hints = get_type_hints(class_typ)
+        hints = class_typ.__annotations__
         self._void_p: List[str] = []
         self._hints = {k: self._convert_tc_ptr(v, k) for k, v in hints.items()}
 

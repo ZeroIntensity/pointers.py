@@ -27,4 +27,4 @@ from .object_pointer import Pointer, to_ptr
 from .std_structs import DivT, Lconv, LDivT, Tm
 from .structure import Struct, StructPointer
 
-__version__ = "2.2.0-a2"
+__version__ = "2.2.0-a3"

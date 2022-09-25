@@ -32,13 +32,14 @@ VOID_P = ctc("void_p")
 WCHAR = ctc("wchar")
 DOUBLE_QUOTE: str = '"'
 TRIPLE_QUOTE: str = '"""'
+SSIZE = ctc("ssize_t")
 
 C_TYPES = {
     "void": "None",
     "PyObject*": ct("py_object"),
     "int": ctc("int"),
     "void*": VOID_P,
-    "Py_ssize_t": ctc("ssize_t"),
+    "Py_ssize_t": SSIZE,
     "char": ctc("char"),
     "char*": CHAR_P,
     "const char*": CHAR_P,
@@ -57,13 +58,19 @@ C_TYPES = {
     "w_char*": WCHAR_P,
     "va_list": VOID_P,
     "wchar_t": WCHAR,
-    "const wchar_t": WCHAR,
     "PyTypeObject": "PyTypeObject",
     "Py_UCS4": "Py_UCS4",
     "PyThreadState": "PyThreadState",
     "PyVarObject": "PyVarObject",
     "PyFrameObject": "PyFrameObject",
     "PyInterpreterState": "PyInterpreterState",
+    "PyType_Spec": "PyType_Spec",
+    "Py_tss_t": "Py_tss_t",
+    "Py_hash_t": SSIZE,
+    "Py_buffer": "Py_buffer",
+    "PyOS_sighandler_t": VOID_P,
+    "PyGILState_STATE": VOID_P,
+    "PyModuleDef": "PyModuleDef",
 }
 
 CT_TYPES = {
@@ -306,7 +313,7 @@ def main():
             return
         break
 
-    out: str = """raise Exception('autogenerating some things is too complicated or not possible! please manually go through and update the rest. you may delete this error when finished\n')"""
+    out: str = """raise Exception('autogenerating some things is too complicated or not possible! please manually go through and update the rest. you may delete this error when finished')\n"""
     from src.pointers._pyapi import API_FUNCS
 
     funcs: dict[str, list[str]] = {}
@@ -370,6 +377,7 @@ def main():
 """
 
     _write_autogen("api_bindings.py", out)
+    print("success!")
 
 
 if __name__ == "__main__":

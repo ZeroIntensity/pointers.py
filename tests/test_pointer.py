@@ -31,9 +31,6 @@ def _():
     ptr >>= "test"
     assert ~ptr == "test"
 
-    with raises(TypeError):
-        ptr >>= 1  # type: ignore
-
 
 @test("movement")
 def _():
@@ -45,9 +42,6 @@ def _():
 
     with raises(InvalidSizeError):
         ptr <<= "hello world"
-
-    with raises(TypeError):
-        ptr <<= 1  # type: ignore
 
 
 @test("assignment with tracked types")
@@ -84,9 +78,6 @@ def _():
     ptr2 = to_ptr(NULL)
     ptr2 >>= 1
 
-    with raises(TypeError):
-        ptr2 >>= ""
-
     ptr2 >>= NULL
 
 
@@ -95,12 +86,3 @@ def _():
     ptr = m & "test"
     assert type(ptr) is Pointer
     assert m * ptr == "test"
-
-
-@test("c pointers")
-def _():
-    a = to_c_ptr("test")
-    assert ~a == "test"
-    c = to_c_ptr(1)
-    assert ~c == 1
-    assert strlen(b"test") == 4

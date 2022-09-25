@@ -14,11 +14,15 @@ T = TypeVar("T")
 class Pointer(BaseObjectPointer[T]):
     """Pointer to a `PyObject`"""
 
+    def _get_tp_name(self) -> str:
+        return type(~self).__name__ if self.address else "NULL"
+
     def __repr__(self) -> str:
-        return f"<pointer to {self.type.__name__} object at {str(self)}>"  # noqa
+
+        return f"<pointer to {self._get_tp_name()} object at {self}>"  # noqa
 
     def __rich__(self):
-        return f"<pointer to [green]{self.type.__name__}[/green] object at [cyan]{str(self)}[/cyan]>"  # noqa
+        return f"<pointer to [bold green]{self._get_tp_name()}[/] object at [cyan]{self}[/cyan]>"  # noqa
 
     def move(
         self,
@@ -31,11 +35,6 @@ class Pointer(BaseObjectPointer[T]):
         if not isinstance(data, BaseObjectPointer):
             raise ValueError(
                 "pointer is not pointing to an object",
-            )
-
-        if data.type is not self.type:
-            raise TypeError(
-                f"target object is not the same type (pointer looks at {self.type.__name__}, target is {data.type.__name__})",  # noqa
             )
 
         deref_a: T = ~data  # type: ignore

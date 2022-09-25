@@ -18,6 +18,8 @@ def _():
     assert ~cast(ptr, bytes) == b"a"
     c_free(ptr)
 
+    assert strlen(b"test") == 4
+
 
 @test("format strings")
 def _():
