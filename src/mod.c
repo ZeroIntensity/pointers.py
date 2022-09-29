@@ -71,12 +71,11 @@ static PyObject* handle(PyObject* self, PyObject* args) {
 
     if (setjmp(buf)) {
         CALL_ATTR(faulthandler, "enable");
-        PyCodeObject* code = PyFrame_GetCode(PyEval_GetFrame());
 
         PyErr_Format(
             PyExc_RuntimeError,
             "segment violation occured during execution of %S",
-            code->co_name
+            PyObject_GetAttrString(func, "__name__")
         );
         return NULL;
     }
