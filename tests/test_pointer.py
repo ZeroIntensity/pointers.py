@@ -1,5 +1,8 @@
+import ctypes
+
 from ward import raises, test
 
+from _pointers import handle
 from pointers import NULL, InvalidSizeError, Pointer
 from pointers import _ as m
 from pointers import strlen, to_c_ptr, to_ptr
@@ -86,3 +89,11 @@ def _():
     ptr = m & "test"
     assert type(ptr) is Pointer
     assert m * ptr == "test"
+
+
+@test("segfault handler")
+def _():
+    def segfault():
+        ctypes.string_at(0)
+
+    handle(segfault, (), {})

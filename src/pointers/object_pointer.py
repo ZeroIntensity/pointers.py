@@ -1,5 +1,4 @@
 import ctypes
-import struct
 import sys
 from typing import TypeVar, Union
 
@@ -42,23 +41,25 @@ class Pointer(BaseObjectPointer[T]):
 
         size_a: int = sys.getsizeof(deref_a)
         size_b: int = sys.getsizeof(deref_b)
+        refcnt = sys.getrefcount(deref_b)
 
         if (self._origin_size < size_a) and (not unsafe):
             raise InvalidSizeError(
                 f"target size may not exceed current size ({size_a} < {size_b})",  # noqa
             )
 
+        if type(deref_a) is not type(deref_b):
+            raise TypeError(
+                "cannot move object of a different type",
+            )
+
         current_address: int = self.ensure()
         bytes_a = (ctypes.c_ubyte * size_a).from_address(data.ensure())
-        (refcnt,) = struct.unpack(
-            "q", ctypes.string_at(current_address, 8)
-        )  # this might be overkill
-
         bytes_b = (ctypes.c_ubyte * size_b).from_address(current_address)
-        set_ref(deref_a, sys.getrefcount(deref_a) - 1 + refcnt)
 
         self.assign(~data)
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
+        set_ref(deref_b, refcnt - 1)
 
     @classmethod
     def make_from(cls, obj: Nullable[T]) -> "Pointer[T]":
