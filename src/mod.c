@@ -2,7 +2,9 @@
 #include <Python.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <stdbool.h>
 #define GETOBJ PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
+#define CALL_ATTR(ob, attr) PyObject_Call(PyObject_GetAttrString(ob, attr), PyTuple_New(0), NULL)
 static jmp_buf buf;
 
 static PyObject* add_ref(PyObject* self, PyObject* args) {
@@ -44,13 +46,13 @@ void handler(int signum) {
 
 static PyObject* handle(PyObject* self, PyObject* args) {
     PyObject* func;
-    PyObject* params;
-    PyObject* kwargs;
+    PyObject* params = NULL;
+    PyObject* kwargs = NULL;
+    PyObject* faulthandler = PyImport_ImportModule("faulthandler");
 
     if (!PyArg_ParseTuple(
             args,
-            "O!O!O!",
-            &PyFunction_Type,
+            "O|O!O!",
             &func,
             &PyTuple_Type,
             &params,
@@ -58,18 +60,32 @@ static PyObject* handle(PyObject* self, PyObject* args) {
             &kwargs
         )
     ) return NULL;
+
+    if (!params) params = PyTuple_New(0);
+    if (!kwargs) kwargs = PyDict_New();
+
     int val = setjmp(buf);
 
+    CALL_ATTR(faulthandler, "disable");
+    // faulthandler needs to be shut off in case of a segfault or its message will still print
+
     if (setjmp(buf)) {
+        CALL_ATTR(faulthandler, "enable");
+        PyCodeObject* code = PyFrame_GetCode(PyEval_GetFrame());
+
         PyErr_Format(
             PyExc_RuntimeError,
             "segment violation occured during execution of %S",
-            PyObject_GetAttrString(func, "__name__")
+            code->co_name
         );
         return NULL;
     }
 
     PyObject* result = PyObject_Call(func, params, kwargs);
+
+    if (!result) return NULL;
+
+    CALL_ATTR(faulthandler, "enable");
     return result;
 }
 

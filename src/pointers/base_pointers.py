@@ -10,7 +10,9 @@ from typing import (
     Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
 )
 
-from _pointers import add_ref, remove_ref
+from typing_extensions import final
+
+from _pointers import add_ref, handle, remove_ref
 
 from ._utils import deref, force_set_attr, move_to_mem
 from .constants import NULL, Nullable
@@ -54,6 +56,7 @@ class BasicPointer(ABC):
     def __rich__(self):
         ...
 
+    @final
     def __str__(self) -> str:
         return hex(self.address or 0)
 
@@ -61,12 +64,14 @@ class BasicPointer(ABC):
     def _cleanup(self) -> None:
         ...
 
+    @final
     def __eq__(self, data: object) -> bool:
         if not isinstance(data, BasePointer):
             return False
 
         return data.address == self.address
 
+    @final
     def ensure(self) -> int:
         """Ensure that the pointer is not null.
 
@@ -91,19 +96,22 @@ class BasicPointer(ABC):
 
 class Movable(ABC, Generic[T, A]):
     @abstractmethod
+    def _move(
+        self,
+        data: Union[A, T],
+        *,
+        unsafe: bool = False,
+    ) -> None:
+        ...
+
+    @final
     def move(
         self,
         data: Union[A, T],
         *,
         unsafe: bool = False,
     ) -> None:
-        """Move data to the target address.
-
-        Args:
-            data: Pointer or object to move into the current data.
-            unsafe: Should buffer overflows be allowed.
-        """
-        ...
+        handle(self._move, (data,), {"unsafe": unsafe})
 
     def __ilshift__(self, data: Union[A, T]):
         self.move(data)
@@ -118,13 +126,18 @@ class Dereferencable(ABC, Generic[T]):
     """Abstract class for an object that may be dereferenced."""
 
     @abstractmethod
+    def _dereference(self) -> T:
+        ...
+
+    @final
     def dereference(self) -> T:
         """Dereference the pointer.
 
         Returns:
             Value at the pointers address."""
-        ...
+        return handle(self._dereference)
 
+    @final
     def __invert__(self) -> T:
         """Dereference the pointer."""
         return self.dereference()
@@ -163,18 +176,9 @@ class BasePointer(
     def __rich__(self):
         ...
 
-    def __str__(self) -> str:
-        return hex(self.address or 0)
-
     @abstractmethod
     def _cleanup(self) -> None:
         ...
-
-    def __eq__(self, data: object) -> bool:
-        if not isinstance(data, BasePointer):
-            return False
-
-        return data.address == self.address
 
 
 class Typed(ABC, Generic[T]):
@@ -295,7 +299,7 @@ class BaseObjectPointer(
     def address(self) -> Optional[int]:
         return self._address
 
-    def dereference(self) -> T:
+    def _dereference(self) -> T:
         return deref(self.ensure())
 
     def __irshift__(
@@ -362,7 +366,7 @@ class BaseCPointer(
         bytes_a = (ctypes.c_ubyte * size).from_address(address)
         return self.make_ct_pointer(), bytes(bytes_a)
 
-    def move(
+    def _move(
         self,
         data: Union["BaseCPointer[T]", T],
         *,
@@ -432,7 +436,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
     def assigned(self, value: bool) -> None:
         self._assigned = value
 
-    def move(
+    def _move(
         self,
         data: Union[BasePointer[T], T],
         unsafe: bool = False,
@@ -452,7 +456,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         self.assigned = True
         remove_ref(data)
 
-    def dereference(self) -> T:
+    def _dereference(self) -> T:
         if self.freed:
             raise FreedMemoryError(
                 "cannot dereference memory that has been freed",

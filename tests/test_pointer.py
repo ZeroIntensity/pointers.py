@@ -96,4 +96,5 @@ def _():
     def segfault():
         ctypes.string_at(0)
 
-    handle(segfault, (), {})
+    with raises(RuntimeError):
+        handle(segfault)

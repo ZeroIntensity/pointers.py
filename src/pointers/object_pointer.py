@@ -23,7 +23,7 @@ class Pointer(BaseObjectPointer[T]):
     def __rich__(self):
         return f"<pointer to [bold green]{self._get_tp_name()}[/] object at [cyan]{self}[/cyan]>"  # noqa
 
-    def move(
+    def _move(
         self,
         target: Union[T, "BasePointer[T]"],
         *,

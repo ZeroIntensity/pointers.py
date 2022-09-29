@@ -35,7 +35,7 @@ class VoidPointer(BaseCPointer[Any]):
     def _as_parameter_(self) -> ctypes.c_void_p:
         return ctypes.c_void_p(self.address)
 
-    def dereference(self) -> Optional[int]:
+    def _dereference(self) -> Optional[int]:
         """Dereference the pointer."""
         deref = ctypes.c_void_p.from_address(self.ensure())
         return deref.value
@@ -131,7 +131,7 @@ class TypedCPointer(_TypedPointer[T]):
 
         return ctypes.pointer(deref)
 
-    def dereference(self) -> T:
+    def _dereference(self) -> T:
         """Dereference the pointer."""
         ctype = get_mapped(self.type)
 
@@ -152,10 +152,6 @@ class TypedCPointer(_TypedPointer[T]):
     def __iter__(self) -> Iterator[T]:
         """Dereference the pointer."""
         return iter({self.dereference()})
-
-    def __invert__(self) -> T:
-        """Dereference the pointer."""
-        return self.dereference()
 
 
 class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
@@ -188,7 +184,7 @@ class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
         deref = (ctype * self._length).from_address(self.ensure())
         return deref
 
-    def dereference(self) -> List[T]:
+    def _dereference(self) -> List[T]:
         """Dereference the pointer."""
         array = self._as_parameter_
         return [array[i] for i in range(self._length)]  # type: ignore
