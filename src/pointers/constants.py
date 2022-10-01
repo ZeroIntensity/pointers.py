@@ -1,13 +1,30 @@
 import ctypes
-from typing import Any, NamedTuple, Type, TypeVar, Union
+import faulthandler
+from contextlib import suppress
+from functools import wraps
+from io import UnsupportedOperation
+from typing import Any, Callable, NamedTuple, Type, TypeVar, Union
+
+from typing_extensions import ParamSpec
+
+from _pointers import handle as _handle
+
+from .exceptions import SegmentViolation
+
+with suppress(
+    UnsupportedOperation
+):  # in case its running in idle or something like that
+    faulthandler.enable()
 
 __all__ = (
     "NULL",
     "Nullable",
     "raw_type",
+    "handle",
 )
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class NULL:
@@ -24,3 +41,28 @@ class RawType(NamedTuple):
 def raw_type(ct: Type["ctypes._CData"]) -> Any:
     """Set a raw ctypes type for a struct."""
     return RawType(ct)
+
+
+def handle(func: Callable[P, T]) -> Callable[P, T]:
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        try:
+            faulthandler.disable()
+            call = _handle(func, args, kwargs)
+
+            with suppress(UnsupportedOperation):
+                faulthandler.enable()
+
+            return call
+        except RuntimeError as e:
+            msg = str(e)
+
+            if not msg.startswith("segment"):
+                raise
+
+            with suppress(UnsupportedOperation):
+                faulthandler.enable()
+
+            raise SegmentViolation(str(e)) from None
+
+    return wrapper

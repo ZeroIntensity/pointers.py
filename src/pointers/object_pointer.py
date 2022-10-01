@@ -5,6 +5,7 @@ from typing import TypeVar, Union
 from _pointers import add_ref, remove_ref, set_ref
 
 from .base_pointers import NULL, BaseObjectPointer, BasePointer, Nullable
+from .constants import handle
 from .exceptions import InvalidSizeError
 
 T = TypeVar("T")
@@ -23,7 +24,8 @@ class Pointer(BaseObjectPointer[T]):
     def __rich__(self):
         return f"<pointer to [bold green]{self._get_tp_name()}[/] object at [cyan]{self}[/cyan]>"  # noqa
 
-    def _move(
+    @handle
+    def move(
         self,
         target: Union[T, "BasePointer[T]"],
         *,
@@ -71,6 +73,7 @@ class Pointer(BaseObjectPointer[T]):
         )
 
 
+@handle
 def to_ptr(obj: Nullable[T]) -> Pointer[T]:
     """Point to the underlying `PyObject`.
 

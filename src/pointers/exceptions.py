@@ -6,6 +6,7 @@ __all__ = (
     "InvalidBindingParameter",
     "NullPointerError",
     "InvalidVersionError",
+    "SegmentViolation",
 )
 
 
@@ -47,5 +48,11 @@ class NullPointerError(Exception):
 
 class InvalidVersionError(Exception):
     """Python version is not high enough."""
+
+    pass
+
+
+class SegmentViolation(Exception):
+    """SIGSEGV was sent to Python."""
 
     pass

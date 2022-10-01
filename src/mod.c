@@ -3,8 +3,9 @@
 #include <signal.h>
 #include <setjmp.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <frameobject.h> // needed to get members of PyFrameObject
 #define GETOBJ PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
-#define CALL_ATTR(ob, attr) PyObject_Call(PyObject_GetAttrString(ob, attr), PyTuple_New(0), NULL)
 static jmp_buf buf;
 
 static PyObject* add_ref(PyObject* self, PyObject* args) {
@@ -47,8 +48,7 @@ void handler(int signum) {
 static PyObject* handle(PyObject* self, PyObject* args) {
     PyObject* func;
     PyObject* params = NULL;
-    PyObject* kwargs = NULL;
-    PyObject* faulthandler = PyImport_ImportModule("faulthandler");
+    PyObject* kwargs = NULL;;
 
     if (!PyArg_ParseTuple(
             args,
@@ -64,27 +64,26 @@ static PyObject* handle(PyObject* self, PyObject* args) {
     if (!params) params = PyTuple_New(0);
     if (!kwargs) kwargs = PyDict_New();
 
-    int val = setjmp(buf);
-
-    CALL_ATTR(faulthandler, "disable");
-    // faulthandler needs to be shut off in case of a segfault or its message will still print
-
     if (setjmp(buf)) {
-        CALL_ATTR(faulthandler, "enable");
+        PyFrameObject* frame = PyEval_GetFrame();
+        PyCodeObject* code = frame->f_code;
+        Py_INCREF(code);
+
+        // this is basically a copy of PyFrame_GetCode, which is only available on 3.9+
 
         PyErr_Format(
             PyExc_RuntimeError,
             "segment violation occured during execution of %S",
-            PyObject_GetAttrString(func, "__name__")
+            code->co_name
         );
+
+        Py_DECREF(code);
         return NULL;
     }
 
     PyObject* result = PyObject_Call(func, params, kwargs);
-
     if (!result) return NULL;
 
-    CALL_ATTR(faulthandler, "enable");
     return result;
 }
 

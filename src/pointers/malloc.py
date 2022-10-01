@@ -3,6 +3,7 @@ from typing import Any, Optional, TypeVar
 
 from ._cstd import c_free, c_malloc, c_realloc
 from .base_pointers import BaseAllocatedPointer, IterDereferencable
+from .constants import handle
 from .exceptions import AllocationError, InvalidSizeError
 
 __all__ = ("AllocatedPointer", "malloc", "free", "realloc")
@@ -61,6 +62,7 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
             self.assigned,
         )
 
+    @handle
     def free(self) -> None:
         self.ensure_valid()
         c_free(self.make_ct_pointer())
@@ -106,6 +108,7 @@ def free(target: BaseAllocatedPointer):
     target.free()
 
 
+@handle
 def realloc(target: A, size: int) -> A:
     """Resize a memory block created by malloc.
 

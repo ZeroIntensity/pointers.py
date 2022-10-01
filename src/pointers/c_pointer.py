@@ -6,6 +6,7 @@ from _pointers import add_ref, remove_ref
 
 from ._utils import get_mapped, map_type
 from .base_pointers import BaseCPointer, IterDereferencable, Typed
+from .constants import handle
 
 if TYPE_CHECKING:
     from .structure import Struct, StructPointer
@@ -31,11 +32,13 @@ class VoidPointer(BaseCPointer[Any]):
     def size(self) -> int:
         return self._size
 
-    @property
+    @property  # type: ignore
+    @handle
     def _as_parameter_(self) -> ctypes.c_void_p:
         return ctypes.c_void_p(self.address)
 
-    def _dereference(self) -> Optional[int]:
+    @handle
+    def dereference(self) -> Optional[int]:
         """Dereference the pointer."""
         deref = ctypes.c_void_p.from_address(self.ensure())
         return deref.value
@@ -61,6 +64,7 @@ class _CDeref(Typed[T], IterDereferencable[T], ABC):
         """Whether the target objects reference count should be decremented when the pointer is garbage collected."""  # noqa
         ...
 
+    @handle
     def _cleanup(self):
         if self.address:
             if (type(~self) is not str) and (self.decref):
@@ -120,18 +124,20 @@ class TypedCPointer(_TypedPointer[T]):
     def address(self) -> Optional[int]:
         return self._address
 
-    @property
+    @property  # type: ignore
+    @handle
     def _as_parameter_(self):
         ctype = get_mapped(self.type)
         deref = ctype.from_address(self.ensure())
         value = deref.value  # type: ignore
 
         if isinstance(value, (TypedCPointer, VoidPointer)):
-            return ctypes.pointer(value._as_parameter_)
+            return ctypes.pointer(value._as_parameter_)  # type: ignore
 
         return ctypes.pointer(deref)
 
-    def _dereference(self) -> T:
+    @handle
+    def dereference(self) -> T:
         """Dereference the pointer."""
         ctype = get_mapped(self.type)
 
@@ -177,14 +183,16 @@ class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
     def type(self) -> Type[T]:  # type: ignore
         return self._type
 
-    @property
+    @property  # type: ignore
+    @handle
     def _as_parameter_(self) -> "ctypes.Array[ctypes._CData]":
         ctype = get_mapped(self.type)
 
         deref = (ctype * self._length).from_address(self.ensure())
         return deref
 
-    def _dereference(self) -> List[T]:
+    @handle
+    def dereference(self) -> List[T]:
         """Dereference the pointer."""
         array = self._as_parameter_
         return [array[i] for i in range(self._length)]  # type: ignore
@@ -200,6 +208,7 @@ class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
         return array[index]
 
 
+@handle
 def cast(ptr: VoidPointer, data_type: Type[T]) -> TypedCPointer[T]:
     """Cast a void pointer to a typed pointer."""
 
@@ -237,6 +246,7 @@ def to_struct_ptr(struct: A) -> "StructPointer[A]":
     return StructPointer(id(struct), type(struct))
 
 
+@handle
 def array(*seq: T) -> CArrayPointer[T]:
     f_type = type(seq[0])
 

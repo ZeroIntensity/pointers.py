@@ -7,7 +7,7 @@ from _pointers import add_ref
 from ._utils import attempt_decode, get_mapped, get_py
 from .base_pointers import BaseCPointer
 from .c_pointer import TypedCPointer, VoidPointer
-from .constants import RawType
+from .constants import RawType, handle
 from .object_pointer import Pointer
 
 T = TypeVar("T", bound="Struct")
@@ -105,6 +105,7 @@ class Struct:
 
         return instance
 
+    @handle
     def __getattribute__(self, name: str):
         attr = super().__getattribute__(name)
 
@@ -169,7 +170,8 @@ class StructPointer(Pointer[T]):
         self._existing = existing
         super().__init__(address, data_type, True)
 
-    @property
+    @property  # type: ignore
+    @handle
     def _as_parameter_(
         self,
     ) -> Union[int, "ctypes._PointerLike"]:

@@ -2,6 +2,7 @@ from typing import Dict, Iterator, Optional, TypeVar
 
 from ._cstd import c_calloc, c_free
 from .base_pointers import BaseAllocatedPointer
+from .constants import handle
 from .exceptions import AllocationError
 
 __all__ = ("AllocatedArrayPointer", "calloc")
@@ -108,6 +109,7 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         chunk = self._get_chunk_at(index)
         chunk <<= value
 
+    @handle
     def free(self) -> None:
         first = self[0]
         first.ensure_valid()

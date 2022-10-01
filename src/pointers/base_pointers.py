@@ -12,10 +12,10 @@ from typing import (
 
 from typing_extensions import final
 
-from _pointers import add_ref, handle, remove_ref
+from _pointers import add_ref, remove_ref
 
 from ._utils import deref, force_set_attr, move_to_mem
-from .constants import NULL, Nullable
+from .constants import NULL, Nullable, handle
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
 
 __all__ = (
@@ -96,22 +96,13 @@ class BasicPointer(ABC):
 
 class Movable(ABC, Generic[T, A]):
     @abstractmethod
-    def _move(
-        self,
-        data: Union[A, T],
-        *,
-        unsafe: bool = False,
-    ) -> None:
-        ...
-
-    @final
     def move(
         self,
         data: Union[A, T],
         *,
         unsafe: bool = False,
     ) -> None:
-        handle(self._move, (data,), {"unsafe": unsafe})
+        ...
 
     def __ilshift__(self, data: Union[A, T]):
         self.move(data)
@@ -126,16 +117,12 @@ class Dereferencable(ABC, Generic[T]):
     """Abstract class for an object that may be dereferenced."""
 
     @abstractmethod
-    def _dereference(self) -> T:
-        ...
-
-    @final
     def dereference(self) -> T:
         """Dereference the pointer.
 
         Returns:
             Value at the pointers address."""
-        return handle(self._dereference)
+        ...
 
     @final
     def __invert__(self) -> T:
@@ -204,6 +191,8 @@ class Sized(ABC):
         """Size of the target value."""
         ...
 
+    @handle
+    @final
     def make_ct_pointer(self) -> "ctypes._PointerLike":
         """Convert the address to a ctypes pointer.
 
@@ -262,6 +251,7 @@ class BaseObjectPointer(
 
         return self._type
 
+    @handle
     def set_attr(self, key: str, value: Any) -> None:
         v: Any = ~self  # mypy gets angry if this isnt any
         if not isinstance(~self, type):
@@ -269,6 +259,7 @@ class BaseObjectPointer(
 
         force_set_attr(v, key, value)
 
+    @handle
     def assign(
         self,
         target: Nullable[Union["BaseObjectPointer[T]", T]],
@@ -299,7 +290,7 @@ class BaseObjectPointer(
     def address(self) -> Optional[int]:
         return self._address
 
-    def _dereference(self) -> T:
+    def dereference(self) -> T:
         return deref(self.ensure())
 
     def __irshift__(
@@ -366,7 +357,8 @@ class BaseCPointer(
         bytes_a = (ctypes.c_ubyte * size).from_address(address)
         return self.make_ct_pointer(), bytes(bytes_a)
 
-    def _move(
+    @handle
+    def move(
         self,
         data: Union["BaseCPointer[T]", T],
         *,
@@ -392,6 +384,7 @@ class BaseCPointer(
         self.move(data, unsafe=True)
         return self
 
+    @handle
     def make_ct_pointer(self):
         return ctypes.cast(
             self.ensure(),
@@ -436,7 +429,8 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
     def assigned(self, value: bool) -> None:
         self._assigned = value
 
-    def _move(
+    @handle
+    def move(
         self,
         data: Union[BasePointer[T], T],
         unsafe: bool = False,
@@ -456,7 +450,8 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         self.assigned = True
         remove_ref(data)
 
-    def _dereference(self) -> T:
+    @handle
+    def dereference(self) -> T:
         if self.freed:
             raise FreedMemoryError(
                 "cannot dereference memory that has been freed",
