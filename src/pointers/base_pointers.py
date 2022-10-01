@@ -1,11 +1,9 @@
 import ctypes
-import faulthandler
 import sys
 import warnings
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from io import UnsupportedOperation
 from typing import (
     Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
 )
@@ -32,11 +30,6 @@ warnings.simplefilter("always", DeprecationWarning)
 
 T = TypeVar("T")
 A = TypeVar("A", bound="BasicPointer")
-
-with suppress(
-    UnsupportedOperation
-):  # in case its running in idle or something like that
-    faulthandler.enable()
 
 
 class BasicPointer(ABC):

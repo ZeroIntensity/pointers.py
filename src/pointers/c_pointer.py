@@ -39,7 +39,6 @@ class VoidPointer(BaseCPointer[Any]):
 
     @handle
     def dereference(self) -> Optional[int]:
-        """Dereference the pointer."""
         deref = ctypes.c_void_p.from_address(self.ensure())
         return deref.value
 

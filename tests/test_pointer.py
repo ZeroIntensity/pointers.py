@@ -2,10 +2,10 @@ import ctypes
 
 from ward import raises, test
 
-from _pointers import handle
-from pointers import NULL, InvalidSizeError, Pointer
+from _pointers import add_ref
+from pointers import NULL, InvalidSizeError, Pointer, SegmentViolation
 from pointers import _ as m
-from pointers import strlen, to_c_ptr, to_ptr
+from pointers import handle, to_c_ptr, to_ptr
 from pointers.exceptions import NullPointerError
 
 
@@ -37,14 +37,14 @@ def _():
 
 @test("movement")
 def _():
-    a = "teststring"
+    a = 763723
     ptr = to_ptr(a)
-    ptr <<= "hi"
+    ptr <<= 2
 
-    assert a == "hi"
+    assert a == 2
 
     with raises(InvalidSizeError):
-        ptr <<= "hello world"
+        ptr <<= 758347580937450893
 
 
 @test("assignment with tracked types")
@@ -78,7 +78,7 @@ def _():
     with raises(NullPointerError):
         print(~to_ptr(NULL))
 
-    ptr2 = to_ptr(NULL)
+    ptr2: Pointer[int] = to_ptr(NULL)
     ptr2 >>= 1
 
     ptr2 >>= NULL
@@ -93,8 +93,9 @@ def _():
 
 @test("segfault handler")
 def _():
+    @handle
     def segfault():
         ctypes.string_at(0)
 
-    with raises(RuntimeError):
-        handle(segfault)
+    with raises(SegmentViolation):
+        segfault()

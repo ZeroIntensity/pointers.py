@@ -9,7 +9,7 @@ from typing_extensions import ParamSpec
 
 from _pointers import handle as _handle
 
-from .exceptions import SegmentViolation
+from .exceptions import Aborted, SegmentViolation
 
 with suppress(
     UnsupportedOperation
@@ -56,15 +56,23 @@ def handle(func: Callable[P, T]) -> Callable[P, T]:
             return call
         except (RuntimeError, OSError) as e:
             msg = str(e)
+            segv = any(
+                {
+                    msg.startswith("segment violation"),
+                    msg.startswith("access violation"),
+                }
+            )
 
-            if not msg.startswith("segment violation") and not msg.startswith(
-                "access violation"
-            ):
+            aborted = msg.startswith(
+                "python aborted",
+            )
+
+            if (not segv) and (not aborted):
                 raise
 
             with suppress(UnsupportedOperation):
                 faulthandler.enable()
 
-            raise SegmentViolation(str(e)) from None
+            raise (SegmentViolation if segv else Aborted)(str(e)) from None
 
     return wrapper

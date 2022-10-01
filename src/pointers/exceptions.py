@@ -7,6 +7,7 @@ __all__ = (
     "NullPointerError",
     "InvalidVersionError",
     "SegmentViolation",
+    "Aborted",
 )
 
 
@@ -54,5 +55,11 @@ class InvalidVersionError(Exception):
 
 class SegmentViolation(Exception):
     """SIGSEGV was sent to Python."""
+
+    pass
+
+
+class Aborted(Exception):
+    """SIGIOT/SIGABRT was sent to Python."""
 
     pass

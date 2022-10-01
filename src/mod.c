@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <frameobject.h> // needed to get members of PyFrameObject
 #define GETOBJ PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
+#define INIT_HANDLER(handle, msg) if (signal(SIGSEGV, handle) == SIG_ERR) { \
+        PyErr_SetString(PyExc_ImportError, msg); \
+        return NULL; \
+    }
 static jmp_buf buf;
 
 static PyObject* add_ref(PyObject* self, PyObject* args) {
@@ -41,8 +45,12 @@ static PyObject* force_set_attr(PyObject* self, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-void handler(int signum) {
+static void sigsegv_handler(int signum) {
     longjmp(buf, 1);
+}
+
+static void sigiot_handler(int signum) {
+    longjmp(buf, 2);
 }
 
 static PyObject* handle(PyObject* self, PyObject* args) {
@@ -63,21 +71,31 @@ static PyObject* handle(PyObject* self, PyObject* args) {
 
     if (!params) params = PyTuple_New(0);
     if (!kwargs) kwargs = PyDict_New();
+    int val = setjmp(buf);
 
-    if (setjmp(buf)) {
+    if (val) {
         PyFrameObject* frame = PyEval_GetFrame();
-        PyCodeObject* code = frame->f_code;
-        Py_INCREF(code);
+        PyObject* name;
+        PyCodeObject* code = NULL;
+
+        if (frame) {
+            code = frame->f_code;
+            Py_INCREF(code);
+            name = code->co_name;
+        } else {
+            name = PyObject_GetAttrString(func, "__name__");
+        }
 
         // this is basically a copy of PyFrame_GetCode, which is only available on 3.9+
 
         PyErr_Format(
             PyExc_RuntimeError,
-            "segment violation occured during execution of %S",
-            code->co_name
+            "%s occured during execution of %S",
+            val == 1 ? "segment violation" : "python aborted",
+            name
         );
 
-        Py_DECREF(code);
+        if (code) Py_DECREF(code);
         return NULL;
     }
 
@@ -105,10 +123,14 @@ static struct PyModuleDef module = {
 };
 
 PyMODINIT_FUNC PyInit__pointers(void) {
-    if (signal(SIGSEGV, handler) == SIG_ERR) {
-        PyErr_SetString(PyExc_RuntimeError, "failed to setup SIGSEGV handler");
-        return NULL;
-    }
+    INIT_HANDLER(
+        sigiot_handler,
+        "cant load _pointers: failed to setup SIGIOT handler"
+    );
+    INIT_HANDLER(
+        sigsegv_handler,
+        "cant load _pointers: failed to setup SIGSEGV handler"
+    );
 
     return PyModule_Create(&module);
 }
