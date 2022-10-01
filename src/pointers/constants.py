@@ -59,7 +59,7 @@ def handle(func: Callable[P, T]) -> Callable[P, T]:
             segv = any(
                 {
                     msg.startswith("segment violation"),
-                    msg.startswith("access violation"),
+                    msg.startswith("exception: access violation"),
                 }
             )
 

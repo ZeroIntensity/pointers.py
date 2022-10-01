@@ -142,7 +142,6 @@ class TypedCPointer(_TypedPointer[T]):
 
         if (ctype is ctypes.c_char_p) and (self._alt):
             res = ctypes.c_char_p(self.ensure()).value
-            assert res
             return res  # type: ignore
 
         ptr = (
