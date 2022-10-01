@@ -54,10 +54,12 @@ def handle(func: Callable[P, T]) -> Callable[P, T]:
                 faulthandler.enable()
 
             return call
-        except RuntimeError as e:
+        except (RuntimeError, OSError) as e:
             msg = str(e)
 
-            if not msg.startswith("segment"):
+            if not msg.startswith("segment violation") and not msg.startswith(
+                "access violation"
+            ):
                 raise
 
             with suppress(UnsupportedOperation):
