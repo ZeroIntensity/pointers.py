@@ -123,7 +123,7 @@ static struct PyModuleDef module = {
 
 PyMODINIT_FUNC PyInit__pointers(void) {
     INIT_HANDLER(
-        SIGIOT,
+        SIGABRT,
         sigiot_handler,
         "cant load _pointers: failed to setup SIGIOT handler"
     );
