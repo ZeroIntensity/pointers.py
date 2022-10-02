@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - master
-            - new-ci
     pull_request:
 concurrency: lint-${{ github.sha }}
 
