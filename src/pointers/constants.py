@@ -44,6 +44,8 @@ def raw_type(ct: Type["ctypes._CData"]) -> Any:
 
 
 def handle(func: Callable[P, T]) -> Callable[P, T]:
+    """Handle segment violation errors when called."""
+
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         try:
@@ -73,6 +75,6 @@ def handle(func: Callable[P, T]) -> Callable[P, T]:
             with suppress(UnsupportedOperation):
                 faulthandler.enable()
 
-            raise (SegmentViolation if segv else Aborted)(str(e)) from None
+            raise (SegmentViolation if segv else Aborted)(msg) from None
 
     return wrapper

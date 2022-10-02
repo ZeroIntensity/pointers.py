@@ -2,7 +2,11 @@ import ctypes
 from typing import Dict, Type
 
 from ._cstd import div_t, lconv, ldiv_t, tm
-from ._pyapi import Py_buffer, PyType_Slot, PyType_Spec
+from ._pyapi import (
+    Py_buffer, Py_tss_t, PyCodeObject, PyFrameObject, PyInterpreterState,
+    PyModuleDef, PyThreadState, PyType_Slot, PyType_Spec, PyTypeObject,
+    PyVarObject
+)
 from .c_pointer import TypedCPointer, VoidPointer
 from .constants import raw_type
 from .structure import Struct, StructPointer
@@ -12,6 +16,17 @@ __all__ = (
     "DivT",
     "LDivT",
     "Lconv",
+    "PyTypeSlot",
+    "PyTypeSpec",
+    "Buffer",
+    "TypeObject",
+    "ThreadState",
+    "FrameObject",
+    "VarObject",
+    "ModuleDef",
+    "TssT",
+    "InterpreterState",
+    "CodeObject",
     "STRUCT_MAP",
 )
 
@@ -69,7 +84,7 @@ class PyTypeSpec(Struct):
     slots: StructPointer[PyTypeSlot]
 
 
-class PyBuffer(Struct):
+class Buffer(Struct):
     buf: VoidPointer
     obj: VoidPointer
     len: int
@@ -83,6 +98,41 @@ class PyBuffer(Struct):
     internal: VoidPointer
 
 
+class TypeObject(Struct):
+    pass
+
+
+class ThreadState(Struct):
+    pass
+
+
+class FrameObject(Struct):
+    pass
+
+
+class VarObject(Struct):
+    ob_size: int = raw_type(ctypes.c_ssize_t)
+    ob_refcnt: int = raw_type(ctypes.c_ssize_t)
+    ob_type: StructPointer[TypeObject]
+
+
+class ModuleDef(Struct):
+    m_base: bytes
+    pfunc: VoidPointer
+
+
+class TssT(Struct):
+    pass
+
+
+class InterpreterState(Struct):
+    pass
+
+
+class CodeObject(Struct):
+    pass
+
+
 STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     tm: Tm,
     div_t: DivT,
@@ -90,5 +140,13 @@ STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     lconv: Lconv,
     PyType_Slot: PyTypeSlot,
     PyType_Spec: PyTypeSpec,
-    Py_buffer: PyBuffer,
+    Py_buffer: Buffer,
+    PyInterpreterState: InterpreterState,
+    PyModuleDef: ModuleDef,
+    Py_tss_t: TssT,
+    PyVarObject: VarObject,
+    PyFrameObject: FrameObject,
+    PyThreadState: ThreadState,
+    PyTypeObject: TypeObject,
+    PyCodeObject: CodeObject,
 }

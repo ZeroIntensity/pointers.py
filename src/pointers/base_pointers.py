@@ -283,6 +283,7 @@ class BaseObjectPointer(
     def address(self) -> Optional[int]:
         return self._address
 
+    @handle
     def dereference(self) -> T:
         return deref(self.ensure())
 

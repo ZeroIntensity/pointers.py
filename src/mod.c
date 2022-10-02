@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <frameobject.h> // needed to get members of PyFrameObject
 #define GETOBJ PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
-#define INIT_HANDLER(handle, msg) if (signal(SIGSEGV, handle) == SIG_ERR) { \
+#define INIT_HANDLER(sig, handle, msg) if (signal(sig, handle) == SIG_ERR) { \
         PyErr_SetString(PyExc_ImportError, msg); \
         return NULL; \
     }
@@ -56,7 +56,7 @@ static void sigiot_handler(int signum) {
 static PyObject* handle(PyObject* self, PyObject* args) {
     PyObject* func;
     PyObject* params = NULL;
-    PyObject* kwargs = NULL;;
+    PyObject* kwargs = NULL;
 
     if (!PyArg_ParseTuple(
             args,
@@ -101,7 +101,6 @@ static PyObject* handle(PyObject* self, PyObject* args) {
 
     PyObject* result = PyObject_Call(func, params, kwargs);
     if (!result) return NULL;
-
     return result;
 }
 
@@ -124,10 +123,12 @@ static struct PyModuleDef module = {
 
 PyMODINIT_FUNC PyInit__pointers(void) {
     INIT_HANDLER(
+        SIGIOT,
         sigiot_handler,
         "cant load _pointers: failed to setup SIGIOT handler"
     );
     INIT_HANDLER(
+        SIGSEGV,
         sigsegv_handler,
         "cant load _pointers: failed to setup SIGSEGV handler"
     );

@@ -1,5 +1,6 @@
 import ctypes
 import inspect
+import warnings
 from types import FunctionType
 from typing import (
     TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optional, Sequence,
@@ -8,7 +9,6 @@ from typing import (
 
 from _pointers import add_ref
 
-from . import _cstd
 from ._cstd import c_calloc as _calloc
 from ._cstd import c_free as _free
 from ._cstd import c_malloc as _malloc
@@ -190,7 +190,7 @@ def _decode_type(
     res_typ = type(res)
 
     if res_typ.__name__.startswith("LP_"):
-        struct_type = struct_map.get(getattr(_cstd, res_typ.__name__[3:]))
+        struct_type = struct_map.get(res_typ._type_)  # type: ignore
         struct = (
             struct_type.from_existing(res.contents) if struct_type else None
         )  # fmt: off
@@ -232,6 +232,7 @@ def _process_args(
     args: Iterable[Any],
     argtypes: Sequence[Type["ctypes._CData"]],
     name: str,
+    struct_map: StructMap,
 ) -> None:
     for index, (value, typ) in enumerate(zip(args, argtypes)):
         if value is inspect._empty:
@@ -244,6 +245,7 @@ def _process_args(
                 [param.annotation for param in sig.parameters.values()],
                 value.c_func._argtypes_,  # type: ignore
                 py_func.__name__,
+                struct_map,
             )
             continue
         is_c_func: bool = isinstance(
@@ -251,6 +253,17 @@ def _process_args(
             PyCFuncPtrType,
         )
         n_type = get_py(typ) if not is_c_func else FunctionType
+
+        if typ.__name__.startswith("LP_"):
+            ptr_tp = typ._type_  # type: ignore
+            if issubclass(ptr_tp, ctypes.Structure):  # type: ignore
+                n_type = StructPointer
+
+                if ptr_tp not in struct_map:
+                    warnings.warn(
+                        f"struct {ptr_tp.__name__} not in struct map",
+                        UserWarning,
+                    )
 
         is_type: bool = isinstance(value, type)
 
@@ -271,7 +284,6 @@ def _process_args(
                 in {
                     ctypes.c_char_p,
                     ctypes.c_void_p,
-                    ctypes.POINTER,
                 }
             ) and (value is None):
                 continue
@@ -289,11 +301,12 @@ def _process_args(
 def _validate_args(
     args: Iterable[Any],
     fn: "ctypes._NamedFuncPointer",
+    struct_map: StructMap,
 ) -> None:
     if not fn.argtypes:
         return
 
-    _process_args(args, fn.argtypes, fn.__name__)
+    _process_args(args, fn.argtypes, fn.__name__, struct_map)
 
 
 def _solve_func(
@@ -342,6 +355,7 @@ def binding_base(
     _validate_args(
         validator_args,
         fn,
+        smap,
     )
 
     res = fn(

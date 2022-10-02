@@ -2,15 +2,19 @@
 from __future__ import annotations
 
 import ctypes
+import os
 import re
+import sysconfig
 
 import requests
 from bs4 import BeautifulSoup, Tag
 
+from src.pointers.std_structs import STRUCT_MAP
+
 PAGES: dict[str, BeautifulSoup] = {}
 BASE_URL: str = "https://docs.python.org/3.11/c-api"
 C_FUNC = re.compile(
-    r"(((.+) )?(\w+(\**)*)) (\w+)\(((((.+ \w+(\[\])?,?)*(, ?\.\.\.)?))|void)\)"
+    r"^(((.+) )?(\w+(\**)*)) (\w+)\(((((.+ \w+(\[\])?,?)*(, ?\.\.\.)?))|void)\)+$"
 )
 
 
@@ -71,6 +75,9 @@ C_TYPES = {
     "PyOS_sighandler_t": VOID_P,
     "PyGILState_STATE": VOID_P,
     "PyModuleDef": "PyModuleDef",
+    "struct PyModuleDef": "PyModuleDef",
+    "PyCodeObject": "PyCodeObject",
+    "PyCapsule_Destructor": VOID_P,
 }
 
 CT_TYPES = {
@@ -159,10 +166,69 @@ def _get_type(ctype: str, *, add_pointer: bool = False) -> str | None:
     return None
 
 
+def _gen_str(
+    name: str,
+    signature: str,
+    params: dict[str, list[str]],
+    minver: str | None,
+) -> str | None:
+    signature = signature.replace(" *", "* ").replace("* *", "** ")
+
+    for i in {"#", "//", "typedef", "static", "/*"}:
+        if signature.startswith(i):
+            return None
+    match = C_FUNC.match(signature)
+
+    if match and (name not in params):
+        params[name] = []
+        group = match.group(1)
+        ret = _get_type(group)
+
+        if not ret:
+            not_found(group, name)
+            return None
+
+        if match.group(12):
+            argtypes = ""
+        else:
+            args = match.group(7)
+            if not args:
+                args = "void"
+            argtypes = ", ("
+
+            if args != "void":
+                for arg in args.split(", "):
+                    arg_split = arg.split(" ")
+                    argname = arg_split.pop(-1)
+                    add_pointer: bool = False
+
+                    if argname.endswith("[]"):
+                        argname = argname[:-2]
+                        add_pointer = True
+
+                    params[name].append(argname if argname != "def" else "df")
+
+                    join = " ".join(arg_split).replace(
+                        "const ", ""
+                    )  # we dont care about consts
+                    typ = _get_type(join, add_pointer=add_pointer)
+
+                    if not typ:
+                        not_found(join, name)
+                        continue
+
+                    argtypes += typ + ","
+
+            argtypes += ")"
+
+        return f"# {signature}\n_register('{name}', {ret}{argtypes}{f', minver={DOUBLE_QUOTE}{minver}{DOUBLE_QUOTE},' if minver else ''})\n"
+    return None  # to make mypy happy
+
+
 def _gen_ct_bindings() -> dict[str, list[str]]:
     params: dict[str, list[str]] = {}
 
-    out: str = ""
+    out: str = "\n\n"
     resp = requests.get(
         f"{BASE_URL}/stable.html#stable-application-binary-interface",
     )
@@ -220,55 +286,50 @@ def _gen_ct_bindings() -> dict[str, list[str]]:
                 minver = minver_soup.get_text()[:-1].split(" ")[-1]
                 # this is super janky
 
-            signature = signature.replace(" *", "* ").replace("* *", "** ")
-            match = C_FUNC.match(signature)
+            result = _gen_str(
+                name,
+                signature,
+                params,
+                minver,
+            )
 
-            if match:
-                params[name] = []
-                group = match.group(1)
-                ret = _get_type(group)
+            if result:
+                out += result
 
-                if not ret:
-                    not_found(group, name)
-                    continue
+    include = sysconfig.get_path("include")
 
-                if match.group(12):
-                    argtypes = ""
-                else:
-                    args = match.group(7)
-                    if not args:
-                        args = "void"
-                    argtypes = ", ("
+    print(f"Reading signatures from {include}")
+    for root, _, files in os.walk(include):
+        for i in files:
+            path = os.path.join(root, i)
+            if os.path.isdir(path):
+                continue
 
-                    if args != "void":
-                        for arg in args.split(", "):
-                            arg_split = arg.split(" ")
-                            argname = arg_split.pop(-1)
-                            add_pointer: bool = False
+            with open(path) as f:
+                lines = f.read().split("\n")
 
-                            if argname.endswith("[]"):
-                                argname = argname[:-2]
-                                add_pointer = True
+                for i in lines:
+                    i = i.replace(";", "")
 
-                            params[name].append(argname if argname != "def" else "df")
+                    if i.startswith("PyAPI_FUNC"):
+                        idx = i.index(")")
+                        typ = i[10:idx]
+                        i = i[10:idx] + typ
 
-                            join = " ".join(arg_split).replace(
-                                "const ", ""
-                            )  # we dont care about consts
-                            typ = _get_type(join, add_pointer=add_pointer)
+                    match = C_FUNC.match(i)
 
-                            if not typ:
-                                not_found(join, name)
-                                continue
+                    if not match:
+                        continue
 
-                            argtypes += typ + ","
+                    result = _gen_str(
+                        match.group(6),
+                        i,
+                        params,
+                        None,
+                    )
 
-                    argtypes += ")"
-
-                out += f"# {signature}\n_register('{name}', {ret}{argtypes}{f', minver={DOUBLE_QUOTE}{minver}{DOUBLE_QUOTE},' if minver else ''})\n"
-            else:
-                ...
-                # print(f"No match... {signature}")
+                    if result:
+                        out += result
 
     _write_autogen("_pyapi.py", out)
     return params
@@ -280,6 +341,13 @@ def map_type(typ: type["ctypes._CData"] | None) -> str:
     name = typ.__name__
 
     if name.startswith("LP_"):
+        actual_name = name[3:]
+
+        for k, v in STRUCT_MAP.items():
+            s_name: str = k.__name__
+            if s_name == actual_name:
+                return f"StructPointer[{v.__name__}]"
+
         return "PointerLike"
 
     return CT_TYPES[name[2:] if name != "py_object" else name]
@@ -313,7 +381,7 @@ def main():
             return
         break
 
-    out: str = """raise Exception('autogenerating some things is too complicated or not possible! please manually go through and update the rest. you may delete this error when finished')\n"""
+    out: str = ""
     from src.pointers._pyapi import API_FUNCS
 
     funcs: dict[str, list[str]] = {}
@@ -326,7 +394,8 @@ def main():
 
         zip_params = (params[k], func.argtypes)
 
-        if not func.argtypes:
+        if func.argtypes is None:
+            print("No argtypes...", func.__name__)
             continue
 
         fparams = [f"{param}: {map_type(typ)}" for param, typ in zip(*zip_params)]
@@ -375,6 +444,13 @@ def main():
     {TRIPLE_QUOTE}Namespace containing API functions prefixed with `{k}_`{TRIPLE_QUOTE}
 {NEWLINE.join(v)}
 """
+
+    all_str = "__all__ = ("
+
+    for i in funcs:
+        all_str += f'"{i}",'
+
+    out = all_str + ")\n\n" + out
 
     _write_autogen("api_bindings.py", out)
     print("success!")
