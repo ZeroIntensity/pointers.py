@@ -18,7 +18,7 @@ from .constants import NULL, Nullable, handle, raw_type
 from .custom_binding import binding, binds
 from .decay import decay, decay_annotated, decay_wrapped
 from .exceptions import (
-    Aborted, AllocationError, DereferenceError, FreedMemoryError,
+    AllocationError, DereferenceError, FreedMemoryError,
     InvalidBindingParameter, InvalidSizeError, NullPointerError,
     SegmentViolation
 )

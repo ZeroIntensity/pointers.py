@@ -18,9 +18,15 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [
     "typing_extensions",
 ]
 version = "2.2.0-beta"
+
+[project.urls]
+Documentation = "https://pointers.zintensity.dev"
+Issues = "https://github.com/ZeroIntensity/pointers.py/issues"
+Source = "https://github.com/ZeroIntensity/pointers.py"

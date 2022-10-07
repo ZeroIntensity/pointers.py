@@ -1,5 +1,13 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#if PY_MAJOR_VERSION != 3
+#error "Python 3 is needed to build"
+#endif
+#if PY_MINOR_VERSION == 11
+#define GET_CODE(frame) PyFrame_GetCode(frame);
+#else
+#define GET_CODE(frame) frame->f_code;
+#endif
 #include <signal.h>
 #include <setjmp.h>
 #include <stdbool.h>
@@ -10,6 +18,7 @@
         PyErr_SetString(PyExc_ImportError, msg); \
         return NULL; \
     }
+
 static jmp_buf buf;
 
 static PyObject* add_ref(PyObject* self, PyObject* args) {
@@ -49,9 +58,6 @@ static void sigsegv_handler(int signum) {
     longjmp(buf, 1);
 }
 
-static void sigiot_handler(int signum) {
-    longjmp(buf, 2);
-}
 
 static PyObject* handle(PyObject* self, PyObject* args) {
     PyObject* func;
@@ -79,7 +85,7 @@ static PyObject* handle(PyObject* self, PyObject* args) {
         PyCodeObject* code = NULL;
 
         if (frame) {
-            code = frame->f_code;
+            code = GET_CODE(frame);
             Py_INCREF(code);
             name = code->co_name;
         } else {
@@ -122,16 +128,13 @@ static struct PyModuleDef module = {
 };
 
 PyMODINIT_FUNC PyInit__pointers(void) {
-    INIT_HANDLER(
-        SIGABRT,
-        sigiot_handler,
-        "cant load _pointers: failed to setup SIGIOT handler"
-    );
-    INIT_HANDLER(
-        SIGSEGV,
-        sigsegv_handler,
-        "cant load _pointers: failed to setup SIGSEGV handler"
-    );
+    if (signal(SIGSEGV, sigsegv_handler) == SIG_ERR) {
+        PyErr_SetString(
+            PyExc_ImportError,
+            "cant load _pointers: failed to setup SIGSEGV handler"
+        );
+        return NULL;
+    }
 
     return PyModule_Create(&module);
 }

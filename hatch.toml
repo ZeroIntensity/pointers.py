@@ -7,7 +7,7 @@ dependencies = [
   "typing_extensions",
 ]
 [envs.default.scripts]
-tests = "ward"
+tests = "ward --path tests/"
 
 [envs.docs]
 dependencies = [
@@ -17,9 +17,6 @@ dependencies = [
 [envs.docs.scripts]
 build = "mkdocs build --clean"
 serve = "mkdocs serve --dev-addr localhost:8000"
-
-[[envs.test.matrix]]
-python = ["37", "38", "39", "310"]
 
 [build.targets.wheel]
 packages = ["src/pointers", "_pointers"]
