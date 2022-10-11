@@ -191,6 +191,7 @@ def _decode_type(
 
     if res_typ.__name__.startswith("LP_"):
         struct_type = struct_map.get(res_typ._type_)  # type: ignore
+
         struct = (
             struct_type.from_existing(res.contents) if struct_type else None
         )  # fmt: off
@@ -258,8 +259,9 @@ def _process_args(
             ptr_tp = typ._type_  # type: ignore
             if issubclass(ptr_tp, ctypes.Structure):  # type: ignore
                 n_type = StructPointer
+                struct = struct_map.get(ptr_tp)
 
-                if ptr_tp not in struct_map:
+                if not struct:
                     warnings.warn(
                         f"struct {ptr_tp.__name__} not in struct map",
                         UserWarning,

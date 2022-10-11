@@ -64,6 +64,7 @@ class Struct:
         hints = class_typ.__annotations__
         self._void_p: List[str] = []
         self._hints = {k: self._convert_tc_ptr(v, k) for k, v in hints.items()}
+        self._existing_address: Optional[int] = None
 
         class _InternalStruct(ctypes.Structure):
             _fields_ = [
@@ -102,6 +103,7 @@ class Struct:
         instance._struct = struct  # type: ignore
         # mypy is getting angry here for whatever reason
         instance._sync()
+        instance._existing_address = ctypes.addressof(struct)
 
         return instance
 
@@ -157,6 +159,11 @@ class Struct:
         """Raw internal Structure object."""
         return self._struct
 
+    def get_existing_address(self) -> int:
+        if not self._existing_address:
+            raise ValueError("instance has not been created from a C struct")
+        return self._existing_address
+
 
 class StructPointer(Pointer[T]):
     """Class representing a pointer to a struct."""
@@ -187,3 +194,6 @@ class StructPointer(Pointer[T]):
 
     def __rich__(self) -> str:
         return f"<[bold blue]pointer[/] to struct at {str(self)}>"
+
+    def get_existing_address(self) -> int:
+        return (~self).get_existing_address()

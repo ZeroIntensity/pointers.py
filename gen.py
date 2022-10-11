@@ -37,11 +37,12 @@ WCHAR = ctc("wchar")
 DOUBLE_QUOTE: str = '"'
 TRIPLE_QUOTE: str = '"""'
 SSIZE = ctc("ssize_t")
+INT = ctc("int")
 
 C_TYPES = {
     "void": "None",
     "PyObject*": ct("py_object"),
-    "int": ctc("int"),
+    "int": INT,
     "void*": VOID_P,
     "Py_ssize_t": SSIZE,
     "char": ctc("char"),
@@ -73,11 +74,12 @@ C_TYPES = {
     "Py_hash_t": SSIZE,
     "Py_buffer": "Py_buffer",
     "PyOS_sighandler_t": VOID_P,
-    "PyGILState_STATE": VOID_P,
+    "PyGILState_STATE": INT,
     "PyModuleDef": "PyModuleDef",
     "struct PyModuleDef": "PyModuleDef",
     "PyCodeObject": "PyCodeObject",
     "PyCapsule_Destructor": VOID_P,
+    "PyGILState": INT,
 }
 
 CT_TYPES = {

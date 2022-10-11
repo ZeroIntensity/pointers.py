@@ -107,7 +107,7 @@ class ThreadState(Struct):
 
 
 class FrameObject(Struct):
-    pass
+    __PYOBJECT__ = True
 
 
 class VarObject(Struct):
