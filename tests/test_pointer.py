@@ -1,12 +1,11 @@
 import ctypes
 
-from ward import raises, test
-
 from _pointers import add_ref
 from pointers import NULL, InvalidSizeError, Pointer, SegmentViolation
 from pointers import _ as m
 from pointers import handle, to_c_ptr, to_ptr
 from pointers.exceptions import NullPointerError
+from ward import raises, test
 
 
 @test("creating pointers")
@@ -89,13 +88,3 @@ def _():
     ptr = m & "test"
     assert type(ptr) is Pointer
     assert m * ptr == "test"
-
-
-@test("segfault handler")
-def _():
-    @handle
-    def segfault():
-        ctypes.string_at(0)
-
-    with raises(SegmentViolation):
-        segfault()
