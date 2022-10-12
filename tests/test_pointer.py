@@ -1,11 +1,9 @@
-import ctypes
-
-from _pointers import add_ref
-from pointers import NULL, InvalidSizeError, Pointer, SegmentViolation
-from pointers import _ as m
-from pointers import handle, to_c_ptr, to_ptr
-from pointers.exceptions import NullPointerError
 from ward import raises, test
+
+from pointers import NULL, InvalidSizeError, Pointer
+from pointers import _ as m
+from pointers import to_c_ptr, to_ptr
+from pointers.exceptions import NullPointerError
 
 
 @test("creating pointers")

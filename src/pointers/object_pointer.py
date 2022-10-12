@@ -44,6 +44,7 @@ class Pointer(BaseObjectPointer[T]):
         size_a: int = sys.getsizeof(deref_a)
         size_b: int = sys.getsizeof(deref_b)
         refcnt = sys.getrefcount(deref_b)
+        refcnt_a = sys.getrefcount(deref_a)
 
         if (self._origin_size < size_a) and (not unsafe):
             raise InvalidSizeError(
@@ -61,7 +62,7 @@ class Pointer(BaseObjectPointer[T]):
 
         self.assign(~data)
         ctypes.memmove(bytes_b, bytes_a, len(bytes_a))
-        set_ref(deref_b, refcnt - 1)
+        set_ref(deref_b, (refcnt - 1) + (refcnt_a - 2))
 
     @classmethod
     def make_from(cls, obj: Nullable[T]) -> "Pointer[T]":

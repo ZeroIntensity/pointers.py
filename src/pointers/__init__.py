@@ -15,7 +15,7 @@ from .c_pointer import (
     TypedCPointer, VoidPointer, array, cast, to_c_ptr, to_struct_ptr, to_voidp
 )
 from .calloc import AllocatedArrayPointer, calloc
-from .constants import NULL, Nullable, handle, raw_type
+from .constants import NULL, Nullable, handle, raw_type, struct_cast
 from .custom_binding import binding, binds
 from .decay import decay, decay_annotated, decay_wrapped
 from .exceptions import (

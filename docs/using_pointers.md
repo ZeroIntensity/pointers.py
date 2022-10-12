@@ -230,3 +230,31 @@ ptr = to_ptr(1)
 ptr >>= NULL
 ~ptr  # NullPointerError
 ```
+
+## Handling Segmentation Faults
+
+If you've ever used a language like C or C++, you probably know what a segmentation fault/segfault is.
+
+These can happen when a memory error occurs (e.g. accessing a NULL pointer), and can be annoying to debug in Python.
+
+Luckily, pointers.py has a custom built handler for converting segfaults into Python exceptions.
+
+Here's an example:
+
+```py
+from pointers import handle
+import ctypes
+
+@handle
+def main():
+    ctypes.string_at(0)  # 0 is the same as a NULL address
+
+main()
+# instead of python crashing with a segfault, pointers.SegmentViolation error occurs
+```
+
+### Pointer Methods
+
+Most pointer methods where a segment violation could occur (`dereference`, `move`, etc.) are decorated with `handle`, so you don't have to worry about manually catching those yourself.
+
+However, methods like `move` can be destructive and cause the error outside of the function (such as when Python does garbage collection), so you may need to make a `main` method and decorate it with `handle` to catch it.

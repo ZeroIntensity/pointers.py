@@ -86,6 +86,6 @@ assert 1 != 2
 free(cache)
 ```
 
-Go ahead and run this to ensure that everything worked fine.
+**Note:** This may not work depending on your build of CPython.
 
 Congratulations, you have written a working program with pointers.py!

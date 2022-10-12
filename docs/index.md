@@ -49,7 +49,7 @@ fclose(file)
 -   Fully type safe
 -   Pythonic pointer API
 -   Bindings for the entire C standard library
--   Segfaults
+-   Undefined behaviour
 
 ### Why does this exist?
 

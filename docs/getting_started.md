@@ -34,4 +34,6 @@ ptr = to_ptr("hello world")
 print(*ptr)
 ```
 
+**Note:** As of now, pointers.py does not officially support Python 3.11 and 3.12
+
 Running this should print `hello world` into the console.

@@ -6,6 +6,7 @@ nav:
     - Using Pointers: using_pointers.md
     - Allocation: allocation.md
     - C Bindings: bindings.md
+    - CPython ABI Bindings: cpython_bindings.md
     - Making a Program: making_a_program.md
     - Reference: reference.md
 theme: readthedocs
