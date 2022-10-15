@@ -21,14 +21,15 @@ from .c_pointer import TypedCPointer, VoidPointer
 from .exceptions import InvalidBindingParameter
 from .std_structs import STRUCT_MAP, DivT, Lconv, LDivT, Tm
 from .structure import StructPointer
+from .util import handle
 
 if TYPE_CHECKING:
     from .structure import Struct
 
 T = TypeVar("T")
 
-PointerLike = Union[TypedCPointer[T], VoidPointer, None]
-StringLike = Union[str, bytes, VoidPointer, TypedCPointer[bytes]]
+PointerLike = Optional[Union[TypedCPointer[T], VoidPointer]]
+StringLike = Optional[Union[str, bytes, VoidPointer, TypedCPointer[bytes]]]
 Format = Union[StringLike, PointerLike]
 TypedPtr = Optional[PointerLike[T]]
 PyCFuncPtrType = type(ctypes.CFUNCTYPE(None))
@@ -330,6 +331,7 @@ def _solve_func(
     return _CFuncTransport(wrapper, fn)
 
 
+@handle
 def binding_base(
     fn: "ctypes._NamedFuncPointer",
     *args,
@@ -380,7 +382,7 @@ def binding_base(
 
 
 def make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
-    if type(data) not in {VoidPointer, str, bytes, TypedCPointer}:
+    if (type(data) not in {VoidPointer, str, bytes, TypedCPointer}) and data:
         raise InvalidBindingParameter(
             f"expected a string-like object, got {repr(data)}"  # noqa
         )
@@ -403,6 +405,9 @@ def make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
 
     if isinstance(data, str):
         return data.encode()
+
+    if not data:
+        data = ctypes.c_char_p(None)  # type: ignore
 
     assert isinstance(data, ctypes.c_char_p), f"{data} is not a char*"
     return data

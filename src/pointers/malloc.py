@@ -3,8 +3,8 @@ from typing import Any, Optional, TypeVar
 
 from ._cstd import c_free, c_malloc, c_realloc
 from .base_pointers import BaseAllocatedPointer, IterDereferencable
-from .constants import handle
 from .exceptions import AllocationError, InvalidSizeError
+from .util import handle
 
 __all__ = ("AllocatedPointer", "malloc", "free", "realloc")
 

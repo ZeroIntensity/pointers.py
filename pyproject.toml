@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "typing_extensions",
 ]
-version = "2.2.0-beta"
+version = "2.2.0"
 
 [project.urls]
 Documentation = "https://pointers.zintensity.dev"

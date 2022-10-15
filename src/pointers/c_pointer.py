@@ -6,7 +6,7 @@ from _pointers import add_ref, remove_ref
 
 from ._utils import get_mapped, map_type
 from .base_pointers import BaseCPointer, IterDereferencable, Typed
-from .constants import handle
+from .util import handle
 
 if TYPE_CHECKING:
     from .structure import Struct, StructPointer

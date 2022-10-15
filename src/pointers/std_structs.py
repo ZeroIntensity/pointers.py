@@ -8,8 +8,8 @@ from ._pyapi import (
     PyVarObject
 )
 from .c_pointer import TypedCPointer, VoidPointer
-from .constants import raw_type
 from .structure import Struct, StructPointer
+from .util import raw_type
 
 __all__ = (
     "Tm",

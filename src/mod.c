@@ -96,8 +96,7 @@ static PyObject* handle(PyObject* self, PyObject* args) {
 
         PyErr_Format(
             PyExc_RuntimeError,
-            "%s occured during execution of %S",
-            val == 1 ? "segment violation" : "python aborted",
+            "segment violation occured during execution of %S",
             name
         );
 

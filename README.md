@@ -6,7 +6,7 @@
 
 Why would you ever need this
 
--   [Documentation](https://pointerspy.netlify.app/)
+-   [Documentation](https://pointers.zintensity.dev/)
 -   [Source](https://github.com/ZeroIntensity/pointers.py)
 -   [PyPI](https://pypi.org/project/pointers.py)
 

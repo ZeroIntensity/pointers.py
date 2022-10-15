@@ -15,7 +15,6 @@ from .c_pointer import (
     TypedCPointer, VoidPointer, array, cast, to_c_ptr, to_struct_ptr, to_voidp
 )
 from .calloc import AllocatedArrayPointer, calloc
-from .constants import NULL, Nullable, handle, raw_type, struct_cast
 from .custom_binding import binding, binds
 from .decay import decay, decay_annotated, decay_wrapped
 from .exceptions import (
@@ -28,6 +27,7 @@ from .malloc import AllocatedPointer, free, malloc, realloc
 from .object_pointer import Pointer, to_ptr
 from .std_structs import DivT, Lconv, LDivT, Tm
 from .structure import Struct, StructPointer
+from .util import NULL, Nullable, handle, raw_type, struct_cast
 
-__version__ = "2.2.0-beta"
+__version__ = "2.2.0"
 __license__ = "MIT"

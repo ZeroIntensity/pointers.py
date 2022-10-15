@@ -13,8 +13,8 @@ from typing_extensions import final
 from _pointers import add_ref, remove_ref
 
 from ._utils import deref, force_set_attr, move_to_mem
-from .constants import NULL, Nullable, handle
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
+from .util import NULL, Nullable, handle
 
 __all__ = (
     "BasePointer",

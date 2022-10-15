@@ -7,8 +7,8 @@ from _pointers import add_ref
 from ._utils import attempt_decode, get_mapped, get_py
 from .base_pointers import BaseCPointer
 from .c_pointer import TypedCPointer, VoidPointer
-from .constants import RawType, handle
 from .object_pointer import Pointer
+from .util import RawType, handle
 
 T = TypeVar("T", bound="Struct")
 

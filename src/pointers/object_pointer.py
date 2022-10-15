@@ -5,8 +5,8 @@ from typing import TypeVar, Union
 from _pointers import add_ref, remove_ref, set_ref
 
 from .base_pointers import NULL, BaseObjectPointer, BasePointer, Nullable
-from .constants import handle
 from .exceptions import InvalidSizeError
+from .util import handle
 
 T = TypeVar("T")
 

@@ -2,8 +2,8 @@ from typing import Dict, Iterator, Optional, TypeVar
 
 from ._cstd import c_calloc, c_free
 from .base_pointers import BaseAllocatedPointer
-from .constants import handle
 from .exceptions import AllocationError
+from .util import handle
 
 __all__ = ("AllocatedArrayPointer", "calloc")
 

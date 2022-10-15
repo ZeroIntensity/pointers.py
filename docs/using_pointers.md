@@ -81,7 +81,7 @@ def my_function(a: str, b: str, c: Pointer):  # must be type hinted as Pointer t
 my_function('a', 'b', 'c')
 ```
 
-This will be fine for most people, but it hsa removes type safety on the target function. If you don't care about type safety in your code, then don't worry about this, but if you do, then there are alternatives.
+This will be fine for most people, but it removes type safety on the target function. If you don't care about type safety in your code, then don't worry about this, but if you do, then there are alternatives.
 
 The first alternative is `decay_annotated`, which decays parameters hinted as `Annotated[T, Pointer]` to a pointer.
 
@@ -110,7 +110,7 @@ def my_function(a: str, b: str, c: Annotated[str, Pointer]):
     print(a, b, ~c)  # type checker error!
 ```
 
-The solution is to use `decay_wrapped`, which takes the caller function as a paremeter:
+The solution is to use `decay_wrapped`, which takes a fake function as a parameter:
 
 ```py
 from pointers import decay_wrapped, Pointer
@@ -126,7 +126,7 @@ def my_function(a: str, b: str, c: Pointer[str]):
 my_function('a', 'b', 'c')  # works just fine, type checker things c takes a string
 ```
 
-It can be broken pretty easily though:
+If the wrapper doesn't match, things won't work properly:
 
 ```py
 from pointers import decay_wrapped, Pointer
