@@ -45,13 +45,9 @@ class BasicPointer(ABC):
     def __repr__(self) -> str:
         ...
 
-    @abstractmethod
-    def __rich__(self):
-        ...
-
     @final
     def __str__(self) -> str:
-        return hex(self.address or 0)
+        return f"{type(self).__name__}({hex(self.address or 0)})"
 
     @abstractmethod
     def _cleanup(self) -> None:
@@ -153,10 +149,6 @@ class BasePointer(
         ...
 
     @abstractmethod
-    def __rich__(self):
-        ...
-
-    @abstractmethod
     def _cleanup(self) -> None:
         ...
 
@@ -217,7 +209,6 @@ class BaseObjectPointer(
     def __init__(
         self,
         address: Optional[int],
-        typ: Type[T],
         increment_ref: bool = False,
     ) -> None:
         """
@@ -227,7 +218,6 @@ class BaseObjectPointer(
             increment_ref: Should the reference count on the target object get incremented.
         """  # noqa
         self._address: Optional[int] = address
-        self._type: Type[T] = typ
 
         if increment_ref and address:
             add_ref(~self)
@@ -242,7 +232,7 @@ class BaseObjectPointer(
             DeprecationWarning,
         )
 
-        return self._type
+        return type(~self)
 
     @handle
     def set_attr(self, key: str, value: Any) -> None:

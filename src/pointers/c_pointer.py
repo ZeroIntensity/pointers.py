@@ -43,10 +43,7 @@ class VoidPointer(BaseCPointer[Any]):
         return deref.value
 
     def __repr__(self) -> str:
-        return f"<void pointer to {self}>"
-
-    def __rich__(self):
-        return f"<[bold green]void[/] pointer to [cyan]{self}[/cyan]>"
+        return f"VoidPointer(address={self.address}, size={self.size})"
 
     def _cleanup(self) -> None:
         pass
@@ -105,16 +102,6 @@ class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
     def type(self):
         return self._type
 
-    def __repr__(self) -> str:
-        tp = self._as_parameter_
-        obj = tp.__name__.replace("c_", "")
-        return f"<pointer to {obj} at {self}>"
-
-    def __rich__(self):
-        tp = self._as_parameter_
-        obj = tp.__name__.replace("c_", "")
-        return f"<pointer to [bold green]{obj}[/] at [cyan]{self}[/]>"
-
 
 class TypedCPointer(_TypedPointer[T]):
     """Class representing a pointer with a known type."""
@@ -157,6 +144,9 @@ class TypedCPointer(_TypedPointer[T]):
         """Dereference the pointer."""
         return iter({self.dereference()})
 
+    def __repr__(self) -> str:
+        return f"TypedCPointer(address={self.address}, size={self.size})"
+
 
 class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
     """Class representing a pointer to a C array."""
@@ -196,10 +186,7 @@ class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
         return [array[i] for i in range(self._length)]  # type: ignore
 
     def __repr__(self) -> str:
-        return f"<pointer to array at {str(self)}>"
-
-    def __rich__(self):
-        return f"<pointer to [bold green]array[/] [cyan]{str(self)}[/]>"
+        return f"CArrayPointer(address={self.address}, size={self.size})"
 
     def __getitem__(self, index: int) -> T:
         array = ~self
@@ -241,7 +228,7 @@ def to_struct_ptr(struct: A) -> "StructPointer[A]":
     """Convert a struct to a pointer."""
     from .structure import StructPointer
 
-    return StructPointer(id(struct), type(struct))
+    return StructPointer(id(struct))
 
 
 @handle

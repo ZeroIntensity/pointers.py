@@ -171,11 +171,10 @@ class StructPointer(Pointer[T]):
     def __init__(
         self,
         address: int,
-        data_type: Type[T],
         existing: Optional["Struct"] = None,
     ):
         self._existing = existing
-        super().__init__(address, data_type, True)
+        super().__init__(address, True)
 
     @property  # type: ignore
     @handle
@@ -190,7 +189,9 @@ class StructPointer(Pointer[T]):
         return self.ensure()
 
     def __repr__(self) -> str:
-        return f"<pointer to struct at {str(self)}>"
+        return (
+            f"StructPointer(address={self.address}, existing={self._existing})"  # noqa
+        )
 
     def __rich__(self) -> str:
         return f"<[bold blue]pointer[/] to struct at {str(self)}>"

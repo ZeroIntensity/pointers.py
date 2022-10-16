@@ -93,10 +93,7 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         return self.__add__(-amount)
 
     def __repr__(self) -> str:
-        return f"<pointer to allocated chunk at {self}>"
-
-    def __rich__(self) -> str:
-        return f"<pointer to [bold green]allocated chunk[/] at [cyan]{self}[/]>"  # noqa
+        return f"AllocatedArrayPointer(address={self.address}, current_index={self.current_index})"  # noqa
 
     def __iter__(self) -> Iterator["AllocatedArrayPointer[T]"]:
         for i in range(self.current_index, self.chunks):

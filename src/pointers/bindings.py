@@ -205,7 +205,7 @@ def _decode_type(
                 alt=True,
             )
             if not issubclass(type(res.contents), ctypes.Structure)
-            else StructPointer(id(struct), type(_not_null(struct)), struct)
+            else StructPointer(id(struct), struct)
         )
     # type safety gets mad if i dont use elif here
     elif current is ctypes.c_void_p:

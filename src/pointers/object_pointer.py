@@ -14,15 +14,8 @@ T = TypeVar("T")
 class Pointer(BaseObjectPointer[T]):
     """Pointer to a `PyObject`"""
 
-    def _get_tp_name(self) -> str:
-        return type(~self).__name__ if self.address else "NULL"
-
     def __repr__(self) -> str:
-
-        return f"<pointer to {self._get_tp_name()} object at {self}>"  # noqa
-
-    def __rich__(self):
-        return f"<pointer to [bold green]{self._get_tp_name()}[/] object at [cyan]{self}[/cyan]>"  # noqa
+        return f"Pointer(address={self.address})"
 
     @handle
     def move(
@@ -69,7 +62,6 @@ class Pointer(BaseObjectPointer[T]):
         is_null = obj is NULL
         return Pointer(
             id(obj) if not is_null else None,
-            type(obj),  # type: ignore
             not is_null,
         )
 
