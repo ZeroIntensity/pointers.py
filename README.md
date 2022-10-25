@@ -35,7 +35,7 @@ free(ptr)
 -   Fully type safe
 -   Pythonic pointer API
 -   Bindings for the entire C standard library
--   Undefined behavior
+-   Segfaults 
 
 ### Why does this exist?
 
