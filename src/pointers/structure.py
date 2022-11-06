@@ -147,7 +147,7 @@ class Struct:
             self._struct.__setattr__(name, value)
         super().__setattr__(name, value)
 
-    def _sync(self):
+    def _sync(self) -> None:
         for name in self._hints:
             setattr(self, name, getattr(self._struct, name))
 

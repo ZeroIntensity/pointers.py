@@ -311,7 +311,7 @@ class BaseObjectPointer(
             else cls.make_from(obj)
         )
 
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         if self.address:
             remove_ref(~self)
 
