@@ -8,9 +8,8 @@ from typing import (
     Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
 )
 
-from typing_extensions import final
-
 from _pointers import add_ref, remove_ref
+from typing_extensions import final
 
 from ._utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
