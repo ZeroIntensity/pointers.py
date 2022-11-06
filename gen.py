@@ -400,7 +400,8 @@ def main():
             print("No argtypes...", func.__name__)
             continue
 
-        fparams = [f"{param}: {map_type(typ)}" for param, typ in zip(*zip_params)]
+        fparams = [
+            f"{param}: {map_type(typ)}" for param, typ in zip(*zip_params)]
         restype: type["ctypes._CData"] = func.restype  # type: ignore
 
         name_split = k.split("_")
