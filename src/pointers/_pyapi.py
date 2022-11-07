@@ -399,8 +399,7 @@ _register(
     ),
 )
 # PyObject* PyCodec_BackslashReplaceErrors(PyObject* exc)
-_register("PyCodec_BackslashReplaceErrors",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyCodec_BackslashReplaceErrors", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyCodec_Decode(PyObject* object, const char* encoding, const char* errors)
 _register(
     "PyCodec_Decode",
@@ -499,8 +498,7 @@ _register(
     minver="3.10",
 )
 # PyObject* PyCodec_XMLCharRefReplaceErrors(PyObject* exc)
-_register("PyCodec_XMLCharRefReplaceErrors",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyCodec_XMLCharRefReplaceErrors", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyComplex_FromDoubles(double real, double imag)
 _register(
     "PyComplex_FromDoubles",
@@ -515,17 +513,13 @@ _register("PyComplex_ImagAsDouble", ctypes.c_double, (ctypes.py_object,))
 # double PyComplex_RealAsDouble(PyObject* op)
 _register("PyComplex_RealAsDouble", ctypes.c_double, (ctypes.py_object,))
 # PyObject* PyDescr_NewClassMethod(PyTypeObject* type, PyMethodDef* method)
-_register("PyDescr_NewClassMethod", ctypes.py_object,
-          (ctypes.POINTER(PyTypeObject),))
+_register("PyDescr_NewClassMethod", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyDescr_NewGetSet(PyTypeObject* type, struct PyGetSetDef* getset)
-_register("PyDescr_NewGetSet", ctypes.py_object,
-          (ctypes.POINTER(PyTypeObject),))
+_register("PyDescr_NewGetSet", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyDescr_NewMember(PyTypeObject* type, struct PyMemberDef* meth)
-_register("PyDescr_NewMember", ctypes.py_object,
-          (ctypes.POINTER(PyTypeObject),))
+_register("PyDescr_NewMember", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyDescr_NewMethod(PyTypeObject* type, struct PyMethodDef* meth)
-_register("PyDescr_NewMethod", ctypes.py_object,
-          (ctypes.POINTER(PyTypeObject),))
+_register("PyDescr_NewMethod", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyDictProxy_New(PyObject* mapping)
 _register("PyDictProxy_New", ctypes.py_object, (ctypes.py_object,))
 # void PyDict_Clear(PyObject* p)
@@ -1009,8 +1003,7 @@ _register(
     ),
 )
 # PyObject* PyEval_EvalFrame(PyFrameObject* f)
-_register("PyEval_EvalFrame", ctypes.py_object,
-          (ctypes.POINTER(PyFrameObject),))
+_register("PyEval_EvalFrame", ctypes.py_object, (ctypes.POINTER(PyFrameObject),))
 # PyObject* PyEval_EvalFrameEx(PyFrameObject* f, int throwflag)
 _register(
     "PyEval_EvalFrameEx",
@@ -1140,8 +1133,7 @@ _register(
     minver="3.9",
 )
 # int PyFrame_GetLineNumber(PyFrameObject* frame)
-_register("PyFrame_GetLineNumber", ctypes.c_int,
-          (ctypes.POINTER(PyFrameObject),))
+_register("PyFrame_GetLineNumber", ctypes.c_int, (ctypes.POINTER(PyFrameObject),))
 # PyObject* PyFrozenSet_New(PyObject* iterable)
 _register("PyFrozenSet_New", ctypes.py_object, (ctypes.py_object,))
 # Py_ssize_t PyGC_Collect(void)
@@ -1288,11 +1280,9 @@ _register("PyImport_ReloadModule", ctypes.py_object, (ctypes.py_object,))
 # int PyIndex_Check(PyObject* o)
 _register("PyIndex_Check", ctypes.c_int, (ctypes.py_object,))
 # void PyInterpreterState_Clear(PyInterpreterState* interp)
-_register("PyInterpreterState_Clear", None,
-          (ctypes.POINTER(PyInterpreterState),))
+_register("PyInterpreterState_Clear", None, (ctypes.POINTER(PyInterpreterState),))
 # void PyInterpreterState_Delete(PyInterpreterState* interp)
-_register("PyInterpreterState_Delete", None,
-          (ctypes.POINTER(PyInterpreterState),))
+_register("PyInterpreterState_Delete", None, (ctypes.POINTER(PyInterpreterState),))
 # PyInterpreterState* PyInterpreterState_Get(void)
 _register(
     "PyInterpreterState_Get",
@@ -1423,8 +1413,7 @@ _register("PyLong_AsUnsignedLong", ctypes.c_ulong, (ctypes.py_object,))
 # unsigned long long PyLong_AsUnsignedLongLong(PyObject* pylong)
 _register("PyLong_AsUnsignedLongLong", ctypes.c_ulonglong, (ctypes.py_object,))
 # unsigned long long PyLong_AsUnsignedLongLongMask(PyObject* obj)
-_register("PyLong_AsUnsignedLongLongMask",
-          ctypes.c_ulonglong, (ctypes.py_object,))
+_register("PyLong_AsUnsignedLongLongMask", ctypes.c_ulonglong, (ctypes.py_object,))
 # unsigned long PyLong_AsUnsignedLongMask(PyObject* obj)
 _register("PyLong_AsUnsignedLongMask", ctypes.c_ulong, (ctypes.py_object,))
 # void* PyLong_AsVoidPtr(PyObject* pylong)
@@ -1452,8 +1441,7 @@ _register(
 # PyObject* PyLong_FromUnsignedLong(unsigned long v)
 _register("PyLong_FromUnsignedLong", ctypes.py_object, (ctypes.c_ulong,))
 # PyObject* PyLong_FromUnsignedLongLong(unsigned long long v)
-_register("PyLong_FromUnsignedLongLong",
-          ctypes.py_object, (ctypes.c_ulonglong,))
+_register("PyLong_FromUnsignedLongLong", ctypes.py_object, (ctypes.c_ulonglong,))
 # PyObject* PyLong_FromVoidPtr(void* p)
 _register("PyLong_FromVoidPtr", ctypes.py_object, (ctypes.c_void_p,))
 # int PyMapping_Check(PyObject* o)
@@ -1529,8 +1517,7 @@ _register(
     ),
 )
 # PyObject* PyMemoryView_FromBuffer(const Py_buffer* view)
-_register("PyMemoryView_FromBuffer", ctypes.py_object,
-          (ctypes.POINTER(Py_buffer),))
+_register("PyMemoryView_FromBuffer", ctypes.py_object, (ctypes.POINTER(Py_buffer),))
 # PyObject* PyMemoryView_FromMemory(char* mem, Py_ssize_t size, int flags)
 _register(
     "PyMemoryView_FromMemory",
@@ -2647,8 +2634,7 @@ _register(
     minver="3.3",
 )
 # PyObject* PyState_FindModule(PyModuleDef* def)
-_register("PyState_FindModule", ctypes.py_object,
-          (ctypes.POINTER(PyModuleDef),))
+_register("PyState_FindModule", ctypes.py_object, (ctypes.POINTER(PyModuleDef),))
 # int PyState_RemoveModule(PyModuleDef* def)
 _register(
     "PyState_RemoveModule",
@@ -2666,8 +2652,7 @@ _register(
     ),
 )
 # PyObject* PyStructSequence_New(PyTypeObject* type)
-_register("PyStructSequence_New", ctypes.py_object,
-          (ctypes.POINTER(PyTypeObject),))
+_register("PyStructSequence_New", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyTypeObject* PyStructSequence_NewType(PyStructSequence_Desc* desc)
 _register("PyStructSequence_NewType", ctypes.POINTER(PyTypeObject), ())
 # void PyStructSequence_SetItem(PyObject* p, Py_ssize_t pos, PyObject* o)
@@ -2990,8 +2975,7 @@ _register(
     ),
 )
 # PyObject* PyUnicodeDecodeError_GetEncoding(PyObject* exc)
-_register("PyUnicodeDecodeError_GetEncoding",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeDecodeError_GetEncoding", ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeDecodeError_GetEnd(PyObject* exc, Py_ssize_t* end)
 _register(
     "PyUnicodeDecodeError_GetEnd",
@@ -3002,11 +2986,9 @@ _register(
     ),
 )
 # PyObject* PyUnicodeDecodeError_GetObject(PyObject* exc)
-_register("PyUnicodeDecodeError_GetObject",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeDecodeError_GetObject", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicodeDecodeError_GetReason(PyObject* exc)
-_register("PyUnicodeDecodeError_GetReason",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeDecodeError_GetReason", ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeDecodeError_GetStart(PyObject* exc, Py_ssize_t* start)
 _register(
     "PyUnicodeDecodeError_GetStart",
@@ -3044,8 +3026,7 @@ _register(
     ),
 )
 # PyObject* PyUnicodeEncodeError_GetEncoding(PyObject* exc)
-_register("PyUnicodeEncodeError_GetEncoding",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeEncodeError_GetEncoding", ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeEncodeError_GetEnd(PyObject* exc, Py_ssize_t* end)
 _register(
     "PyUnicodeEncodeError_GetEnd",
@@ -3056,11 +3037,9 @@ _register(
     ),
 )
 # PyObject* PyUnicodeEncodeError_GetObject(PyObject* exc)
-_register("PyUnicodeEncodeError_GetObject",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeEncodeError_GetObject", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicodeEncodeError_GetReason(PyObject* exc)
-_register("PyUnicodeEncodeError_GetReason",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeEncodeError_GetReason", ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeEncodeError_GetStart(PyObject* exc, Py_ssize_t* start)
 _register(
     "PyUnicodeEncodeError_GetStart",
@@ -3107,11 +3086,9 @@ _register(
     ),
 )
 # PyObject* PyUnicodeTranslateError_GetObject(PyObject* exc)
-_register("PyUnicodeTranslateError_GetObject",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeTranslateError_GetObject", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicodeTranslateError_GetReason(PyObject* exc)
-_register("PyUnicodeTranslateError_GetReason",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicodeTranslateError_GetReason", ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeTranslateError_GetStart(PyObject* exc, Py_ssize_t* start)
 _register(
     "PyUnicodeTranslateError_GetStart",
@@ -3174,8 +3151,7 @@ _register("PyUnicode_AsLatin1String", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsMBCSString(PyObject* unicode)
 _register("PyUnicode_AsMBCSString", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsRawUnicodeEscapeString(PyObject* unicode)
-_register("PyUnicode_AsRawUnicodeEscapeString",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicode_AsRawUnicodeEscapeString", ctypes.py_object, (ctypes.py_object,))
 # Py_UCS4* PyUnicode_AsUCS4(PyObject* u, Py_UCS4* buffer, Py_ssize_t buflen, int copy_null)
 _register(
     "PyUnicode_AsUCS4",
@@ -3212,8 +3188,7 @@ _register(
 # PyObject* PyUnicode_AsUTF8String(PyObject* unicode)
 _register("PyUnicode_AsUTF8String", ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsUnicodeEscapeString(PyObject* unicode)
-_register("PyUnicode_AsUnicodeEscapeString",
-          ctypes.py_object, (ctypes.py_object,))
+_register("PyUnicode_AsUnicodeEscapeString", ctypes.py_object, (ctypes.py_object,))
 # Py_ssize_t PyUnicode_AsWideChar(PyObject* unicode, wchar_t* w, Py_ssize_t size)
 _register(
     "PyUnicode_AsWideChar",

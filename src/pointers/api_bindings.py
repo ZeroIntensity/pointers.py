@@ -3,7 +3,12 @@ from typing import TypeVar, Union
 from ._pyapi import API_FUNCS, Func
 from .base_pointers import BaseObjectPointer
 from .bindings import (
-    CharLike, PointerLike, StringLike, binding_base, make_char, make_string
+    CharLike,
+    PointerLike,
+    StringLike,
+    binding_base,
+    make_char,
+    make_string,
 )
 from .std_structs import *
 from .structure import StructPointer
@@ -119,8 +124,7 @@ class PyArg(_CallBase):
     @staticmethod
     def va_parse(args: PyObjectLike, format: StringLike, vargs: PointerLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyArg_VaParse"], _deref_maybe(
-                args), make_string(format), vargs
+            API_FUNCS["PyArg_VaParse"], _deref_maybe(args), make_string(format), vargs
         )
 
     # PyArg_VaParseTupleAndKeywords
@@ -198,8 +202,7 @@ class PyBuffer(_CallBase):
         view: StructPointer[Buffer], buf: PointerLike, len: int, fort: CharLike
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyBuffer_FromContiguous"], view, buf, len, make_char(
-                fort)
+            API_FUNCS["PyBuffer_FromContiguous"], view, buf, len, make_char(fort)
         )
 
     # PyBuffer_GetPointer
@@ -262,8 +265,7 @@ class PyByteArray(_CallBase):
     @staticmethod
     def from_string_and_size(string: StringLike, len: int) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyByteArray_FromStringAndSize"], make_string(
-                string), len
+            API_FUNCS["PyByteArray_FromStringAndSize"], make_string(string), len
         )
 
     # PyByteArray_Resize
@@ -293,8 +295,7 @@ class PyBytes(_CallBase):
         obj: PyObjectLike, buffer: PointerLike, length: PointerLike
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyBytes_AsStringAndSize"], _deref_maybe(
-                obj), buffer, length
+            API_FUNCS["PyBytes_AsStringAndSize"], _deref_maybe(obj), buffer, length
         )
 
     # PyBytes_Concat
@@ -348,8 +349,7 @@ class PyCallIter(_CallBase):
     @staticmethod
     def new(callable: PyObjectLike, sentinel: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyCallIter_New"], _deref_maybe(
-                callable), _deref_maybe(sentinel)
+            API_FUNCS["PyCallIter_New"], _deref_maybe(callable), _deref_maybe(sentinel)
         )
 
 
@@ -388,8 +388,7 @@ class PyCapsule(_CallBase):
     @staticmethod
     def get_pointer(capsule: PyObjectLike, name: StringLike) -> PointerLike:
         return api_binding_base(
-            API_FUNCS["PyCapsule_GetPointer"], _deref_maybe(
-                capsule), make_string(name)
+            API_FUNCS["PyCapsule_GetPointer"], _deref_maybe(capsule), make_string(name)
         )
 
     # PyCapsule_Import
@@ -403,8 +402,7 @@ class PyCapsule(_CallBase):
     @staticmethod
     def is_valid(capsule: PyObjectLike, name: StringLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyCapsule_IsValid"], _deref_maybe(
-                capsule), make_string(name)
+            API_FUNCS["PyCapsule_IsValid"], _deref_maybe(capsule), make_string(name)
         )
 
     # PyCapsule_New
@@ -427,16 +425,14 @@ class PyCapsule(_CallBase):
     @staticmethod
     def set_destructor(capsule: PyObjectLike, destructor: PointerLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyCapsule_SetDestructor"], _deref_maybe(
-                capsule), destructor
+            API_FUNCS["PyCapsule_SetDestructor"], _deref_maybe(capsule), destructor
         )
 
     # PyCapsule_SetName
     @staticmethod
     def set_name(capsule: PyObjectLike, name: StringLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyCapsule_SetName"], _deref_maybe(
-                capsule), make_string(name)
+            API_FUNCS["PyCapsule_SetName"], _deref_maybe(capsule), make_string(name)
         )
 
     # PyCapsule_SetPointer
@@ -544,8 +540,7 @@ class PyCodec(_CallBase):
     @staticmethod
     def register_error(name: StringLike, error: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyCodec_RegisterError"], make_string(
-                name), _deref_maybe(error)
+            API_FUNCS["PyCodec_RegisterError"], make_string(name), _deref_maybe(error)
         )
 
     # PyCodec_ReplaceErrors
@@ -680,8 +675,7 @@ class PyDict(_CallBase):
     @staticmethod
     def del_item_string(p: PyObjectLike, key: StringLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyDict_DelItemString"], _deref_maybe(
-                p), make_string(key)
+            API_FUNCS["PyDict_DelItemString"], _deref_maybe(p), make_string(key)
         )
 
     # PyDict_GetItem
@@ -695,16 +689,14 @@ class PyDict(_CallBase):
     @staticmethod
     def get_item_string(p: PyObjectLike, key: StringLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyDict_GetItemString"], _deref_maybe(
-                p), make_string(key)
+            API_FUNCS["PyDict_GetItemString"], _deref_maybe(p), make_string(key)
         )
 
     # PyDict_GetItemWithError
     @staticmethod
     def get_item_with_error(p: PyObjectLike, key: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyDict_GetItemWithError"], _deref_maybe(
-                p), _deref_maybe(key)
+            API_FUNCS["PyDict_GetItemWithError"], _deref_maybe(p), _deref_maybe(key)
         )
 
     # PyDict_Items
@@ -721,8 +713,7 @@ class PyDict(_CallBase):
     @staticmethod
     def merge(a: PyObjectLike, b: PyObjectLike, override: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyDict_Merge"], _deref_maybe(
-                a), _deref_maybe(b), override
+            API_FUNCS["PyDict_Merge"], _deref_maybe(a), _deref_maybe(b), override
         )
 
     # PyDict_MergeFromSeq2
@@ -1030,16 +1021,14 @@ class PyErr(_CallBase):
     @staticmethod
     def set_object(type: PyObjectLike, value: PyObjectLike) -> None:
         return api_binding_base(
-            API_FUNCS["PyErr_SetObject"], _deref_maybe(
-                type), _deref_maybe(value)
+            API_FUNCS["PyErr_SetObject"], _deref_maybe(type), _deref_maybe(value)
         )
 
     # PyErr_SetString
     @staticmethod
     def set_string(type: PyObjectLike, message: StringLike) -> None:
         return api_binding_base(
-            API_FUNCS["PyErr_SetString"], _deref_maybe(
-                type), make_string(message)
+            API_FUNCS["PyErr_SetString"], _deref_maybe(type), make_string(message)
         )
 
     # PyErr_SyntaxLocation
@@ -1261,24 +1250,21 @@ class PyException(_CallBase):
     @staticmethod
     def set_cause(ex: PyObjectLike, cause: PyObjectLike) -> None:
         return api_binding_base(
-            API_FUNCS["PyException_SetCause"], _deref_maybe(
-                ex), _deref_maybe(cause)
+            API_FUNCS["PyException_SetCause"], _deref_maybe(ex), _deref_maybe(cause)
         )
 
     # PyException_SetContext
     @staticmethod
     def set_context(ex: PyObjectLike, ctx: PyObjectLike) -> None:
         return api_binding_base(
-            API_FUNCS["PyException_SetContext"], _deref_maybe(
-                ex), _deref_maybe(ctx)
+            API_FUNCS["PyException_SetContext"], _deref_maybe(ex), _deref_maybe(ctx)
         )
 
     # PyException_SetTraceback
     @staticmethod
     def set_traceback(ex: PyObjectLike, tb: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyException_SetTraceback"], _deref_maybe(
-                ex), _deref_maybe(tb)
+            API_FUNCS["PyException_SetTraceback"], _deref_maybe(ex), _deref_maybe(tb)
         )
 
 
@@ -1318,8 +1304,7 @@ class PyFile(_CallBase):
     @staticmethod
     def write_object(obj: PyObjectLike, p: PyObjectLike, flags: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyFile_WriteObject"], _deref_maybe(
-                obj), _deref_maybe(p), flags
+            API_FUNCS["PyFile_WriteObject"], _deref_maybe(obj), _deref_maybe(p), flags
         )
 
     # PyFile_WriteString
@@ -1462,8 +1447,7 @@ class PyImport(_CallBase):
     @staticmethod
     def exec_code_module(name: StringLike, co: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyImport_ExecCodeModule"], make_string(
-                name), _deref_maybe(co)
+            API_FUNCS["PyImport_ExecCodeModule"], make_string(name), _deref_maybe(co)
         )
 
     # PyImport_ExecCodeModuleEx
@@ -1703,8 +1687,7 @@ class PyList(_CallBase):
     @staticmethod
     def insert(list: PyObjectLike, index: int, item: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyList_Insert"], _deref_maybe(
-                list), index, _deref_maybe(item)
+            API_FUNCS["PyList_Insert"], _deref_maybe(list), index, _deref_maybe(item)
         )
 
     # PyList_New
@@ -1721,8 +1704,7 @@ class PyList(_CallBase):
     @staticmethod
     def set_item(list: PyObjectLike, index: int, item: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyList_SetItem"], _deref_maybe(
-                list), index, _deref_maybe(item)
+            API_FUNCS["PyList_SetItem"], _deref_maybe(list), index, _deref_maybe(item)
         )
 
     # PyList_SetSlice
@@ -1778,8 +1760,7 @@ class PyLong(_CallBase):
     @staticmethod
     def as_long_long_and_overflow(obj: PyObjectLike, overflow: PointerLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyLong_AsLongLongAndOverflow"], _deref_maybe(
-                obj), overflow
+            API_FUNCS["PyLong_AsLongLongAndOverflow"], _deref_maybe(obj), overflow
         )
 
     # PyLong_AsSize_t
@@ -1885,8 +1866,7 @@ class PyMapping(_CallBase):
     @staticmethod
     def get_item_string(o: PyObjectLike, key: StringLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyMapping_GetItemString"], _deref_maybe(
-                o), make_string(key)
+            API_FUNCS["PyMapping_GetItemString"], _deref_maybe(o), make_string(key)
         )
 
     # PyMapping_HasKey
@@ -1900,8 +1880,7 @@ class PyMapping(_CallBase):
     @staticmethod
     def has_key_string(o: PyObjectLike, key: StringLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyMapping_HasKeyString"], _deref_maybe(
-                o), make_string(key)
+            API_FUNCS["PyMapping_HasKeyString"], _deref_maybe(o), make_string(key)
         )
 
     # PyMapping_Items
@@ -2198,40 +2177,35 @@ class PyNumber(_CallBase):
     @staticmethod
     def floor_divide(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_FloorDivide"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_FloorDivide"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceAdd
     @staticmethod
     def in_place_add(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceAdd"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceAdd"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceAnd
     @staticmethod
     def in_place_and(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceAnd"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceAnd"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceFloorDivide
     @staticmethod
     def in_place_floor_divide(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceFloorDivide"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceFloorDivide"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceLshift
     @staticmethod
     def in_place_lshift(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceLshift"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceLshift"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceMatrixMultiply
@@ -2247,8 +2221,7 @@ class PyNumber(_CallBase):
     @staticmethod
     def in_place_multiply(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceMultiply"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceMultiply"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceOr
@@ -2274,40 +2247,35 @@ class PyNumber(_CallBase):
     @staticmethod
     def in_place_remainder(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceRemainder"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceRemainder"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceRshift
     @staticmethod
     def in_place_rshift(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceRshift"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceRshift"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceSubtract
     @staticmethod
     def in_place_subtract(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceSubtract"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceSubtract"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceTrueDivide
     @staticmethod
     def in_place_true_divide(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceTrueDivide"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceTrueDivide"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_InPlaceXor
     @staticmethod
     def in_place_xor(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_InPlaceXor"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_InPlaceXor"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_Index
@@ -2336,8 +2304,7 @@ class PyNumber(_CallBase):
     @staticmethod
     def matrix_multiply(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_MatrixMultiply"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_MatrixMultiply"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_Multiply
@@ -2404,8 +2371,7 @@ class PyNumber(_CallBase):
     @staticmethod
     def true_divide(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyNumber_TrueDivide"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PyNumber_TrueDivide"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PyNumber_Xor
@@ -2494,8 +2460,7 @@ class PyOS(_CallBase):
         str: StringLike, size: int, format: StringLike, va: PointerLike
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyOS_vsnprintf"], make_string(
-                str), size, make_string(format), va
+            API_FUNCS["PyOS_vsnprintf"], make_string(str), size, make_string(format), va
         )
 
 
@@ -2513,8 +2478,7 @@ class PyObject(_CallBase):
         obj: PyObjectLike, buffer: PointerLike, buffer_len: PointerLike
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_AsCharBuffer"], _deref_maybe(
-                obj), buffer, buffer_len
+            API_FUNCS["PyObject_AsCharBuffer"], _deref_maybe(obj), buffer, buffer_len
         )
 
     # PyObject_AsFileDescriptor
@@ -2528,8 +2492,7 @@ class PyObject(_CallBase):
         obj: PyObjectLike, buffer: PointerLike, buffer_len: PointerLike
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_AsReadBuffer"], _deref_maybe(
-                obj), buffer, buffer_len
+            API_FUNCS["PyObject_AsReadBuffer"], _deref_maybe(obj), buffer, buffer_len
         )
 
     # PyObject_AsWriteBuffer
@@ -2538,8 +2501,7 @@ class PyObject(_CallBase):
         obj: PyObjectLike, buffer: PointerLike, buffer_len: PointerLike
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_AsWriteBuffer"], _deref_maybe(
-                obj), buffer, buffer_len
+            API_FUNCS["PyObject_AsWriteBuffer"], _deref_maybe(obj), buffer, buffer_len
         )
 
     # PyObject_Bytes
@@ -2570,8 +2532,7 @@ class PyObject(_CallBase):
     @staticmethod
     def call_object(callable: PyObjectLike, args: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyObject_CallObject"], _deref_maybe(
-                callable), _deref_maybe(args)
+            API_FUNCS["PyObject_CallObject"], _deref_maybe(callable), _deref_maybe(args)
         )
 
     # PyObject_Calloc
@@ -2640,8 +2601,7 @@ class PyObject(_CallBase):
     @staticmethod
     def generic_get_attr(o: PyObjectLike, name: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyObject_GenericGetAttr"], _deref_maybe(
-                o), _deref_maybe(name)
+            API_FUNCS["PyObject_GenericGetAttr"], _deref_maybe(o), _deref_maybe(name)
         )
 
     # PyObject_GenericGetDict
@@ -2684,16 +2644,14 @@ class PyObject(_CallBase):
     @staticmethod
     def get_attr(o: PyObjectLike, attr_name: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyObject_GetAttr"], _deref_maybe(
-                o), _deref_maybe(attr_name)
+            API_FUNCS["PyObject_GetAttr"], _deref_maybe(o), _deref_maybe(attr_name)
         )
 
     # PyObject_GetAttrString
     @staticmethod
     def get_attr_string(o: PyObjectLike, attr_name: StringLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyObject_GetAttrString"], _deref_maybe(
-                o), make_string(attr_name)
+            API_FUNCS["PyObject_GetAttrString"], _deref_maybe(o), make_string(attr_name)
         )
 
     # PyObject_GetBuffer
@@ -2702,8 +2660,7 @@ class PyObject(_CallBase):
         exporter: PyObjectLike, view: StructPointer[Buffer], flags: int
     ) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_GetBuffer"], _deref_maybe(
-                exporter), view, flags
+            API_FUNCS["PyObject_GetBuffer"], _deref_maybe(exporter), view, flags
         )
 
     # PyObject_GetItem
@@ -2722,16 +2679,14 @@ class PyObject(_CallBase):
     @staticmethod
     def has_attr(o: PyObjectLike, attr_name: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_HasAttr"], _deref_maybe(
-                o), _deref_maybe(attr_name)
+            API_FUNCS["PyObject_HasAttr"], _deref_maybe(o), _deref_maybe(attr_name)
         )
 
     # PyObject_HasAttrString
     @staticmethod
     def has_attr_string(o: PyObjectLike, attr_name: StringLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_HasAttrString"], _deref_maybe(
-                o), make_string(attr_name)
+            API_FUNCS["PyObject_HasAttrString"], _deref_maybe(o), make_string(attr_name)
         )
 
     # PyObject_Hash
@@ -2762,16 +2717,14 @@ class PyObject(_CallBase):
     @staticmethod
     def is_instance(inst: PyObjectLike, cls: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_IsInstance"], _deref_maybe(
-                inst), _deref_maybe(cls)
+            API_FUNCS["PyObject_IsInstance"], _deref_maybe(inst), _deref_maybe(cls)
         )
 
     # PyObject_IsSubclass
     @staticmethod
     def is_subclass(derived: PyObjectLike, cls: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyObject_IsSubclass"], _deref_maybe(
-                derived), _deref_maybe(cls)
+            API_FUNCS["PyObject_IsSubclass"], _deref_maybe(derived), _deref_maybe(cls)
         )
 
     # PyObject_IsTrue
@@ -2808,8 +2761,7 @@ class PyObject(_CallBase):
     @staticmethod
     def rich_compare(o1: PyObjectLike, o2: PyObjectLike, opid: int) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyObject_RichCompare"], _deref_maybe(
-                o1), _deref_maybe(o2), opid
+            API_FUNCS["PyObject_RichCompare"], _deref_maybe(o1), _deref_maybe(o2), opid
         )
 
     # PyObject_RichCompareBool
@@ -2896,8 +2848,7 @@ class PySequence(_CallBase):
     @staticmethod
     def contains(o: PyObjectLike, value: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PySequence_Contains"], _deref_maybe(
-                o), _deref_maybe(value)
+            API_FUNCS["PySequence_Contains"], _deref_maybe(o), _deref_maybe(value)
         )
 
     # PySequence_Count
@@ -2942,8 +2893,7 @@ class PySequence(_CallBase):
     @staticmethod
     def in_place_concat(o1: PyObjectLike, o2: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PySequence_InPlaceConcat"], _deref_maybe(
-                o1), _deref_maybe(o2)
+            API_FUNCS["PySequence_InPlaceConcat"], _deref_maybe(o1), _deref_maybe(o2)
         )
 
     # PySequence_InPlaceRepeat
@@ -2979,16 +2929,14 @@ class PySequence(_CallBase):
     @staticmethod
     def set_item(o: PyObjectLike, i: int, v: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PySequence_SetItem"], _deref_maybe(
-                o), i, _deref_maybe(v)
+            API_FUNCS["PySequence_SetItem"], _deref_maybe(o), i, _deref_maybe(v)
         )
 
     # PySequence_SetSlice
     @staticmethod
     def set_slice(o: PyObjectLike, i1: int, i2: int, v: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PySequence_SetSlice"], _deref_maybe(
-                o), i1, i2, _deref_maybe(v)
+            API_FUNCS["PySequence_SetSlice"], _deref_maybe(o), i1, i2, _deref_maybe(v)
         )
 
     # PySequence_Size
@@ -3021,8 +2969,7 @@ class PySet(_CallBase):
     @staticmethod
     def contains(anyset: PyObjectLike, key: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PySet_Contains"], _deref_maybe(
-                anyset), _deref_maybe(key)
+            API_FUNCS["PySet_Contains"], _deref_maybe(anyset), _deref_maybe(key)
         )
 
     # PySet_Discard
@@ -3167,8 +3114,7 @@ class PyStructSequence(_CallBase):
     @staticmethod
     def set_item(p: PyObjectLike, pos: int, o: PyObjectLike) -> None:
         return api_binding_base(
-            API_FUNCS["PyStructSequence_SetItem"], _deref_maybe(
-                p), pos, _deref_maybe(o)
+            API_FUNCS["PyStructSequence_SetItem"], _deref_maybe(p), pos, _deref_maybe(o)
         )
 
 
@@ -3451,8 +3397,7 @@ class PyType(_CallBase):
         type: StructPointer[TypeObject], args: PyObjectLike, kwds: PyObjectLike
     ) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyType_GenericNew"], type, _deref_maybe(
-                args), _deref_maybe(kwds)
+            API_FUNCS["PyType_GenericNew"], type, _deref_maybe(args), _deref_maybe(kwds)
         )
 
     # PyType_GetFlags
@@ -3546,8 +3491,7 @@ class PyUnicodeDecodeError(_CallBase):
     @staticmethod
     def get_start(exc: PyObjectLike, start: PointerLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicodeDecodeError_GetStart"], _deref_maybe(
-                exc), start
+            API_FUNCS["PyUnicodeDecodeError_GetStart"], _deref_maybe(exc), start
         )
 
     # PyUnicodeDecodeError_SetEnd
@@ -3570,8 +3514,7 @@ class PyUnicodeDecodeError(_CallBase):
     @staticmethod
     def set_start(exc: PyObjectLike, start: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicodeDecodeError_SetStart"], _deref_maybe(
-                exc), start
+            API_FUNCS["PyUnicodeDecodeError_SetStart"], _deref_maybe(exc), start
         )
 
 
@@ -3610,8 +3553,7 @@ class PyUnicodeEncodeError(_CallBase):
     @staticmethod
     def get_start(exc: PyObjectLike, start: PointerLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicodeEncodeError_GetStart"], _deref_maybe(
-                exc), start
+            API_FUNCS["PyUnicodeEncodeError_GetStart"], _deref_maybe(exc), start
         )
 
     # PyUnicodeEncodeError_SetEnd
@@ -3634,8 +3576,7 @@ class PyUnicodeEncodeError(_CallBase):
     @staticmethod
     def set_start(exc: PyObjectLike, start: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicodeEncodeError_SetStart"], _deref_maybe(
-                exc), start
+            API_FUNCS["PyUnicodeEncodeError_SetStart"], _deref_maybe(exc), start
         )
 
 
@@ -3667,8 +3608,7 @@ class PyUnicodeTranslateError(_CallBase):
     @staticmethod
     def get_start(exc: PyObjectLike, start: PointerLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicodeTranslateError_GetStart"], _deref_maybe(
-                exc), start
+            API_FUNCS["PyUnicodeTranslateError_GetStart"], _deref_maybe(exc), start
         )
 
     # PyUnicodeTranslateError_SetEnd
@@ -3691,8 +3631,7 @@ class PyUnicodeTranslateError(_CallBase):
     @staticmethod
     def set_start(exc: PyObjectLike, start: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicodeTranslateError_SetStart"], _deref_maybe(
-                exc), start
+            API_FUNCS["PyUnicodeTranslateError_SetStart"], _deref_maybe(exc), start
         )
 
 
@@ -3738,8 +3677,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def as_raw_unicode_escape_string(unicode: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_AsRawUnicodeEscapeString"], _deref_maybe(
-                unicode)
+            API_FUNCS["PyUnicode_AsRawUnicodeEscapeString"], _deref_maybe(unicode)
         )
 
     # PyUnicode_AsUCS4
@@ -3748,8 +3686,7 @@ class PyUnicode(_CallBase):
         u: PyObjectLike, buffer: PointerLike, buflen: int, copy_null: int
     ) -> PointerLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_AsUCS4"], _deref_maybe(
-                u), buffer, buflen, copy_null
+            API_FUNCS["PyUnicode_AsUCS4"], _deref_maybe(u), buffer, buflen, copy_null
         )
 
     # PyUnicode_AsUCS4Copy
@@ -3803,16 +3740,14 @@ class PyUnicode(_CallBase):
     @staticmethod
     def as_wide_char_string(unicode: PyObjectLike, size: PointerLike) -> str:
         return api_binding_base(
-            API_FUNCS["PyUnicode_AsWideCharString"], _deref_maybe(
-                unicode), size
+            API_FUNCS["PyUnicode_AsWideCharString"], _deref_maybe(unicode), size
         )
 
     # PyUnicode_Compare
     @staticmethod
     def compare(left: PyObjectLike, right: PyObjectLike) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicode_Compare"], _deref_maybe(
-                left), _deref_maybe(right)
+            API_FUNCS["PyUnicode_Compare"], _deref_maybe(left), _deref_maybe(right)
         )
 
     # PyUnicode_CompareWithASCIIString
@@ -3828,8 +3763,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def concat(left: PyObjectLike, right: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_Concat"], _deref_maybe(
-                left), _deref_maybe(right)
+            API_FUNCS["PyUnicode_Concat"], _deref_maybe(left), _deref_maybe(right)
         )
 
     # PyUnicode_Contains
@@ -3914,8 +3848,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def decode_locale(str: StringLike, errors: StringLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_DecodeLocale"], make_string(
-                str), make_string(errors)
+            API_FUNCS["PyUnicode_DecodeLocale"], make_string(str), make_string(errors)
         )
 
     # PyUnicode_DecodeLocaleAndSize
@@ -4008,8 +3941,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def decode_utf_7(s: StringLike, size: int, errors: StringLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_DecodeUTF7"], make_string(
-                s), size, make_string(errors)
+            API_FUNCS["PyUnicode_DecodeUTF7"], make_string(s), size, make_string(errors)
         )
 
     # PyUnicode_DecodeUTF7Stateful
@@ -4029,8 +3961,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def decode_utf_8(s: StringLike, size: int, errors: StringLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_DecodeUTF8"], make_string(
-                s), size, make_string(errors)
+            API_FUNCS["PyUnicode_DecodeUTF8"], make_string(s), size, make_string(errors)
         )
 
     # PyUnicode_DecodeUTF8Stateful
@@ -4120,8 +4051,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def format(format: PyObjectLike, args: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_Format"], _deref_maybe(
-                format), _deref_maybe(args)
+            API_FUNCS["PyUnicode_Format"], _deref_maybe(format), _deref_maybe(args)
         )
 
     # PyUnicode_FromEncodedObject
@@ -4194,8 +4124,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def join(separator: PyObjectLike, seq: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_Join"], _deref_maybe(
-                separator), _deref_maybe(seq)
+            API_FUNCS["PyUnicode_Join"], _deref_maybe(separator), _deref_maybe(seq)
         )
 
     # PyUnicode_ReadChar
@@ -4232,8 +4161,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def split(s: PyObjectLike, sep: PyObjectLike, maxsplit: int) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyUnicode_Split"], _deref_maybe(
-                s), _deref_maybe(sep), maxsplit
+            API_FUNCS["PyUnicode_Split"], _deref_maybe(s), _deref_maybe(sep), maxsplit
         )
 
     # PyUnicode_Splitlines
@@ -4280,8 +4208,7 @@ class PyUnicode(_CallBase):
     @staticmethod
     def write_char(unicode: PyObjectLike, index: int, character: int) -> int:
         return api_binding_base(
-            API_FUNCS["PyUnicode_WriteChar"], _deref_maybe(
-                unicode), index, character
+            API_FUNCS["PyUnicode_WriteChar"], _deref_maybe(unicode), index, character
         )
 
 
@@ -4297,16 +4224,14 @@ class PyWeakref(_CallBase):
     @staticmethod
     def new_proxy(ob: PyObjectLike, callback: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyWeakref_NewProxy"], _deref_maybe(
-                ob), _deref_maybe(callback)
+            API_FUNCS["PyWeakref_NewProxy"], _deref_maybe(ob), _deref_maybe(callback)
         )
 
     # PyWeakref_NewRef
     @staticmethod
     def new_ref(ob: PyObjectLike, callback: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["PyWeakref_NewRef"], _deref_maybe(
-                ob), _deref_maybe(callback)
+            API_FUNCS["PyWeakref_NewRef"], _deref_maybe(ob), _deref_maybe(callback)
         )
 
 
@@ -4383,8 +4308,7 @@ class Py(_CallBase):
     @staticmethod
     def generic_alias(origin: PyObjectLike, args: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
-            API_FUNCS["Py_GenericAlias"], _deref_maybe(
-                origin), _deref_maybe(args)
+            API_FUNCS["Py_GenericAlias"], _deref_maybe(origin), _deref_maybe(args)
         )
 
     # Py_GetBuildInfo

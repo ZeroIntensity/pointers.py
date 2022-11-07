@@ -3,9 +3,7 @@ import faulthandler
 from contextlib import suppress
 from functools import wraps
 from io import UnsupportedOperation
-from typing import (
-    TYPE_CHECKING, Any, Callable, NamedTuple, Type, TypeVar, Union
-)
+from typing import TYPE_CHECKING, Any, Callable, NamedTuple, Type, TypeVar, Union
 
 from _pointers import handle as _handle
 from typing_extensions import ParamSpec

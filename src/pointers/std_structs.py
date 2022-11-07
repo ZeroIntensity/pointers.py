@@ -3,9 +3,17 @@ from typing import Dict, Type
 
 from ._cstd import div_t, lconv, ldiv_t, tm
 from ._pyapi import (
-    Py_buffer, Py_tss_t, PyCodeObject, PyFrameObject, PyInterpreterState,
-    PyModuleDef, PyThreadState, PyType_Slot, PyType_Spec, PyTypeObject,
-    PyVarObject
+    Py_buffer,
+    Py_tss_t,
+    PyCodeObject,
+    PyFrameObject,
+    PyInterpreterState,
+    PyModuleDef,
+    PyThreadState,
+    PyType_Slot,
+    PyType_Spec,
+    PyTypeObject,
+    PyVarObject,
 )
 from .c_pointer import TypedCPointer, VoidPointer
 from .structure import Struct, StructPointer

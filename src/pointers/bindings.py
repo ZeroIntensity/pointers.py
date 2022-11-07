@@ -3,8 +3,17 @@ import inspect
 import warnings
 from types import FunctionType
 from typing import (
-    TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optional, Sequence,
-    Type, TypeVar, Union
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    Type,
+    TypeVar,
+    Union,
 )
 
 from _pointers import add_ref
