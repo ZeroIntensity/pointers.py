@@ -2,7 +2,9 @@ import sys
 
 from ward import raises, test
 
-from pointers import FreedMemoryError, InvalidSizeError, calloc, free, malloc, realloc
+from pointers import (
+    FreedMemoryError, InvalidSizeError, calloc, free, malloc, realloc
+)
 
 
 @test("malloc and free")

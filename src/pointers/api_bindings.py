@@ -3,12 +3,7 @@ from typing import TypeVar, Union
 from ._pyapi import API_FUNCS, Func
 from .base_pointers import BaseObjectPointer
 from .bindings import (
-    CharLike,
-    PointerLike,
-    StringLike,
-    binding_base,
-    make_char,
-    make_string,
+    CharLike, PointerLike, StringLike, binding_base, make_char, make_string
 )
 from .std_structs import *
 from .structure import StructPointer

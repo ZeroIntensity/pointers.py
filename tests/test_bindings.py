@@ -1,28 +1,12 @@
 from ward import raises, test
 
 from pointers import (
-    InvalidBindingParameter,
-    Struct,
-    StructPointer,
-    TypedCPointer,
-    VoidPointer,
+    InvalidBindingParameter, Struct, StructPointer, TypedCPointer, VoidPointer
 )
 from pointers import _cstd as std
 from pointers import (
-    binds,
-    c_free,
-    c_malloc,
-    cast,
-    div,
-    isspace,
-    signal,
-    sprintf,
-    strcpy,
-    strlen,
-    to_c_ptr,
-    to_struct_ptr,
-    to_voidp,
-    toupper,
+    binds, c_free, c_malloc, cast, div, isspace, signal, sprintf, strcpy,
+    strlen, to_c_ptr, to_struct_ptr, to_voidp, toupper
 )
 from pointers.std_structs import DivT
 
