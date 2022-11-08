@@ -4,13 +4,10 @@ import warnings
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from typing import (
-    Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
-)
-
-from typing_extensions import final
+from typing import Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
 
 from _pointers import add_ref, remove_ref
+from typing_extensions import final
 
 from ._utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
@@ -312,7 +309,7 @@ class BaseObjectPointer(
             else cls.make_from(obj)
         )
 
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         if self.address:
             remove_ref(~self)
 

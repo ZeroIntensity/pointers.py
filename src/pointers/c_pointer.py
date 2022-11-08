@@ -61,7 +61,7 @@ class _CDeref(Typed[T], IterDereferencable[T], ABC):
         ...
 
     @handle
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         if self.address:
             if (type(~self) is not str) and (self.decref):
                 remove_ref(~self)
@@ -78,7 +78,7 @@ class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
         void_p: bool = True,
         decref: bool = True,
         alt: bool = False,
-    ):
+    ) -> None:
         self._void_p = void_p
         super().__init__(address, size)
         self._type = data_type
