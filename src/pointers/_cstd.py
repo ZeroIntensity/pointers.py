@@ -1,12 +1,6 @@
 import ctypes
 from ctypes.util import find_library
-from platform import system
-
-platforms = {
-    "linux": "libc.so.6",
-    "darwin": "libc.dylib",
-    "windows": "msvcrt",
-}
+from sys import platform
 
 __all__ = (
     "c_malloc",
@@ -20,7 +14,16 @@ __all__ = (
     "ldiv_t",
 )
 
-dll = ctypes.CDLL(platforms.get(system().lower()) or find_library("c"))
+_c_library_name: str
+
+if platform in ("win32", "cygwin"):
+    _c_library_name = "msvcrt"
+elif platform == "darwin":
+    _c_library_name = "libc.dylib"
+else:
+    _c_library_name = find_library("c") or "libc.so.6"
+
+dll = ctypes.CDLL(_c_library_name)
 
 
 class tm(ctypes.Structure):

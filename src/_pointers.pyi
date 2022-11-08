@@ -2,10 +2,13 @@ from typing import Any, Callable, TypeVar
 
 _T = TypeVar("_T")
 
+
 def add_ref(obj: Any) -> None: ...
 def remove_ref(obj: Any) -> None: ...
 def force_set_attr(typ: type[Any], key: str, value: Any) -> None: ...
 def set_ref(obj: Any, count: int) -> None: ...
+
+
 def handle(
     func: Callable[..., _T],
     args: tuple[Any, ...] | None = None,
