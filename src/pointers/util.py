@@ -34,7 +34,10 @@ P = ParamSpec("P")
 
 
 class NULL:
-    """Unique object representing a NULL address."""
+    """Unique object representing a NULL address.
+
+    May be used with object pointers or passed to bindings.
+    """
 
 
 Nullable = Union[T, Type[NULL]]

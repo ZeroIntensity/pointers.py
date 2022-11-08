@@ -14,10 +14,6 @@
 #include <stdio.h>
 #include <frameobject.h> // needed to get members of PyFrameObject
 #define GETOBJ PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
-#define INIT_HANDLER(sig, handle, msg) if (signal(sig, handle) == SIG_ERR) { \
-        PyErr_SetString(PyExc_ImportError, msg); \
-        return NULL; \
-    }
 
 static jmp_buf buf;
 
