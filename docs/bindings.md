@@ -151,6 +151,40 @@ signal(2, sighandler)
 c_raise(2)  # send signal 2 to the program
 ```
 
+Alternatively, you can create a function pointer using `to_func_ptr`:
+
+```py
+from pointers import to_func_ptr, signal, exit, c_raise
+
+def test(signum: int) -> None:
+    print('hello world')
+    exit(0)
+
+signal(2, to_func_ptr(test))
+c_raise(2)
+```
+
+**Note:** `to_func_ptr` requires the function to be type hinted in order to correctly generate the signature of the C function, so the following **will not** work:
+
+```py
+def test(signum):
+    ...
+
+to_func_ptr(test)
+```
+
+## Null Pointers
+
+If you would like to pass a `NULL` pointer to a binding, you can use `pointers.NULL` or pass `None`:
+
+```py
+from pointers import time, NULL
+
+# these two do the same thing
+print(time(NULL))
+print(time(None))
+```
+
 ## Custom Bindings
 
 You can create your own binding to a C function with `ctypes` and pointers.py.

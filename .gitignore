@@ -13,3 +13,4 @@ vgcore.*
 _pointers.cpython*
 *.egg-info/
 wheelhouse/
+gen.py

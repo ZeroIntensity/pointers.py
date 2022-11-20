@@ -1,6 +1,6 @@
 import ctypes
 from contextlib import suppress
-from typing import Any, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
 from _pointers import add_ref
 
@@ -21,7 +21,12 @@ __all__ = (
 class Struct:
     """Abstract class representing a struct."""
 
-    def _convert_tc_ptr(self, typ: Any, name: str):
+    _hints: Dict[str, Any]
+    _void_p: List[str]
+    _internal_struct: Type[ctypes.Structure]
+
+    @classmethod
+    def _convert_tc_ptr(cls, typ: Any, name: str):
         if typ is TypedCPointer:
             raise TypeError(
                 "cannot instantiate: TypedCPointer has no type argument",
@@ -29,7 +34,7 @@ class Struct:
 
         if getattr(typ, "__origin__", None) is TypedCPointer:
             setattr(
-                type(self),
+                cls,
                 name,
                 RawType(
                     ctypes.POINTER(get_mapped(typ.__args__[0])),
@@ -38,18 +43,19 @@ class Struct:
 
         return typ
 
+    @classmethod
     def _get_type(
-        self,
+        cls,
         ct: Type["ctypes._CData"],
         name: str,
     ) -> Type["ctypes._CData"]:
-        attr = getattr(type(self), name, None)
+        attr = getattr(cls, name, None)
 
         if isinstance(attr, RawType):
             return attr.tp
 
         if ct is ctypes.c_void_p:
-            self._void_p.append(name)
+            cls._void_p.append(name)
 
         return ct
 
@@ -61,21 +67,8 @@ class Struct:
                 "cannot instantiate Struct directly",
             )
 
-        hints = class_typ.__annotations__
-        self._void_p: List[str] = []
-        self._hints = {k: self._convert_tc_ptr(v, k) for k, v in hints.items()}
         self._existing_address: Optional[int] = None
-
-        class _InternalStruct(ctypes.Structure):
-            _fields_ = [
-                (
-                    name,
-                    self._get_type(get_mapped(typ), name),
-                )
-                for name, typ in self._hints.items()  # fmt: off
-            ]
-
-        self._struct = _InternalStruct(
+        self._struct = self._internal_struct(
             *[
                 i if not isinstance(i, BaseCPointer) else i._as_parameter_
                 for i in args  # fmt: off
@@ -84,6 +77,26 @@ class Struct:
 
         if do_sync:
             self._sync()
+
+    def __init_subclass__(cls):
+        hints = cls.__annotations__
+        cls._void_p = []
+        cls._hints = {
+            k: cls._convert_tc_ptr(v, k)
+            for k, v in hints.items()
+            if k not in {"_hints", "_void_p", "_internal_struct"}
+        }
+
+        class _InternalStruct(ctypes.Structure):
+            _fields_ = [
+                (
+                    name,
+                    cls._get_type(get_mapped(typ), name),
+                )
+                for name, typ in cls._hints.items()  # fmt: off
+            ]
+
+        cls._internal_struct = _InternalStruct
 
     @property
     def _as_parameter_(self) -> ctypes.Structure:
@@ -189,9 +202,7 @@ class StructPointer(Pointer[T]):
         return self.ensure()
 
     def __repr__(self) -> str:
-        return (
-            f"StructPointer(address={self.address}, existing={self._existing})"  # noqa
-        )
+        return f"StructPointer(address={self.address}, existing={self._existing!r})"  # noqa
 
     def __rich__(self) -> str:
         return f"<[bold blue]pointer[/] to struct at {str(self)}>"

@@ -92,11 +92,9 @@ def _():
     assert ~s.d == 1
     assert ~cast(s.e, str) == "hello"
 
-    class Foo(Struct):
-        bar: TypedCPointer
-
     with raises(TypeError):
-        Foo()
+        class Foo(Struct):
+            bar: TypedCPointer
 
 
 @test("custom bindings")

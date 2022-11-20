@@ -4,6 +4,7 @@ from typing import Any, Optional, TypeVar
 from ._cstd import c_free, c_malloc, c_realloc
 from .base_pointers import BaseAllocatedPointer, IterDereferencable
 from .exceptions import AllocationError, InvalidSizeError
+from .stack_pointer import StackAllocatedPointer
 from .util import handle
 
 __all__ = ("AllocatedPointer", "malloc", "free", "realloc")
@@ -32,7 +33,6 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         self._size = size
         self._freed = False
         self._assigned = assigned
-        self._tracked = False
 
     @property
     def address(self) -> Optional[int]:
@@ -126,6 +126,9 @@ def realloc(target: A, size: int) -> A:
         realloc(ptr, 2)
         ```
     """  # noqa
+    if type(target) is StackAllocatedPointer:
+        raise TypeError("pointers to items on the stack may not be resized")
+
     tsize: int = sys.getsizeof(~target)
 
     if target.assigned and (tsize > size):

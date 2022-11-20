@@ -3,7 +3,8 @@ import sys
 from ward import raises, test
 
 from pointers import (
-    FreedMemoryError, InvalidSizeError, calloc, free, malloc, realloc
+    DereferenceError, FreedMemoryError, InvalidSizeError,
+    StackAllocatedPointer, acquire_stack_alloc, calloc, free, malloc, realloc
 )
 
 
@@ -109,6 +110,22 @@ def _():
     ptr = malloc(sys.getsizeof(obj))
     ptr <<= obj
 
-    # assert (~ptr).value == "hello"
-    # free(ptr)
-    # assert obj.value == "hello"
+    assert (~ptr).value == "hello"
+    free(ptr)
+    assert obj.value == "hello"
+
+@test("stack allocation")
+def _():
+    @acquire_stack_alloc(24)
+    def cb(ptr: StackAllocatedPointer[int]):
+        assert type(ptr) is StackAllocatedPointer
+
+        with raises(DereferenceError):
+            print(*ptr)
+
+        ptr <<= 0
+
+        with raises(InvalidSizeError):
+            ptr <<= 1
+
+        assert ~ptr == 0

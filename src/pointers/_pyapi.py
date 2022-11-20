@@ -100,6 +100,30 @@ class PyCodeObject(ctypes.Structure):
     pass
 
 
+class PyMethodDef(ctypes.Structure):
+    _fields_ = [
+        ("ml_name", ctypes.c_char_p),
+        ("ml_meth", ctypes.CFUNCTYPE(ctypes.py_object, ctypes.py_object)),
+        ("ml_flags", ctypes.c_int),
+        ("ml_doc", ctypes.c_char_p),
+    ]
+
+
+class PyGetSetDef(ctypes.Structure):
+    _fields_ = [
+        ("name", ctypes.c_char_p),
+        ("get", ctypes.CFUNCTYPE(ctypes.py_object, ctypes.py_object, ctypes.c_void_p)),
+        (
+            "set",
+            ctypes.CFUNCTYPE(
+                ctypes.c_int, ctypes.py_object, ctypes.py_object, ctypes.c_void_p
+            ),
+        ),
+        ("doc", ctypes.c_char_p),
+        ("closure", ctypes.c_void_p),
+    ]
+
+
 Py_UCS4 = ctypes.c_uint32
 
 
@@ -513,13 +537,27 @@ _register("PyComplex_ImagAsDouble", ctypes.c_double, (ctypes.py_object,))
 # double PyComplex_RealAsDouble(PyObject* op)
 _register("PyComplex_RealAsDouble", ctypes.c_double, (ctypes.py_object,))
 # PyObject* PyDescr_NewClassMethod(PyTypeObject* type, PyMethodDef* method)
-_register("PyDescr_NewClassMethod", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
+_register(
+    "PyDescr_NewClassMethod",
+    ctypes.py_object,
+    (
+        ctypes.POINTER(PyTypeObject),
+        ctypes.POINTER(PyMethodDef),
+    ),
+)
 # PyObject* PyDescr_NewGetSet(PyTypeObject* type, struct PyGetSetDef* getset)
 _register("PyDescr_NewGetSet", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyDescr_NewMember(PyTypeObject* type, struct PyMemberDef* meth)
 _register("PyDescr_NewMember", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyDescr_NewMethod(PyTypeObject* type, struct PyMethodDef* meth)
-_register("PyDescr_NewMethod", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
+_register(
+    "PyDescr_NewMethod",
+    ctypes.py_object,
+    (
+        ctypes.POINTER(PyTypeObject),
+        ctypes.POINTER(PyMethodDef),
+    ),
+)
 # PyObject* PyDictProxy_New(PyObject* mapping)
 _register("PyDictProxy_New", ctypes.py_object, (ctypes.py_object,))
 # void PyDict_Clear(PyObject* p)
@@ -1552,7 +1590,10 @@ _register(
 _register(
     "PyModule_AddFunctions",
     ctypes.c_int,
-    (ctypes.py_object,),
+    (
+        ctypes.py_object,
+        ctypes.POINTER(PyMethodDef),
+    ),
     minver="3.5",
 )
 # int PyModule_AddIntConstant(PyObject* module, const char* name, long value)
@@ -3908,82 +3949,314 @@ _register(
     (ctypes.py_object,),
     minver="3.10",
 )
-# int _Py_CheckPython3(void)
-_register("_Py_CheckPython3", ctypes.c_int, ())
-# void _PyArg_Fini(void)
-_register("_PyArg_Fini", None, ())
-# void AnnotateIgnoreReadsBegin(const char* file, int line)
+# int PyOS_mystrnicmp(const char* , const char* , Py_ssize_t)
 _register(
-    "AnnotateIgnoreReadsBegin",
-    None,
+    "PyOS_mystrnicmp",
+    ctypes.c_int,
     (
         ctypes.c_char_p,
-        ctypes.c_int,
+        ctypes.c_char_p,
     ),
 )
-# void AnnotateIgnoreReadsEnd(const char* file, int line)
+# int PyOS_InterruptOccurred(void)
+_register("PyOS_InterruptOccurred", ctypes.c_int, ())
+# PyObject* _PyWarnings_Init(void)
+_register("_PyWarnings_Init", ctypes.py_object, ())
+# void PyFrame_LocalsToFast(PyFrameObject* , int)
+_register("PyFrame_LocalsToFast", None, (ctypes.POINTER(PyFrameObject),))
+# int PyFrame_FastToLocalsWithError(PyFrameObject* f)
 _register(
-    "AnnotateIgnoreReadsEnd",
-    None,
-    (
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
+    "PyFrame_FastToLocalsWithError", ctypes.c_int, (ctypes.POINTER(PyFrameObject),)
 )
-# void AnnotateIgnoreWritesBegin(const char* file, int line)
+# void _PyFrame_DebugMallocStats(FILE* out)
+_register("_PyFrame_DebugMallocStats", None, ())
+# void _Py_NewReference(PyObject* op)
+_register("_Py_NewReference", None, (ctypes.py_object,))
+# int _Py_CoerceLegacyLocale(int warn)
+_register("_Py_CoerceLegacyLocale", ctypes.c_int, (ctypes.c_int,))
+# int _Py_LegacyLocaleDetected(int warn)
+_register("_Py_LegacyLocaleDetected", ctypes.c_int, (ctypes.c_int,))
+# int PyCompile_OpcodeStackEffect(int opcode, int oparg)
 _register(
-    "AnnotateIgnoreWritesBegin",
-    None,
+    "PyCompile_OpcodeStackEffect",
+    ctypes.c_int,
     (
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
-)
-# void AnnotateIgnoreWritesEnd(const char* file, int line)
-_register(
-    "AnnotateIgnoreWritesEnd",
-    None,
-    (
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
-)
-# void AnnotateEnableRaceDetection(const char* file, int line, int enable)
-_register(
-    "AnnotateEnableRaceDetection",
-    None,
-    (
-        ctypes.c_char_p,
         ctypes.c_int,
         ctypes.c_int,
     ),
 )
-# void AnnotateFlushState(const char* file, int line)
+# int PyCompile_OpcodeStackEffectWithJump(int opcode, int oparg, int jump)
 _register(
-    "AnnotateFlushState",
-    None,
+    "PyCompile_OpcodeStackEffectWithJump",
+    ctypes.c_int,
     (
-        ctypes.c_char_p,
+        ctypes.c_int,
+        ctypes.c_int,
         ctypes.c_int,
     ),
 )
-# int RunningOnValgrind(void)
-_register("RunningOnValgrind", ctypes.c_int, ())
-# int PySignal_SetWakeupFd(int fd)
-_register("PySignal_SetWakeupFd", ctypes.c_int, (ctypes.c_int,))
-# PyObject* PyAST_mod2obj(mod_ty t)
-_register("PyAST_mod2obj", ctypes.py_object, ())
-# int PyAST_Check(PyObject* obj)
-_register("PyAST_Check", ctypes.c_int, (ctypes.py_object,))
-# PyObject* _PyErr_SetFromPyStatus(PyStatus status)
-_register("_PyErr_SetFromPyStatus", ctypes.py_object, ())
-# uint64_t _Py_KeyedHash(uint64_t, const char* , Py_ssize_t)
-_register("_Py_KeyedHash", ctypes.c_uint64, (ctypes.c_char_p,))
-# int _PyContext_Init(void)
-_register("_PyContext_Init", ctypes.c_int, ())
-# void _PyEval_Fini(void)
-_register("_PyEval_Fini", None, ())
-# int _PyHamt_Init(void)
-_register("_PyHamt_Init", ctypes.c_int, ())
-# void _PyHamt_Fini(void)
-_register("_PyHamt_Fini", None, ())
+# int _Py_DisplaySourceLine(PyObject* , PyObject* , int, int)
+_register(
+    "_Py_DisplaySourceLine",
+    ctypes.c_int,
+    (
+        ctypes.py_object,
+        ctypes.py_object,
+    ),
+)
+# void _PyTraceback_Add(const char* , const char* , int)
+_register(
+    "_PyTraceback_Add",
+    None,
+    (
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+    ),
+)
+# int _PyImport_SetModule(PyObject* name, PyObject* module)
+_register(
+    "_PyImport_SetModule",
+    ctypes.c_int,
+    (
+        ctypes.py_object,
+        ctypes.py_object,
+    ),
+)
+# int _PyImport_SetModuleString(const char* name, PyObject* module)
+_register(
+    "_PyImport_SetModuleString",
+    ctypes.c_int,
+    (
+        ctypes.c_char_p,
+        ctypes.py_object,
+    ),
+)
+# void _PyImport_AcquireLock(void)
+_register("_PyImport_AcquireLock", None, ())
+# int _PyImport_ReleaseLock(void)
+_register("_PyImport_ReleaseLock", ctypes.c_int, ())
+# void _PyErr_WriteUnraisableMsg(const char* err_msg, PyObject* obj)
+_register(
+    "_PyErr_WriteUnraisableMsg",
+    None,
+    (
+        ctypes.c_char_p,
+        ctypes.py_object,
+    ),
+)
+# void _PyInterpreterState_RequireIDRef(PyInterpreterState* , int)
+_register(
+    "_PyInterpreterState_RequireIDRef", None, (ctypes.POINTER(PyInterpreterState),)
+)
+# int _PyCrossInterpreterData_RegisterClass(PyTypeObject* , crossinterpdatafunc)
+_register(
+    "_PyCrossInterpreterData_RegisterClass",
+    ctypes.c_int,
+    (ctypes.POINTER(PyTypeObject),),
+)
+# void* _PyBytesWriter_WriteBytes(_PyBytesWriter* writer, void* str, const void* bytes, Py_ssize_t size)
+_register(
+    "_PyBytesWriter_WriteBytes",
+    ctypes.c_void_p,
+    (
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_ssize_t,
+    ),
+)
+# int _PyEval_SetTrace(PyThreadState* tstate, Py_tracefunc func, PyObject* arg)
+_register(
+    "_PyEval_SetTrace",
+    ctypes.c_int,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.py_object,
+    ),
+)
+# int _PyEval_GetCoroutineOriginTrackingDepth(void)
+_register("_PyEval_GetCoroutineOriginTrackingDepth", ctypes.c_int, ())
+# int PyEval_MergeCompilerFlags(PyCompilerFlags* cf)
+_register("PyEval_MergeCompilerFlags", ctypes.c_int, ())
+# void _PyEval_SetSwitchInterval(unsigned long microseconds)
+_register("_PyEval_SetSwitchInterval", None, (ctypes.c_ulong,))
+# unsigned long _PyEval_GetSwitchInterval(void)
+_register("_PyEval_GetSwitchInterval", ctypes.c_ulong, ())
+# int _PyRun_SimpleFileObject(FILE* fp, PyObject* filename, int closeit, PyCompilerFlags* flags)
+_register(
+    "_PyRun_SimpleFileObject",
+    ctypes.c_int,
+    (
+        ctypes.py_object,
+        ctypes.c_int,
+    ),
+)
+# int PySys_Audit(const char* event, const char* argFormat, ...)
+_register("PySys_Audit", ctypes.c_int)
+# void _PyTuple_DebugMallocStats(FILE* out)
+_register("_PyTuple_DebugMallocStats", None, ())
+# int PyFile_SetOpenCodeHook(Py_OpenCodeHookFunction hook, void* userData)
+_register("PyFile_SetOpenCodeHook", ctypes.c_int, (ctypes.c_void_p,))
+# void PyMem_RawFree(void* ptr)
+_register("PyMem_RawFree", None, (ctypes.c_void_p,))
+# void PyMem_SetupDebugHooks(void)
+_register("PyMem_SetupDebugHooks", None, ())
+# int _Py_DecodeLocaleEx(const char* arg, wchar_t** wstr, size_t* wlen, const char** reason, int current_locale, _Py_error_handler errors)
+_register(
+    "_Py_DecodeLocaleEx",
+    ctypes.c_int,
+    (
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_wchar_p),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_char_p),
+        ctypes.c_int,
+    ),
+)
+# int _Py_EncodeLocaleEx(const wchar_t* text, char** str, size_t* error_pos, const char** reason, int current_locale, _Py_error_handler errors)
+_register(
+    "_Py_EncodeLocaleEx",
+    ctypes.c_int,
+    (
+        ctypes.c_wchar_p,
+        ctypes.POINTER(ctypes.c_char_p),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_char_p),
+        ctypes.c_int,
+    ),
+)
+# char* _Py_EncodeLocaleRaw(const wchar_t* text, size_t* error_pos)
+_register(
+    "_Py_EncodeLocaleRaw",
+    ctypes.c_char_p,
+    (
+        ctypes.c_wchar_p,
+        ctypes.POINTER(ctypes.c_size_t),
+    ),
+)
+# PyCodeObject* _PyAST_Compile(struct _mod* mod, PyObject* filename, PyCompilerFlags* flags, int optimize, struct _arena* arena)
+_register(
+    "_PyAST_Compile",
+    ctypes.POINTER(PyCodeObject),
+    (
+        ctypes.py_object,
+        ctypes.c_int,
+    ),
+)
+# int _PyStructSequence_InitType(PyTypeObject* type, PyStructSequence_Desc* desc, unsigned long tp_flags)
+_register(
+    "_PyStructSequence_InitType",
+    ctypes.c_int,
+    (
+        ctypes.POINTER(PyTypeObject),
+        ctypes.c_ulong,
+    ),
+)
+# int _PySys_Audit(PyThreadState* tstate, const char* event, const char* argFormat, ...)
+_register("_PySys_Audit", ctypes.c_int)
+# int _PyType_CheckConsistency(PyTypeObject* type)
+_register("_PyType_CheckConsistency", ctypes.c_int, (ctypes.POINTER(PyTypeObject),))
+# int _PyDict_CheckConsistency(PyObject* mp, int check_content)
+_register(
+    "_PyDict_CheckConsistency",
+    ctypes.c_int,
+    (
+        ctypes.py_object,
+        ctypes.c_int,
+    ),
+)
+# void _PyErr_Fetch(PyThreadState* tstate, PyObject** type, PyObject** value, PyObject** traceback)
+_register(
+    "_PyErr_Fetch",
+    None,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.POINTER(ctypes.py_object),
+        ctypes.POINTER(ctypes.py_object),
+        ctypes.POINTER(ctypes.py_object),
+    ),
+)
+# int _PyErr_ExceptionMatches(PyThreadState* tstate, PyObject* exc)
+_register(
+    "_PyErr_ExceptionMatches",
+    ctypes.c_int,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.py_object,
+    ),
+)
+# void _PyErr_Restore(PyThreadState* tstate, PyObject* type, PyObject* value, PyObject* traceback)
+_register(
+    "_PyErr_Restore",
+    None,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.py_object,
+        ctypes.py_object,
+        ctypes.py_object,
+    ),
+)
+# void _PyErr_SetObject(PyThreadState* tstate, PyObject* type, PyObject* value)
+_register(
+    "_PyErr_SetObject",
+    None,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.py_object,
+        ctypes.py_object,
+    ),
+)
+# void _PyErr_ChainStackItem(_PyErr_StackItem* exc_info)
+_register("_PyErr_ChainStackItem", None, ())
+# void _PyErr_Clear(PyThreadState* tstate)
+_register("_PyErr_Clear", None, (ctypes.POINTER(PyThreadState),))
+# void _PyErr_SetNone(PyThreadState* tstate, PyObject* exception)
+_register(
+    "_PyErr_SetNone",
+    None,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.py_object,
+    ),
+)
+# void _PyErr_SetString(PyThreadState* tstate, PyObject* exception, const char* string)
+_register(
+    "_PyErr_SetString",
+    None,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.py_object,
+        ctypes.c_char_p,
+    ),
+)
+# void _PyErr_NormalizeException(PyThreadState* tstate, PyObject** exc, PyObject** val, PyObject** tb)
+_register(
+    "_PyErr_NormalizeException",
+    None,
+    (
+        ctypes.POINTER(PyThreadState),
+        ctypes.POINTER(ctypes.py_object),
+        ctypes.POINTER(ctypes.py_object),
+        ctypes.POINTER(ctypes.py_object),
+    ),
+)
+# int _PyErr_CheckSignalsTstate(PyThreadState* tstate)
+_register("_PyErr_CheckSignalsTstate", ctypes.c_int, (ctypes.POINTER(PyThreadState),))
+# void _Py_DumpExtensionModules(int fd, PyInterpreterState* interp)
+_register(
+    "_Py_DumpExtensionModules",
+    None,
+    (
+        ctypes.c_int,
+        ctypes.POINTER(PyInterpreterState),
+    ),
+)
+# Py_ssize_t _Py_UTF8_Edit_Cost(PyObject* str_a, PyObject* str_b, Py_ssize_t max_cost)
+_register(
+    "_Py_UTF8_Edit_Cost",
+    ctypes.c_ssize_t,
+    (
+        ctypes.py_object,
+        ctypes.py_object,
+        ctypes.c_ssize_t,
+    ),
+)

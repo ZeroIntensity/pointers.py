@@ -12,7 +12,8 @@ from .base_pointers import (
 )
 from .bindings import *
 from .c_pointer import (
-    TypedCPointer, VoidPointer, array, cast, to_c_ptr, to_struct_ptr, to_voidp
+    TypedCPointer, VoidPointer, array, cast, to_c_ptr, to_func_ptr,
+    to_struct_ptr, to_voidp
 )
 from .calloc import AllocatedArrayPointer, calloc
 from .custom_binding import binding, binds
@@ -25,6 +26,9 @@ from .exceptions import (
 from .magic import _
 from .malloc import AllocatedPointer, free, malloc, realloc
 from .object_pointer import Pointer, to_ptr
+from .stack_pointer import (
+    StackAllocatedPointer, acquire_stack_alloc, stack_alloc
+)
 from .std_structs import DivT, Lconv, LDivT, Tm
 from .structure import Struct, StructPointer
 from .util import NULL, Nullable, handle, raw_type, struct_cast

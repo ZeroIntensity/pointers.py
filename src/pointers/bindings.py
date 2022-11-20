@@ -276,11 +276,9 @@ def _process_args(
         if not (isinstance if not is_type else issubclass)(value, n_type):
             v_type = type(value) if not is_type else value
 
-            if (n_type in {
-                BasePointer,
-                BaseCPointer,
-                StructPointer
-            }) and (value is None):
+            if (n_type in {BasePointer, BaseCPointer, StructPointer}) and (
+                value is None
+            ):
                 continue
 
             if (n_type is FunctionType) and is_c_func:
