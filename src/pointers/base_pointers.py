@@ -214,7 +214,6 @@ class BaseObjectPointer(
         """
         Args:
             address: Address of the underlying value.
-            typ: Type of the pointer.
             increment_ref: Should the reference count on the target object get incremented.
         """  # noqa
         self._address: Optional[int] = address
