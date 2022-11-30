@@ -135,9 +135,10 @@ static PyObject* run_stack_callback(PyObject* self, PyObject* args) {
     PyTuple_SetItem(tup, 0, obj);
     PyObject* result = PyObject_Call(func, tup, NULL);
     if (!result) return NULL;
-    PyObject_SetAttrString(obj, "freed", Py_NewRef(Py_True));
+    PyObject_SetAttrString(obj, "freed", Py_True);
 
-    return Py_NewRef(result);
+    Py_INCREF(result);
+    return result;
 }
 
 static PyMethodDef methods[] = {
