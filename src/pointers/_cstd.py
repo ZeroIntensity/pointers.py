@@ -24,7 +24,7 @@ else:
     _c_library_name = find_library("c") or "libc.so.6"
 
 dll = ctypes.CDLL(_c_library_name)
-
+mdll = dll if platform in ("win32", "cygwin") else ctypes.CDLL(find_library("m") else "libm.so.6")
 
 class tm(ctypes.Structure):
     _fields_ = [
@@ -136,20 +136,20 @@ dll.setlocale.restype = ctypes.c_char_p
 dll.localeconv.argtypes = ()
 dll.localeconv.restype = ctypes.POINTER(lconv)
 # double frexp(double x, int* exponent)
-dll.frexp.argtypes = (
+mdll.frexp.argtypes = (
     ctypes.c_double,
     ctypes.POINTER(ctypes.c_int),
 )
-dll.frexp.restype = ctypes.c_double
+mdll.frexp.restype = ctypes.c_double
 # double ldexp(double x, int exponent)
-dll.ldexp.argtypes = (ctypes.c_double, ctypes.c_int)
-dll.ldexp.restype = ctypes.c_double
+mdll.ldexp.argtypes = (ctypes.c_double, ctypes.c_int)
+mdll.ldexp.restype = ctypes.c_double
 # double modf(double x, double* integer)
-dll.modf.argtypes = (
+mdll.modf.argtypes = (
     ctypes.c_double,
     ctypes.POINTER(ctypes.c_double),
 )
-dll.modf.restype = ctypes.c_double
+mdll.modf.restype = ctypes.c_double
 # int raise(int sig)
 c_raise.argtypes = (ctypes.c_int,)
 c_raise.restype = ctypes.c_int
