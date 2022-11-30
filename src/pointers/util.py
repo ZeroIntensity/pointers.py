@@ -3,10 +3,13 @@ import faulthandler
 from contextlib import suppress
 from functools import wraps
 from io import UnsupportedOperation
-from typing import TYPE_CHECKING, Any, Callable, NamedTuple, Type, TypeVar, Union
+from typing import (
+    TYPE_CHECKING, Any, Callable, NamedTuple, Type, TypeVar, Union
+)
+
+from typing_extensions import ParamSpec
 
 from _pointers import handle as _handle
-from typing_extensions import ParamSpec
 
 from .exceptions import SegmentViolation
 
@@ -31,7 +34,10 @@ P = ParamSpec("P")
 
 
 class NULL:
-    """Unique object representing a NULL address."""
+    """Unique object representing a NULL address.
+
+    May be used with object pointers or passed to bindings.
+    """
 
 
 Nullable = Union[T, Type[NULL]]

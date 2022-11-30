@@ -7,7 +7,7 @@ nav:
     - Allocation: allocation.md
     - C Bindings: bindings.md
     - CPython ABI Bindings: cpython_bindings.md
-    - Making a Program: making_a_program.md
+    - Working By Example: working_by_example.md
     - Reference: reference.md
 theme: readthedocs
 

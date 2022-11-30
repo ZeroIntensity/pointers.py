@@ -1,4 +1,6 @@
 import ctypes
+from collections.abc import Callable
+from types import FunctionType, MethodType
 from typing import Any, Dict, Type, Union
 
 from _pointers import force_set_attr as _force_set_attr
@@ -85,6 +87,27 @@ def get_mapped(typ: Any) -> "Type[ctypes._CData]":
     """Get the C mapped value of the given type."""
     from .c_pointer import VoidPointer
 
+    if getattr(typ, "__origin__", None) is Callable:
+        args = list(typ.__args__)
+        res = args.pop(-1)
+        return ctypes.CFUNCTYPE(get_mapped(res), *map(get_mapped, args))
+
+    if type(typ) in {FunctionType, MethodType}:
+        hints = typ.__annotations__.copy()
+        try:
+            res = hints.pop("return")
+        except KeyError as e:
+            raise TypeError(
+                "return type annotation is required to convert to a C function"  # noqa
+            ) from e
+
+        args = hints.values()
+        return ctypes.CFUNCTYPE(
+            get_mapped(res) if res else None,
+            *map(get_mapped, args),
+        )
+
+    # VoidPointer needs to be passed here to stop circular imports
     return {**_C_TYPES, VoidPointer: ctypes.c_void_p}.get(  # type: ignore
         typ,
     ) or ctypes.py_object

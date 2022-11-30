@@ -1,6 +1,10 @@
-# Making a Program
+# Working By Example
 
-Now that we've learned how to use pointers.py, lets build a small script to make `1 == 2`, and then revert our changes (make `1 != 2`).
+Now that we've learned how to use pointers.py, lets build some small scripts to try out some of its features.
+
+## Making one equal two
+
+**Note:** This may not work depending on your build of CPython.
 
 Lets start out with creating a pointer to `1`, and then moving `2` to it:
 
@@ -85,7 +89,3 @@ ptr <<= ~cache
 assert 1 != 2
 free(cache)
 ```
-
-**Note:** This may not work depending on your build of CPython.
-
-Congratulations, you have written a working program with pointers.py!

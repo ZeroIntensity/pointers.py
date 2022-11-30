@@ -3,17 +3,8 @@ import inspect
 import warnings
 from types import FunctionType
 from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    Optional,
-    Sequence,
-    Type,
-    TypeVar,
-    Union,
+    TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optional, Sequence,
+    Type, TypeVar, Union
 )
 
 from _pointers import add_ref
@@ -30,14 +21,14 @@ from .c_pointer import TypedCPointer, VoidPointer
 from .exceptions import InvalidBindingParameter
 from .std_structs import STRUCT_MAP, DivT, Lconv, LDivT, Tm
 from .structure import StructPointer
-from .util import handle
+from .util import NULL, Nullable, handle
 
 if TYPE_CHECKING:
     from .structure import Struct
 
 T = TypeVar("T")
 
-PointerLike = Optional[Union[TypedCPointer[T], VoidPointer]]
+PointerLike = Nullable[Optional[Union[TypedCPointer[T], VoidPointer]]]
 StringLike = Optional[Union[str, bytes, VoidPointer, TypedCPointer[bytes]]]
 Format = Union[StringLike, PointerLike]
 TypedPtr = Optional[PointerLike[T]]
@@ -285,7 +276,9 @@ def _process_args(
         if not (isinstance if not is_type else issubclass)(value, n_type):
             v_type = type(value) if not is_type else value
 
-            if (n_type is BasePointer) and (value is None):
+            if (n_type in {BasePointer, BaseCPointer, StructPointer}) and (
+                value is None
+            ):
                 continue
 
             if (n_type is FunctionType) and is_c_func:
@@ -343,10 +336,12 @@ def _solve_func(
 @handle
 def binding_base(
     fn: "ctypes._NamedFuncPointer",
-    *args,
+    *simple_args,
     map_extra: Optional[StructMap] = None,
 ) -> Any:
     smap = {**STRUCT_MAP, **(map_extra or {})}
+
+    args = [i if i is not NULL else None for i in simple_args]
 
     validator_args = [
         arg
@@ -355,7 +350,7 @@ def binding_base(
             and (not isinstance(arg, PyCFuncPtrType))
         )
         else _solve_func(
-            arg,
+            arg,  # type: ignore
             typ,  # type: ignore
             smap,
         )

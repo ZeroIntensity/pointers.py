@@ -20,7 +20,7 @@ Here's an example with `PyEval_GetFrame`:
 ```py
 from pointers import PyEval
 
-frame = PyEval.get_frame()  # calls the c PyEval_GetFrame function
+frame = PyEval.get_frame()  # calls PyEval_GetFrame
 ```
 
 ## Casting Pointers
@@ -44,11 +44,3 @@ from pointers import PyEval, struct_cast
 frame = struct_cast(PyEval.get_frame())
 # frame is now a valid frame object!
 ```
-
-## Limited Support
-
-CPython ABI bindings are still unfinished, and any method that contains one of the following remains unsupported:
-
--   Uses a format string
--   Undocumented on [python.org](https://python.org)
--   Isn't documented properly

@@ -1,19 +1,11 @@
 import ctypes
-from typing import Dict, Type
+from typing import Any, Callable, Dict, Type
 
 from ._cstd import div_t, lconv, ldiv_t, tm
 from ._pyapi import (
-    Py_buffer,
-    Py_tss_t,
-    PyCodeObject,
-    PyFrameObject,
-    PyInterpreterState,
-    PyModuleDef,
-    PyThreadState,
-    PyType_Slot,
-    PyType_Spec,
-    PyTypeObject,
-    PyVarObject,
+    Py_buffer, Py_tss_t, PyCodeObject, PyFrameObject, PyGetSetDef,
+    PyInterpreterState, PyMethodDef, PyModuleDef, PyThreadState, PyType_Slot,
+    PyType_Spec, PyTypeObject, PyVarObject
 )
 from .c_pointer import TypedCPointer, VoidPointer
 from .structure import Struct, StructPointer
@@ -35,6 +27,7 @@ __all__ = (
     "TssT",
     "InterpreterState",
     "CodeObject",
+    "MethodDef",
     "STRUCT_MAP",
 )
 
@@ -107,7 +100,7 @@ class Buffer(Struct):
 
 
 class TypeObject(Struct):
-    pass
+    __PYOBJECT__ = True
 
 
 class ThreadState(Struct):
@@ -141,6 +134,21 @@ class CodeObject(Struct):
     pass
 
 
+class MethodDef(Struct):
+    ml_name: bytes
+    ml_meth: Callable[[Any], Any]
+    ml_flags: int
+    ml_doc: bytes
+
+
+class GetSetDef(Struct):
+    name: bytes
+    get: Callable[[Any, VoidPointer], Any]
+    set: Callable[[Any, Any, VoidPointer], int]
+    doc: bytes
+    closure: VoidPointer
+
+
 STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     tm: Tm,
     div_t: DivT,
@@ -157,4 +165,6 @@ STRUCT_MAP: Dict[Type[ctypes.Structure], Type[Struct]] = {
     PyThreadState: ThreadState,
     PyTypeObject: TypeObject,
     PyCodeObject: CodeObject,
+    PyMethodDef: MethodDef,
+    PyGetSetDef: GetSetDef,
 }

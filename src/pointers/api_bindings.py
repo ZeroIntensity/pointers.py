@@ -3,12 +3,7 @@ from typing import TypeVar, Union
 from ._pyapi import API_FUNCS, Func
 from .base_pointers import BaseObjectPointer
 from .bindings import (
-    CharLike,
-    PointerLike,
-    StringLike,
-    binding_base,
-    make_char,
-    make_string,
+    CharLike, PointerLike, StringLike, binding_base, make_char, make_string
 )
 from .std_structs import *
 from .structure import StructPointer
@@ -105,6 +100,23 @@ __all__ = (
     "PyUnicode",
     "PyWeakref",
     "Py",
+    "_PyWarnings",
+    "_PyFrame",
+    "_Py",
+    "PyCompile",
+    "_PyTraceback",
+    "_PyImport",
+    "_PyErr",
+    "_PyInterpreterState",
+    "_PyCrossInterpreterData",
+    "_PyBytesWriter",
+    "_PyEval",
+    "_PyRun",
+    "_PyTuple",
+    "_PyAST",
+    "_PyStructSequence",
+    "_PyType",
+    "_PyDict",
 )
 
 
@@ -1227,6 +1239,13 @@ class PyEval(_CallBase):
             API_FUNCS["PyEval_ThreadsInitialized"],
         )
 
+    # PyEval_MergeCompilerFlags
+    @staticmethod
+    def merge_compiler_flags() -> int:
+        return api_binding_base(
+            API_FUNCS["PyEval_MergeCompilerFlags"],
+        )
+
 
 class PyException(_CallBase):
     """Namespace containing API functions prefixed with `PyException_`"""
@@ -1314,6 +1333,11 @@ class PyFile(_CallBase):
             API_FUNCS["PyFile_WriteString"], make_string(s), _deref_maybe(p)
         )
 
+    # PyFile_SetOpenCodeHook
+    @staticmethod
+    def set_open_code_hook(hook: PointerLike) -> int:
+        return api_binding_base(API_FUNCS["PyFile_SetOpenCodeHook"], hook)
+
 
 class PyFloat(_CallBase):
     """Namespace containing API functions prefixed with `PyFloat_`"""
@@ -1368,6 +1392,16 @@ class PyFrame(_CallBase):
     def get_line_number(frame: StructPointer[FrameObject]) -> int:
         return api_binding_base(API_FUNCS["PyFrame_GetLineNumber"], frame)
 
+    # PyFrame_LocalsToFast
+    @staticmethod
+    def locals_to_fast(frame: StructPointer[FrameObject]) -> None:
+        return api_binding_base(API_FUNCS["PyFrame_LocalsToFast"], frame)
+
+    # PyFrame_FastToLocalsWithError
+    @staticmethod
+    def fast_to_locals_with_error(f: StructPointer[FrameObject]) -> int:
+        return api_binding_base(API_FUNCS["PyFrame_FastToLocalsWithError"], f)
+
 
 class PyFrozenSet(_CallBase):
     """Namespace containing API functions prefixed with `PyFrozenSet_`"""
@@ -1415,7 +1449,7 @@ class PyGILState(_CallBase):
 
     # PyGILState_Ensure
     @staticmethod
-    def ensure() -> PointerLike:
+    def ensure() -> int:
         return api_binding_base(
             API_FUNCS["PyGILState_Ensure"],
         )
@@ -1942,6 +1976,18 @@ class PyMem(_CallBase):
     def realloc(p: PointerLike, n: int) -> PointerLike:
         return api_binding_base(API_FUNCS["PyMem_Realloc"], p, n)
 
+    # PyMem_RawFree
+    @staticmethod
+    def raw_free(ptr: PointerLike) -> None:
+        return api_binding_base(API_FUNCS["PyMem_RawFree"], ptr)
+
+    # PyMem_SetupDebugHooks
+    @staticmethod
+    def setup_debug_hooks() -> None:
+        return api_binding_base(
+            API_FUNCS["PyMem_SetupDebugHooks"],
+        )
+
 
 class PyMemoryView(_CallBase):
     """Namespace containing API functions prefixed with `PyMemoryView_`"""
@@ -2461,6 +2507,20 @@ class PyOS(_CallBase):
     ) -> int:
         return api_binding_base(
             API_FUNCS["PyOS_vsnprintf"], make_string(str), size, make_string(format), va
+        )
+
+    # PyOS_mystrnicmp
+    @staticmethod
+    def mystrnicmp(p1: StringLike, p2: StringLike) -> int:
+        return api_binding_base(
+            API_FUNCS["PyOS_mystrnicmp"], make_string(p1), make_string(p2)
+        )
+
+    # PyOS_InterruptOccurred
+    @staticmethod
+    def interrupt_occurred() -> int:
+        return api_binding_base(
+            API_FUNCS["PyOS_InterruptOccurred"],
         )
 
 
@@ -4238,6 +4298,8 @@ class PyWeakref(_CallBase):
 class Py(_CallBase):
     """Namespace containing API functions prefixed with `Py_`"""
 
+    # Py_AddPendingCall
+
     # Py_BytesMain
     @staticmethod
     def bytes_main(argc: int, argv: PointerLike) -> int:
@@ -4487,3 +4549,405 @@ class Py(_CallBase):
     @staticmethod
     def x_new_ref(o: PyObjectLike) -> PyObjectLike:
         return api_binding_base(API_FUNCS["Py_XNewRef"], _deref_maybe(o))
+
+
+class _PyWarnings(_CallBase):
+    """Namespace containing API functions prefixed with `_PyWarnings_`"""
+
+    # _PyWarnings_Init
+    @staticmethod
+    def init() -> PyObjectLike:
+        return api_binding_base(
+            API_FUNCS["_PyWarnings_Init"],
+        )
+
+
+class _PyFrame(_CallBase):
+    """Namespace containing API functions prefixed with `_PyFrame_`"""
+
+    # _PyFrame_DebugMallocStats
+    @staticmethod
+    def debug_malloc_stats() -> None:
+        return api_binding_base(
+            API_FUNCS["_PyFrame_DebugMallocStats"],
+        )
+
+
+class _Py(_CallBase):
+    """Namespace containing API functions prefixed with `_Py_`"""
+
+    # _Py_NewReference
+    @staticmethod
+    def new_reference(op: PyObjectLike) -> None:
+        return api_binding_base(API_FUNCS["_Py_NewReference"], _deref_maybe(op))
+
+    # _Py_CoerceLegacyLocale
+    @staticmethod
+    def coerce_legacy_locale(warn: int) -> int:
+        return api_binding_base(API_FUNCS["_Py_CoerceLegacyLocale"], warn)
+
+    # _Py_LegacyLocaleDetected
+    @staticmethod
+    def legacy_locale_detected(warn: int) -> int:
+        return api_binding_base(API_FUNCS["_Py_LegacyLocaleDetected"], warn)
+
+    # _Py_DisplaySourceLine
+    @staticmethod
+    def display_source_line(p1: PyObjectLike, p2: PyObjectLike) -> int:
+        return api_binding_base(
+            API_FUNCS["_Py_DisplaySourceLine"], _deref_maybe(p1), _deref_maybe(p2)
+        )
+
+    # _Py_DecodeLocaleEx
+    @staticmethod
+    def decode_locale_ex(
+        arg: StringLike,
+        wstr: PointerLike,
+        wlen: PointerLike,
+        reason: PointerLike,
+        current_locale: int,
+    ) -> int:
+        return api_binding_base(
+            API_FUNCS["_Py_DecodeLocaleEx"],
+            make_string(arg),
+            wstr,
+            wlen,
+            reason,
+            current_locale,
+        )
+
+    # _Py_EncodeLocaleEx
+    @staticmethod
+    def encode_locale_ex(
+        text: str,
+        str: PointerLike,
+        error_pos: PointerLike,
+        reason: PointerLike,
+        current_locale: int,
+    ) -> int:
+        return api_binding_base(
+            API_FUNCS["_Py_EncodeLocaleEx"],
+            text,
+            str,
+            error_pos,
+            reason,
+            current_locale,
+        )
+
+    # _Py_EncodeLocaleRaw
+    @staticmethod
+    def encode_locale_raw(text: str, error_pos: PointerLike) -> StringLike:
+        return api_binding_base(API_FUNCS["_Py_EncodeLocaleRaw"], text, error_pos)
+
+    # _Py_DumpExtensionModules
+    @staticmethod
+    def dump_extension_modules(
+        fd: int, interp: StructPointer[InterpreterState]
+    ) -> None:
+        return api_binding_base(API_FUNCS["_Py_DumpExtensionModules"], fd, interp)
+
+    # _Py_UTF8_Edit_Cost
+    @staticmethod
+    def utf_8__edit__cost(
+        str_a: PyObjectLike, str_b: PyObjectLike, max_cost: int
+    ) -> int:
+        return api_binding_base(
+            API_FUNCS["_Py_UTF8_Edit_Cost"],
+            _deref_maybe(str_a),
+            _deref_maybe(str_b),
+            max_cost,
+        )
+
+
+class PyCompile(_CallBase):
+    """Namespace containing API functions prefixed with `PyCompile_`"""
+
+    # PyCompile_OpcodeStackEffect
+    @staticmethod
+    def opcode_stack_effect(opcode: int, oparg: int) -> int:
+        return api_binding_base(API_FUNCS["PyCompile_OpcodeStackEffect"], opcode, oparg)
+
+    # PyCompile_OpcodeStackEffectWithJump
+    @staticmethod
+    def opcode_stack_effect_with_jump(opcode: int, oparg: int, jump: int) -> int:
+        return api_binding_base(
+            API_FUNCS["PyCompile_OpcodeStackEffectWithJump"], opcode, oparg, jump
+        )
+
+
+class _PyTraceback(_CallBase):
+    """Namespace containing API functions prefixed with `_PyTraceback_`"""
+
+    # _PyTraceback_Add
+    @staticmethod
+    def add(p1: StringLike, p2: StringLike) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyTraceback_Add"], make_string(p1), make_string(p2)
+        )
+
+
+class _PyImport(_CallBase):
+    """Namespace containing API functions prefixed with `_PyImport_`"""
+
+    # _PyImport_SetModule
+    @staticmethod
+    def set_module(name: PyObjectLike, module: PyObjectLike) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyImport_SetModule"], _deref_maybe(name), _deref_maybe(module)
+        )
+
+    # _PyImport_SetModuleString
+    @staticmethod
+    def set_module_string(name: StringLike, module: PyObjectLike) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyImport_SetModuleString"],
+            make_string(name),
+            _deref_maybe(module),
+        )
+
+    # _PyImport_AcquireLock
+    @staticmethod
+    def acquire_lock() -> None:
+        return api_binding_base(
+            API_FUNCS["_PyImport_AcquireLock"],
+        )
+
+    # _PyImport_ReleaseLock
+    @staticmethod
+    def release_lock() -> int:
+        return api_binding_base(
+            API_FUNCS["_PyImport_ReleaseLock"],
+        )
+
+
+class _PyErr(_CallBase):
+    """Namespace containing API functions prefixed with `_PyErr_`"""
+
+    # _PyErr_WriteUnraisableMsg
+    @staticmethod
+    def write_unraisable_msg(err_msg: StringLike, obj: PyObjectLike) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_WriteUnraisableMsg"],
+            make_string(err_msg),
+            _deref_maybe(obj),
+        )
+
+    # _PyErr_Fetch
+    @staticmethod
+    def fetch(
+        tstate: StructPointer[ThreadState],
+        type: PointerLike,
+        value: PointerLike,
+        traceback: PointerLike,
+    ) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_Fetch"], tstate, type, value, traceback
+        )
+
+    # _PyErr_ExceptionMatches
+    @staticmethod
+    def exception_matches(tstate: StructPointer[ThreadState], exc: PyObjectLike) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyErr_ExceptionMatches"], tstate, _deref_maybe(exc)
+        )
+
+    # _PyErr_Restore
+    @staticmethod
+    def restore(
+        tstate: StructPointer[ThreadState],
+        type: PyObjectLike,
+        value: PyObjectLike,
+        traceback: PyObjectLike,
+    ) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_Restore"],
+            tstate,
+            _deref_maybe(type),
+            _deref_maybe(value),
+            _deref_maybe(traceback),
+        )
+
+    # _PyErr_SetObject
+    @staticmethod
+    def set_object(
+        tstate: StructPointer[ThreadState], type: PyObjectLike, value: PyObjectLike
+    ) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_SetObject"],
+            tstate,
+            _deref_maybe(type),
+            _deref_maybe(value),
+        )
+
+    # _PyErr_ChainStackItem
+    @staticmethod
+    def chain_stack_item() -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_ChainStackItem"],
+        )
+
+    # _PyErr_Clear
+    @staticmethod
+    def clear(tstate: StructPointer[ThreadState]) -> None:
+        return api_binding_base(API_FUNCS["_PyErr_Clear"], tstate)
+
+    # _PyErr_SetNone
+    @staticmethod
+    def set_none(tstate: StructPointer[ThreadState], exception: PyObjectLike) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_SetNone"], tstate, _deref_maybe(exception)
+        )
+
+    # _PyErr_SetString
+    @staticmethod
+    def set_string(
+        tstate: StructPointer[ThreadState], exception: PyObjectLike, string: StringLike
+    ) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_SetString"],
+            tstate,
+            _deref_maybe(exception),
+            make_string(string),
+        )
+
+    # _PyErr_NormalizeException
+    @staticmethod
+    def normalize_exception(
+        tstate: StructPointer[ThreadState],
+        exc: PointerLike,
+        val: PointerLike,
+        tb: PointerLike,
+    ) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyErr_NormalizeException"], tstate, exc, val, tb
+        )
+
+    # _PyErr_CheckSignalsTstate
+    @staticmethod
+    def check_signals_tstate(tstate: StructPointer[ThreadState]) -> int:
+        return api_binding_base(API_FUNCS["_PyErr_CheckSignalsTstate"], tstate)
+
+
+class _PyInterpreterState(_CallBase):
+    """Namespace containing API functions prefixed with `_PyInterpreterState_`"""
+
+    # _PyInterpreterState_RequireIDRef
+    @staticmethod
+    def require_i_d_ref(state: StructPointer[InterpreterState]) -> None:
+        return api_binding_base(
+            API_FUNCS["_PyInterpreterState_RequireIDRef"],
+        )
+
+
+class _PyCrossInterpreterData(_CallBase):
+    """Namespace containing API functions prefixed with `_PyCrossInterpreterData_`"""
+
+    # _PyCrossInterpreterData_RegisterClass
+    @staticmethod
+    def register_class(tp: StructPointer[TypeObject]) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyCrossInterpreterData_RegisterClass"],
+        )
+
+
+class _PyBytesWriter(_CallBase):
+    """Namespace containing API functions prefixed with `_PyBytesWriter_`"""
+
+    # _PyBytesWriter_WriteBytes
+    @staticmethod
+    def write_bytes(writer: PointerLike, str: PointerLike, bytes: int) -> PointerLike:
+        return api_binding_base(
+            API_FUNCS["_PyBytesWriter_WriteBytes"], writer, str, bytes
+        )
+
+
+class _PyEval(_CallBase):
+    """Namespace containing API functions prefixed with `_PyEval_`"""
+
+    # _PyEval_SetTrace
+    @staticmethod
+    def set_trace(tstate: StructPointer[ThreadState], func: PyObjectLike) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyEval_SetTrace"], tstate, _deref_maybe(func)
+        )
+
+    # _PyEval_GetCoroutineOriginTrackingDepth
+    @staticmethod
+    def get_coroutine_origin_tracking_depth() -> int:
+        return api_binding_base(
+            API_FUNCS["_PyEval_GetCoroutineOriginTrackingDepth"],
+        )
+
+    # _PyEval_SetSwitchInterval
+    @staticmethod
+    def set_switch_interval(microseconds: int) -> None:
+        return api_binding_base(API_FUNCS["_PyEval_SetSwitchInterval"], microseconds)
+
+    # _PyEval_GetSwitchInterval
+    @staticmethod
+    def get_switch_interval() -> int:
+        return api_binding_base(
+            API_FUNCS["_PyEval_GetSwitchInterval"],
+        )
+
+
+class _PyRun(_CallBase):
+    """Namespace containing API functions prefixed with `_PyRun_`"""
+
+    # _PyRun_SimpleFileObject
+    @staticmethod
+    def simple_file_object(fp: PyObjectLike, filename: int) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyRun_SimpleFileObject"], _deref_maybe(fp), filename
+        )
+
+
+class _PyTuple(_CallBase):
+    """Namespace containing API functions prefixed with `_PyTuple_`"""
+
+    # _PyTuple_DebugMallocStats
+    @staticmethod
+    def debug_malloc_stats() -> None:
+        return api_binding_base(
+            API_FUNCS["_PyTuple_DebugMallocStats"],
+        )
+
+
+class _PyAST(_CallBase):
+    """Namespace containing API functions prefixed with `_PyAST_`"""
+
+    # _PyAST_Compile
+    @staticmethod
+    def compile(mod: PyObjectLike, filename: int) -> StructPointer[CodeObject]:
+        return api_binding_base(
+            API_FUNCS["_PyAST_Compile"], _deref_maybe(mod), filename
+        )
+
+
+class _PyStructSequence(_CallBase):
+    """Namespace containing API functions prefixed with `_PyStructSequence_`"""
+
+    # _PyStructSequence_InitType
+    @staticmethod
+    def init_type(type: StructPointer[TypeObject], desc: int) -> int:
+        return api_binding_base(API_FUNCS["_PyStructSequence_InitType"], type, desc)
+
+
+class _PyType(_CallBase):
+    """Namespace containing API functions prefixed with `_PyType_`"""
+
+    # _PyType_CheckConsistency
+    @staticmethod
+    def check_consistency(type: StructPointer[TypeObject]) -> int:
+        return api_binding_base(API_FUNCS["_PyType_CheckConsistency"], type)
+
+
+class _PyDict(_CallBase):
+    """Namespace containing API functions prefixed with `_PyDict_`"""
+
+    # _PyDict_CheckConsistency
+    @staticmethod
+    def check_consistency(mp: PyObjectLike, check_content: int) -> int:
+        return api_binding_base(
+            API_FUNCS["_PyDict_CheckConsistency"], _deref_maybe(mp), check_content
+        )

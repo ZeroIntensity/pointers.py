@@ -13,22 +13,30 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <frameobject.h> // needed to get members of PyFrameObject
-#define GETOBJ PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
-#define INIT_HANDLER(sig, handle, msg) if (signal(sig, handle) == SIG_ERR) { \
-        PyErr_SetString(PyExc_ImportError, msg); \
-        return NULL; \
-    }
+#define GETOBJ() PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
+
+#ifdef _WIN32
+#include <malloc.h>
+#endif
+
+#if defined(__GNUC__)
+#define ALLOCA(size) alloca(size)
+#elif defined(_WIN32)
+#define ALLOCA(size) _alloca(size)
+#else
+#define ALLOCA(size) NULL; PyErr_SetString(PyExc_RuntimeError, "stack allocations are not supported on this system!"); return NULL;
+#endif
 
 static jmp_buf buf;
 
 static PyObject* add_ref(PyObject* self, PyObject* args) {
-    GETOBJ;
+    GETOBJ();
     Py_INCREF(obj);
     Py_RETURN_NONE;
 }
 
 static PyObject* remove_ref(PyObject* self, PyObject* args) {
-    GETOBJ;
+    GETOBJ();
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }
@@ -109,12 +117,36 @@ static PyObject* handle(PyObject* self, PyObject* args) {
     return result;
 }
 
+static PyObject* run_stack_callback(PyObject* self, PyObject* args) {
+    int size;
+    PyObject* tp;
+    PyObject* func;
+
+    if (!PyArg_ParseTuple(args, "iO!O", &size, &PyType_Type, &tp, &func)) return NULL;
+
+    void* ptr = ALLOCA(size);
+    PyObject* tp_args = PyTuple_New(2);
+    PyTuple_SetItem(tp_args, 0, PyLong_FromVoidPtr(ptr));
+    PyTuple_SetItem(tp_args, 1, PyLong_FromLong(size));
+    PyObject* obj = PyObject_Call(tp, tp_args, NULL);
+    if (!obj) return NULL;
+
+    PyObject* tup = PyTuple_New(1);
+    PyTuple_SetItem(tup, 0, obj);
+    PyObject* result = PyObject_Call(func, tup, NULL);
+    if (!result) return NULL;
+    PyObject_SetAttrString(obj, "freed", Py_NewRef(Py_True));
+
+    return Py_NewRef(result);
+}
+
 static PyMethodDef methods[] = {
     {"add_ref", add_ref, METH_VARARGS, "Increment the reference count on the target object."},
     {"remove_ref", remove_ref, METH_VARARGS, "Decrement the reference count on the target object."},
     {"force_set_attr", force_set_attr, METH_VARARGS, "Force setting an attribute on the target type."},
     {"set_ref", set_ref, METH_VARARGS, "Set the reference count on the target object."},
     {"handle", handle, METH_VARARGS, "Enable the SIGSEGV handler."},
+    {"run_stack_callback", run_stack_callback, METH_VARARGS, "."},
     {NULL, NULL, 0, NULL}
 };
 

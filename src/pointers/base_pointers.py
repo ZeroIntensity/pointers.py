@@ -4,10 +4,13 @@ import warnings
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from typing import Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
+from typing import (
+    Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
+)
+
+from typing_extensions import final
 
 from _pointers import add_ref, remove_ref
-from typing_extensions import final
 
 from ._utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
@@ -211,7 +214,6 @@ class BaseObjectPointer(
         """
         Args:
             address: Address of the underlying value.
-            typ: Type of the pointer.
             increment_ref: Should the reference count on the target object get incremented.
         """  # noqa
         self._address: Optional[int] = address

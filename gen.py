@@ -1,11 +1,15 @@
 # this file shouldnt be pep 8 checked
 from __future__ import annotations
 
+import asyncio
 import ctypes
 import os
 import re
 import sysconfig
+from contextlib import suppress
 
+import aiofiles  # type: ignore
+import aiohttp
 import requests
 from bs4 import BeautifulSoup, Tag
 
@@ -16,6 +20,7 @@ BASE_URL: str = "https://docs.python.org/3.11/c-api"
 C_FUNC = re.compile(
     r"^(((.+) )?(\w+(\**)*)) (\w+)\(((((.+ \w+(\[\])?,?)*(, ?\.\.\.)?))|void)\)+$"
 )
+COMMENT = re.compile(r"\/\*.*\*\/")
 
 
 def ct(data: str) -> str:
@@ -80,6 +85,12 @@ C_TYPES = {
     "PyCodeObject": "PyCodeObject",
     "PyCapsule_Destructor": VOID_P,
     "PyGILState": INT,
+    "PyMethodDef": "PyMethodDef",
+    "PyGetSetDef": "PyGetSetDef",
+    "struct PyMethodDef*": "ctypes.POINTER(PyMethodDef)",
+    "struct PyGetSetDef*": "ctypes.POINTER(PyGetSetDef)",
+    "FILE*": VOID_P,
+    "PySendResult": INT
 }
 
 CT_TYPES = {
@@ -168,20 +179,25 @@ def _get_type(ctype: str, *, add_pointer: bool = False) -> str | None:
     return None
 
 
-def _gen_str(
-    name: str,
+async def _gen_str(
+    name: str | None,
     signature: str,
     params: dict[str, list[str]],
     minver: str | None,
 ) -> str | None:
-    signature = signature.replace(" *", "* ").replace("* *", "** ")
+    signature = signature.replace(" *", "* ").replace("* *", "** ").replace("struct ", "")
 
     for i in {"#", "//", "typedef", "static", "/*"}:
         if signature.startswith(i):
             return None
     match = C_FUNC.match(signature)
 
+    if not name:
+        if match:
+            name = match.group(6)
+
     if match and (name not in params):
+        assert name
         params[name] = []
         group = match.group(1)
         ret = _get_type(group)
@@ -227,76 +243,75 @@ def _gen_str(
     return None  # to make mypy happy
 
 
-def _gen_ct_bindings() -> dict[str, list[str]]:
+async def _gen_ct_bindings() -> dict[str, list[str]]:
     params: dict[str, list[str]] = {}
 
     out: str = "\n\n"
-    resp = requests.get(
-        f"{BASE_URL}/stable.html#stable-application-binary-interface",
-    )
-    soup = BeautifulSoup(resp.text, features="html.parser")
-    ul = soup.find("ul", attrs={"class": "simple"})
-    assert ul
+    async with aiohttp.ClientSession() as s:
+        async with s.get(f"{BASE_URL}/stable.html#stable-application-binary-interface") as resp:
+            soup = BeautifulSoup(await resp.text(), features="html.parser")
+            ul = soup.find("ul", attrs={"class": "simple"})
+            assert ul
 
-    for tag in ul:
-        if not isinstance(tag, Tag):
-            continue
-
-        p = tag.find("p", recursive=True)
-        assert p
-        a = p.find("a")
-
-        if a:
-            assert type(a) is Tag
-            name: str = a.get_text().replace("()", "")
-            href = a.attrs["href"]
-            path = href[: href.find(".html")]
-
-            if path not in PAGES:
-                print("Loading page... ", path)
-                PAGES[path] = BeautifulSoup(
-                    requests.get(f"{BASE_URL}/{path}.html").text,
-                    features="html.parser",
-                )
-
-            page = PAGES[path]
-            signature: str = ""
-            doc = page.find(id=f"c.{name}")
-            assert doc, f"{page} {name}"
-
-            for tg in doc:
-                if isinstance(tg, str):
-                    signature += tg if tg != "\n" else ""
+            for tag in ul:
+                if not isinstance(tag, Tag):
                     continue
 
-                text: str = tg.get_text()
-                if text != "Â¶":
-                    signature += text
+                p = tag.find("p", recursive=True)
+                assert p
+                a = p.find("a")
 
-            assert type(doc) is Tag
-            parent = doc.parent
-            assert parent
+                if a:
+                    assert type(a) is Tag
+                    name: str = a.get_text().replace("()", "")
+                    href = a.attrs["href"]
+                    path = href[: href.find(".html")]
 
-            minver_soup = parent.find(
-                "span",
-                attrs={"class": "versionmodified added"},
-                recursive=True,
-            )
-            minver: str | None = None
+                    if path not in PAGES:
+                        print("Loading page... ", path)
+                        PAGES[path] = BeautifulSoup(
+                            requests.get(f"{BASE_URL}/{path}.html").text,
+                            features="html.parser",
+                        )
 
-            if minver_soup:
-                minver = minver_soup.get_text()[:-1].split(" ")[-1]
-                # this is super janky
+                    page = PAGES[path]
+                    signature: str = ""
+                    doc = page.find(id=f"c.{name}")
+                    assert doc, f"{page} {name}"
 
-            result = _gen_str(
-                name,
-                signature,
-                params,
-                minver,
-            )
+                    for tg in doc:
+                        if isinstance(tg, str):
+                            signature += tg if tg != "\n" else ""
+                            continue
 
-            if result:
-                out += result
+                        text: str = tg.get_text()
+                        if text != "Â¶":
+                            signature += text
+
+                    assert type(doc) is Tag
+                    parent = doc.parent
+                    assert parent
+
+                    minver_soup = parent.find(
+                        "span",
+                        attrs={"class": "versionmodified added"},
+                        recursive=True,
+                    )
+                    minver: str | None = None
+
+                    if minver_soup:
+                        minver = minver_soup.get_text()[:-1].split(" ")[-1]
+                        # this is super janky
+
+                    result = await _gen_str(
+                        name,
+                        signature,
+                        params,
+                        minver,
+                    )
+
+                    if result:
+                        out += result
 
     include = sysconfig.get_path("include")
 
@@ -307,31 +322,43 @@ def _gen_ct_bindings() -> dict[str, list[str]]:
             if os.path.isdir(path):
                 continue
 
-            with open(path) as f:
-                lines = f.read().split("\n")
+            async with aiofiles.open(path) as f:
+                print("Loading file... ", path)
 
-                for i in lines:
-                    i = i.replace(";", "")
+                lines = COMMENT.sub("", (await f.read()).replace("\n", "").replace("  ", "").replace("  ", "")).split(";")
 
-                    if i.startswith("PyAPI_FUNC"):
-                        idx = i.index(")")
-                        typ = i[10:idx]
-                        i = i[10:idx] + typ
-
-                    match = C_FUNC.match(i)
-
-                    if not match:
+                for raw_line in lines:
+                    if "PyAPI_FUNC" not in raw_line:
                         continue
 
-                    result = _gen_str(
-                        match.group(6),
-                        i,
+                    split = raw_line.split("PyAPI_FUNC")
+                    line = 'PyAPI_FUNC' + ''.join(split[1:])
+                    line = line.replace(";", "")
+
+                    idx = line.index(")")
+                    line = line[11:idx] + line[idx + 1:]
+
+                    patched_line = ""
+
+                    for index, char in enumerate(line):
+                        patched_line += char
+
+                        if char == ",":
+                            with suppress(IndexError):
+                                if line[index + 1] != " ":
+                                    patched_line += " "
+
+                    result = await _gen_str(
+                        None,
+                        patched_line.replace(" *", "* ").replace("* *", "** "),
                         params,
                         None,
                     )
 
                     if result:
                         out += result
+                    else:
+                        print("No result...", patched_line)
 
     _write_autogen("_pyapi.py", out)
     return params
@@ -371,8 +398,8 @@ def get_converter(data: str, typ: str) -> str:
     return data
 
 
-def main():
-    params = _gen_ct_bindings()
+async def main():
+    params = await _gen_ct_bindings()
     while True:
         yn = input("regen api_bindings.py (y/n)? ").lower()
 
@@ -405,6 +432,10 @@ def main():
 
         name_split = k.split("_")
         section = name_split[0]
+
+        if not section:
+            name_split.pop(0)
+            section = "_" + name_split[0]
 
         if section not in funcs:
             funcs[section] = []
@@ -459,4 +490,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

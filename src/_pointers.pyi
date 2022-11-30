@@ -1,16 +1,15 @@
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, Type, TypeVar
 
 _T = TypeVar("_T")
-
+_A = TypeVar("_A")
 
 def add_ref(obj: Any) -> None: ...
 def remove_ref(obj: Any) -> None: ...
 def force_set_attr(typ: type[Any], key: str, value: Any) -> None: ...
 def set_ref(obj: Any, count: int) -> None: ...
-
-
 def handle(
     func: Callable[..., _T],
     args: tuple[Any, ...] | None = None,
     kwargs: dict[str, Any] | None = None,
 ) -> _T: ...
+def run_stack_callback(size: int, ptr: Type[_T], func: Callable[[_T], _A]) -> _A: ...

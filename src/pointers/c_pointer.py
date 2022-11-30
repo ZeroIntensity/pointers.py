@@ -1,10 +1,14 @@
 import ctypes
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Iterator, List, Optional, Type, TypeVar
+from typing import (
+    TYPE_CHECKING, Any, Callable, Iterator, List, Optional, Type, TypeVar
+)
+
+from typing_extensions import ParamSpec
 
 from _pointers import add_ref, remove_ref
 
-from ._utils import get_mapped, map_type
+from ._utils import deref, get_mapped, map_type
 from .base_pointers import BaseCPointer, IterDereferencable, Typed
 from .util import handle
 
@@ -13,6 +17,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 A = TypeVar("A", bound="Struct")
+P = ParamSpec("P")
 
 __all__ = (
     "TypedCPointer",
@@ -22,6 +27,7 @@ __all__ = (
     "to_voidp",
     "array",
     "to_struct_ptr",
+    "to_func_ptr",
 )
 
 
@@ -67,7 +73,53 @@ class _CDeref(Typed[T], IterDereferencable[T], ABC):
                 remove_ref(~self)
 
 
-class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
+class FunctionPointer(BaseCPointer[Callable[P, T]]):  # type: ignore
+    def __init__(self, address: int) -> None:
+        cb = deref(address)
+        add_ref(cb)
+        self._decref = True
+        self._address = address
+        mapped: "ctypes._FuncPointer" = get_mapped(cb)  # type: ignore
+
+        @ctypes.CFUNCTYPE(mapped._restype_, *mapped._argtypes_)  # type: ignore
+        def transport(*args, **kwargs):
+            cb(*args, **kwargs)
+
+        add_ref(transport)
+        self._transport = transport
+        self._size = ctypes.sizeof(transport)
+
+    @handle
+    def _cleanup(self) -> None:
+        if self.address:
+            remove_ref(~self)
+        remove_ref(self._transport)
+
+    @property
+    def _as_parameter_(self) -> "ctypes._CData":
+        return self._transport
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @property
+    def type(self) -> Type[Callable[P, T]]:
+        return type(~self)
+
+    @handle
+    def dereference(self) -> Callable[P, T]:
+        return deref(self.ensure())
+
+    @handle  # type: ignore
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
+        return (~self)(*args, **kwargs)
+
+    def __repr__(self) -> str:
+        return f"FunctionPointer(address={self.address})"
+
+
+class TypedCPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
     """Class representing a pointer with a known type."""
 
     def __init__(
@@ -83,12 +135,7 @@ class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
         super().__init__(address, size)
         self._type = data_type
         self._decref = decref
-        self._alt = alt
-
-    @property
-    def alt(self) -> bool:
-        """Whether to use the alternative method for dereferencing."""
-        return self._alt
+        self.alt = alt
 
     @property
     def size(self) -> int:
@@ -101,10 +148,6 @@ class _TypedPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
     @property
     def type(self):
         return self._type
-
-
-class TypedCPointer(_TypedPointer[T]):
-    """Class representing a pointer with a known type."""
 
     @property
     def address(self) -> Optional[int]:
@@ -127,7 +170,7 @@ class TypedCPointer(_TypedPointer[T]):
         """Dereference the pointer."""
         ctype = get_mapped(self.type)
 
-        if (ctype is ctypes.c_char_p) and (self._alt):
+        if (ctype is ctypes.c_char_p) and (self.alt):
             res = ctypes.c_char_p(self.ensure()).value
             return res  # type: ignore
 
@@ -252,3 +295,7 @@ def array(*seq: T) -> CArrayPointer[T]:
         length,
         f_type,  # type: ignore
     )
+
+
+def to_func_ptr(fn: Callable[P, T]) -> FunctionPointer[P, T]:
+    return FunctionPointer(id(fn))  # type: ignore
