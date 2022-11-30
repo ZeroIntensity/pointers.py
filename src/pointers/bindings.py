@@ -14,7 +14,7 @@ from ._cstd import c_free as _free
 from ._cstd import c_malloc as _malloc
 from ._cstd import c_raise as ct_raise
 from ._cstd import c_realloc as _realloc
-from ._cstd import dll
+from ._cstd import dll, mdll
 from ._utils import get_mapped, get_py
 from .base_pointers import BaseCPointer, BasePointer
 from .c_pointer import TypedCPointer, VoidPointer
@@ -505,15 +505,15 @@ def setlocale(category: int, locale: StringLike) -> str:
 
 
 def frexp(x: float, exponent: TypedPtr[int]) -> int:
-    return binding_base(dll.frexp, x, exponent)
+    return binding_base(mdll.frexp, x, exponent)
 
 
 def ldexp(x: float, exponent: int) -> int:
-    return binding_base(dll.ldexp, x, exponent)
+    return binding_base(mdll.ldexp, x, exponent)
 
 
 def modf(x: float, integer: TypedPtr[float]) -> int:
-    return binding_base(dll.modf, x, integer)
+    return binding_base(mdll.modf, x, integer)
 
 
 def fclose(stream: PointerLike) -> int:
