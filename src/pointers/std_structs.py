@@ -28,6 +28,7 @@ __all__ = (
     "InterpreterState",
     "CodeObject",
     "MethodDef",
+    "GetSetDef",
     "STRUCT_MAP",
 )
 

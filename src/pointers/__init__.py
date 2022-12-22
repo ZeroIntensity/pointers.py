@@ -33,5 +33,5 @@ from .std_structs import DivT, Lconv, LDivT, Tm
 from .structure import Struct, StructPointer
 from .util import NULL, Nullable, handle, raw_type, struct_cast
 
-__version__ = "2.2.0"
+__version__ = "2.5.0"
 __license__ = "MIT"

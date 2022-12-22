@@ -131,4132 +131,1396 @@ Py_UCS4 = ctypes.c_uint32
 
 
 # int PyAIter_Check(PyObject* o)
-_register(
-    "PyAIter_Check",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('PyAIter_Check', ctypes.c_int, (ctypes.py_object,), minver="3.10",)
 # int PyArg_Parse(PyObject* args, const char* format, ...)
-_register("PyArg_Parse", ctypes.c_int)
+_register('PyArg_Parse', ctypes.c_int)
 # int PyArg_ParseTuple(PyObject* args, const char* format, ...)
-_register("PyArg_ParseTuple", ctypes.c_int)
+_register('PyArg_ParseTuple', ctypes.c_int)
 # int PyArg_ParseTupleAndKeywords(PyObject* args, PyObject* kw, const char* format, char* keywords[], ...)
-_register("PyArg_ParseTupleAndKeywords", ctypes.c_int)
+_register('PyArg_ParseTupleAndKeywords', ctypes.c_int)
 # int PyArg_UnpackTuple(PyObject* args, const char* name, Py_ssize_t min, Py_ssize_t max, ...)
-_register("PyArg_UnpackTuple", ctypes.c_int)
+_register('PyArg_UnpackTuple', ctypes.c_int)
 # int PyArg_VaParse(PyObject* args, const char* format, va_list vargs)
-_register(
-    "PyArg_VaParse",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyArg_VaParse', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.c_void_p,))
 # int PyArg_VaParseTupleAndKeywords(PyObject* args, PyObject* kw, const char* format, char* keywords[], va_list vargs)
-_register(
-    "PyArg_VaParseTupleAndKeywords",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.c_void_p,
-    ),
-)
+_register('PyArg_VaParseTupleAndKeywords', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.c_char_p,ctypes.POINTER(ctypes.c_char_p),ctypes.c_void_p,))
 # PyObject* PyBool_FromLong(long v)
-_register("PyBool_FromLong", ctypes.py_object, (ctypes.c_long,))
+_register('PyBool_FromLong', ctypes.py_object, (ctypes.c_long,))
 # void PyBuffer_FillContiguousStrides(int ndims, Py_ssize_t* shape, Py_ssize_t* strides, int itemsize, char order)
-_register(
-    "PyBuffer_FillContiguousStrides",
-    None,
-    (
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.c_int,
-        ctypes.c_char,
-    ),
-)
+_register('PyBuffer_FillContiguousStrides', None, (ctypes.c_int,ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),ctypes.c_int,ctypes.c_char,))
 # int PyBuffer_FillInfo(Py_buffer* view, PyObject* exporter, void* buf, Py_ssize_t len, int readonly, int flags)
-_register(
-    "PyBuffer_FillInfo",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(Py_buffer),
-        ctypes.py_object,
-        ctypes.c_void_p,
-        ctypes.c_ssize_t,
-        ctypes.c_int,
-        ctypes.c_int,
-    ),
-)
+_register('PyBuffer_FillInfo', ctypes.c_int, (ctypes.POINTER(Py_buffer),ctypes.py_object,ctypes.c_void_p,ctypes.c_ssize_t,ctypes.c_int,ctypes.c_int,))
 # int PyBuffer_FromContiguous(const Py_buffer* view, const void* buf, Py_ssize_t len, char fort)
-_register(
-    "PyBuffer_FromContiguous",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(Py_buffer),
-        ctypes.c_void_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char,
-    ),
-)
+_register('PyBuffer_FromContiguous', ctypes.c_int, (ctypes.POINTER(Py_buffer),ctypes.c_void_p,ctypes.c_ssize_t,ctypes.c_char,))
 # void* PyBuffer_GetPointer(const Py_buffer* view, const Py_ssize_t* indices)
-_register(
-    "PyBuffer_GetPointer",
-    ctypes.c_void_p,
-    (
-        ctypes.POINTER(Py_buffer),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyBuffer_GetPointer', ctypes.c_void_p, (ctypes.POINTER(Py_buffer),ctypes.POINTER(ctypes.c_ssize_t),))
 # int PyBuffer_IsContiguous(const Py_buffer* view, char order)
-_register(
-    "PyBuffer_IsContiguous",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(Py_buffer),
-        ctypes.c_char,
-    ),
-)
+_register('PyBuffer_IsContiguous', ctypes.c_int, (ctypes.POINTER(Py_buffer),ctypes.c_char,))
 # void PyBuffer_Release(Py_buffer* view)
-_register("PyBuffer_Release", None, (ctypes.POINTER(Py_buffer),))
+_register('PyBuffer_Release', None, (ctypes.POINTER(Py_buffer),))
 # Py_ssize_t PyBuffer_SizeFromFormat(const char* format)
-_register(
-    "PyBuffer_SizeFromFormat",
-    ctypes.c_ssize_t,
-    (ctypes.c_char_p,),
-    minver="3.9",
-)
+_register('PyBuffer_SizeFromFormat', ctypes.c_ssize_t, (ctypes.c_char_p,), minver="3.9",)
 # int PyBuffer_ToContiguous(void* buf, const Py_buffer* src, Py_ssize_t len, char order)
-_register(
-    "PyBuffer_ToContiguous",
-    ctypes.c_int,
-    (
-        ctypes.c_void_p,
-        ctypes.POINTER(Py_buffer),
-        ctypes.c_ssize_t,
-        ctypes.c_char,
-    ),
-)
+_register('PyBuffer_ToContiguous', ctypes.c_int, (ctypes.c_void_p,ctypes.POINTER(Py_buffer),ctypes.c_ssize_t,ctypes.c_char,))
 # char* PyByteArray_AsString(PyObject* bytearray)
-_register("PyByteArray_AsString", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyByteArray_AsString', ctypes.c_char_p, (ctypes.py_object,))
 # PyObject* PyByteArray_Concat(PyObject* a, PyObject* b)
-_register(
-    "PyByteArray_Concat",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyByteArray_Concat', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyByteArray_FromObject(PyObject* o)
-_register("PyByteArray_FromObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyByteArray_FromObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyByteArray_FromStringAndSize(const char* string, Py_ssize_t len)
-_register(
-    "PyByteArray_FromStringAndSize",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyByteArray_FromStringAndSize', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,))
 # int PyByteArray_Resize(PyObject* bytearray, Py_ssize_t len)
-_register(
-    "PyByteArray_Resize",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyByteArray_Resize', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # Py_ssize_t PyByteArray_Size(PyObject* bytearray)
-_register("PyByteArray_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyByteArray_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # char* PyBytes_AsString(PyObject* o)
-_register("PyBytes_AsString", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyBytes_AsString', ctypes.c_char_p, (ctypes.py_object,))
 # int PyBytes_AsStringAndSize(PyObject* obj, char** buffer, Py_ssize_t* length)
-_register(
-    "PyBytes_AsStringAndSize",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyBytes_AsStringAndSize', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_char_p),ctypes.POINTER(ctypes.c_ssize_t),))
 # void PyBytes_Concat(PyObject** bytes, PyObject* newpart)
-_register(
-    "PyBytes_Concat",
-    None,
-    (
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.py_object,
-    ),
-)
+_register('PyBytes_Concat', None, (ctypes.POINTER(ctypes.py_object),ctypes.py_object,))
 # void PyBytes_ConcatAndDel(PyObject** bytes, PyObject* newpart)
-_register(
-    "PyBytes_ConcatAndDel",
-    None,
-    (
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.py_object,
-    ),
-)
+_register('PyBytes_ConcatAndDel', None, (ctypes.POINTER(ctypes.py_object),ctypes.py_object,))
 # PyObject* PyBytes_FromFormat(const char* format, ...)
-_register("PyBytes_FromFormat", ctypes.py_object)
+_register('PyBytes_FromFormat', ctypes.py_object)
 # PyObject* PyBytes_FromFormatV(const char* format, va_list vargs)
-_register(
-    "PyBytes_FromFormatV",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyBytes_FromFormatV', ctypes.py_object, (ctypes.c_char_p,ctypes.c_void_p,))
 # PyObject* PyBytes_FromObject(PyObject* o)
-_register("PyBytes_FromObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyBytes_FromObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyBytes_FromString(const char* v)
-_register("PyBytes_FromString", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyBytes_FromString', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyBytes_FromStringAndSize(const char* v, Py_ssize_t len)
-_register(
-    "PyBytes_FromStringAndSize",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyBytes_FromStringAndSize', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,))
 # Py_ssize_t PyBytes_Size(PyObject* o)
-_register("PyBytes_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyBytes_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PyCallIter_New(PyObject* callable, PyObject* sentinel)
-_register(
-    "PyCallIter_New",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyCallIter_New', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # int PyCallable_Check(PyObject* o)
-_register("PyCallable_Check", ctypes.c_int, (ctypes.py_object,))
+_register('PyCallable_Check', ctypes.c_int, (ctypes.py_object,))
 # void* PyCapsule_GetContext(PyObject* capsule)
-_register("PyCapsule_GetContext", ctypes.c_void_p, (ctypes.py_object,))
+_register('PyCapsule_GetContext', ctypes.c_void_p, (ctypes.py_object,))
 # PyCapsule_Destructor PyCapsule_GetDestructor(PyObject* capsule)
-_register("PyCapsule_GetDestructor", ctypes.c_void_p, (ctypes.py_object,))
+_register('PyCapsule_GetDestructor', ctypes.c_void_p, (ctypes.py_object,))
 # const char* PyCapsule_GetName(PyObject* capsule)
-_register("PyCapsule_GetName", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyCapsule_GetName', ctypes.c_char_p, (ctypes.py_object,))
 # void* PyCapsule_GetPointer(PyObject* capsule, const char* name)
-_register(
-    "PyCapsule_GetPointer",
-    ctypes.c_void_p,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCapsule_GetPointer', ctypes.c_void_p, (ctypes.py_object,ctypes.c_char_p,))
 # void* PyCapsule_Import(const char* name, int no_block)
-_register(
-    "PyCapsule_Import",
-    ctypes.c_void_p,
-    (
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
-)
+_register('PyCapsule_Import', ctypes.c_void_p, (ctypes.c_char_p,ctypes.c_int,))
 # int PyCapsule_IsValid(PyObject* capsule, const char* name)
-_register(
-    "PyCapsule_IsValid",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCapsule_IsValid', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyCapsule_New(void* pointer, const char* name, PyCapsule_Destructor destructor)
-_register(
-    "PyCapsule_New",
-    ctypes.py_object,
-    (
-        ctypes.c_void_p,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyCapsule_New', ctypes.py_object, (ctypes.c_void_p,ctypes.c_char_p,ctypes.c_void_p,))
 # int PyCapsule_SetContext(PyObject* capsule, void* context)
-_register(
-    "PyCapsule_SetContext",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyCapsule_SetContext', ctypes.c_int, (ctypes.py_object,ctypes.c_void_p,))
 # int PyCapsule_SetDestructor(PyObject* capsule, PyCapsule_Destructor destructor)
-_register(
-    "PyCapsule_SetDestructor",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyCapsule_SetDestructor', ctypes.c_int, (ctypes.py_object,ctypes.c_void_p,))
 # int PyCapsule_SetName(PyObject* capsule, const char* name)
-_register(
-    "PyCapsule_SetName",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCapsule_SetName', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # int PyCapsule_SetPointer(PyObject* capsule, void* pointer)
-_register(
-    "PyCapsule_SetPointer",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyCapsule_SetPointer', ctypes.c_int, (ctypes.py_object,ctypes.c_void_p,))
 # PyObject* PyCodec_BackslashReplaceErrors(PyObject* exc)
-_register("PyCodec_BackslashReplaceErrors", ctypes.py_object, (ctypes.py_object,))
+_register('PyCodec_BackslashReplaceErrors', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyCodec_Decode(PyObject* object, const char* encoding, const char* errors)
-_register(
-    "PyCodec_Decode",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCodec_Decode', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,))
 # PyObject* PyCodec_Decoder(const char* encoding)
-_register("PyCodec_Decoder", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyCodec_Decoder', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyCodec_Encode(PyObject* object, const char* encoding, const char* errors)
-_register(
-    "PyCodec_Encode",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCodec_Encode', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,))
 # PyObject* PyCodec_Encoder(const char* encoding)
-_register("PyCodec_Encoder", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyCodec_Encoder', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyCodec_IgnoreErrors(PyObject* exc)
-_register("PyCodec_IgnoreErrors", ctypes.py_object, (ctypes.py_object,))
+_register('PyCodec_IgnoreErrors', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyCodec_IncrementalDecoder(const char* encoding, const char* errors)
-_register(
-    "PyCodec_IncrementalDecoder",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCodec_IncrementalDecoder', ctypes.py_object, (ctypes.c_char_p,ctypes.c_char_p,))
 # PyObject* PyCodec_IncrementalEncoder(const char* encoding, const char* errors)
-_register(
-    "PyCodec_IncrementalEncoder",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCodec_IncrementalEncoder', ctypes.py_object, (ctypes.c_char_p,ctypes.c_char_p,))
 # int PyCodec_KnownEncoding(const char* encoding)
-_register("PyCodec_KnownEncoding", ctypes.c_int, (ctypes.c_char_p,))
+_register('PyCodec_KnownEncoding', ctypes.c_int, (ctypes.c_char_p,))
 # PyObject* PyCodec_LookupError(const char* name)
-_register("PyCodec_LookupError", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyCodec_LookupError', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyCodec_NameReplaceErrors(PyObject* exc)
-_register(
-    "PyCodec_NameReplaceErrors",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.5",
-)
+_register('PyCodec_NameReplaceErrors', ctypes.py_object, (ctypes.py_object,), minver="3.5",)
 # int PyCodec_Register(PyObject* search_function)
-_register("PyCodec_Register", ctypes.c_int, (ctypes.py_object,))
+_register('PyCodec_Register', ctypes.c_int, (ctypes.py_object,))
 # int PyCodec_RegisterError(const char* name, PyObject* error)
-_register(
-    "PyCodec_RegisterError",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyCodec_RegisterError', ctypes.c_int, (ctypes.c_char_p,ctypes.py_object,))
 # PyObject* PyCodec_ReplaceErrors(PyObject* exc)
-_register("PyCodec_ReplaceErrors", ctypes.py_object, (ctypes.py_object,))
+_register('PyCodec_ReplaceErrors', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyCodec_StreamReader(const char* encoding, PyObject* stream, const char* errors)
-_register(
-    "PyCodec_StreamReader",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCodec_StreamReader', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyCodec_StreamWriter(const char* encoding, PyObject* stream, const char* errors)
-_register(
-    "PyCodec_StreamWriter",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCodec_StreamWriter', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyCodec_StrictErrors(PyObject* exc)
-_register("PyCodec_StrictErrors", ctypes.py_object, (ctypes.py_object,))
+_register('PyCodec_StrictErrors', ctypes.py_object, (ctypes.py_object,))
 # int PyCodec_Unregister(PyObject* search_function)
-_register(
-    "PyCodec_Unregister",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('PyCodec_Unregister', ctypes.c_int, (ctypes.py_object,), minver="3.10",)
 # PyObject* PyCodec_XMLCharRefReplaceErrors(PyObject* exc)
-_register("PyCodec_XMLCharRefReplaceErrors", ctypes.py_object, (ctypes.py_object,))
+_register('PyCodec_XMLCharRefReplaceErrors', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyComplex_FromDoubles(double real, double imag)
-_register(
-    "PyComplex_FromDoubles",
-    ctypes.py_object,
-    (
-        ctypes.c_double,
-        ctypes.c_double,
-    ),
-)
+_register('PyComplex_FromDoubles', ctypes.py_object, (ctypes.c_double,ctypes.c_double,))
 # double PyComplex_ImagAsDouble(PyObject* op)
-_register("PyComplex_ImagAsDouble", ctypes.c_double, (ctypes.py_object,))
+_register('PyComplex_ImagAsDouble', ctypes.c_double, (ctypes.py_object,))
 # double PyComplex_RealAsDouble(PyObject* op)
-_register("PyComplex_RealAsDouble", ctypes.c_double, (ctypes.py_object,))
+_register('PyComplex_RealAsDouble', ctypes.c_double, (ctypes.py_object,))
 # PyObject* PyDescr_NewClassMethod(PyTypeObject* type, PyMethodDef* method)
-_register(
-    "PyDescr_NewClassMethod",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.POINTER(PyMethodDef),
-    ),
-)
-# PyObject* PyDescr_NewGetSet(PyTypeObject* type, struct PyGetSetDef* getset)
-_register("PyDescr_NewGetSet", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
-# PyObject* PyDescr_NewMember(PyTypeObject* type, struct PyMemberDef* meth)
-_register("PyDescr_NewMember", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
-# PyObject* PyDescr_NewMethod(PyTypeObject* type, struct PyMethodDef* meth)
-_register(
-    "PyDescr_NewMethod",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.POINTER(PyMethodDef),
-    ),
-)
+_register('PyDescr_NewClassMethod', ctypes.py_object, (ctypes.POINTER(PyTypeObject),ctypes.POINTER(PyMethodDef),))
+# PyObject* PyDescr_NewGetSet(PyTypeObject* type, PyGetSetDef* getset)
+_register('PyDescr_NewGetSet', ctypes.py_object, (ctypes.POINTER(PyTypeObject),ctypes.POINTER(PyGetSetDef),))
+# PyObject* PyDescr_NewMember(PyTypeObject* type, PyMemberDef* meth)
+_register('PyDescr_NewMember', ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
+# PyObject* PyDescr_NewMethod(PyTypeObject* type, PyMethodDef* meth)
+_register('PyDescr_NewMethod', ctypes.py_object, (ctypes.POINTER(PyTypeObject),ctypes.POINTER(PyMethodDef),))
 # PyObject* PyDictProxy_New(PyObject* mapping)
-_register("PyDictProxy_New", ctypes.py_object, (ctypes.py_object,))
+_register('PyDictProxy_New', ctypes.py_object, (ctypes.py_object,))
 # void PyDict_Clear(PyObject* p)
-_register("PyDict_Clear", None, (ctypes.py_object,))
+_register('PyDict_Clear', None, (ctypes.py_object,))
 # int PyDict_Contains(PyObject* p, PyObject* key)
-_register(
-    "PyDict_Contains",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_Contains', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyDict_Copy(PyObject* p)
-_register("PyDict_Copy", ctypes.py_object, (ctypes.py_object,))
+_register('PyDict_Copy', ctypes.py_object, (ctypes.py_object,))
 # int PyDict_DelItem(PyObject* p, PyObject* key)
-_register(
-    "PyDict_DelItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_DelItem', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PyDict_DelItemString(PyObject* p, const char* key)
-_register(
-    "PyDict_DelItemString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyDict_DelItemString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyDict_GetItem(PyObject* p, PyObject* key)
-_register(
-    "PyDict_GetItem",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_GetItem', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyDict_GetItemString(PyObject* p, const char* key)
-_register(
-    "PyDict_GetItemString",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyDict_GetItemString', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyDict_GetItemWithError(PyObject* p, PyObject* key)
-_register(
-    "PyDict_GetItemWithError",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_GetItemWithError', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyDict_Items(PyObject* p)
-_register("PyDict_Items", ctypes.py_object, (ctypes.py_object,))
+_register('PyDict_Items', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyDict_Keys(PyObject* p)
-_register("PyDict_Keys", ctypes.py_object, (ctypes.py_object,))
+_register('PyDict_Keys', ctypes.py_object, (ctypes.py_object,))
 # int PyDict_Merge(PyObject* a, PyObject* b, int override)
-_register(
-    "PyDict_Merge",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyDict_Merge', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # int PyDict_MergeFromSeq2(PyObject* a, PyObject* seq2, int override)
-_register(
-    "PyDict_MergeFromSeq2",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyDict_MergeFromSeq2', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # PyObject* PyDict_New()
-_register("PyDict_New", ctypes.py_object, ())
+_register('PyDict_New', ctypes.py_object, ())
 # int PyDict_Next(PyObject* p, Py_ssize_t* ppos, PyObject** pkey, PyObject** pvalue)
-_register(
-    "PyDict_Next",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-    ),
-)
+_register('PyDict_Next', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),))
 # int PyDict_SetItem(PyObject* p, PyObject* key, PyObject* val)
-_register(
-    "PyDict_SetItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_SetItem', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # int PyDict_SetItemString(PyObject* p, const char* key, PyObject* val)
-_register(
-    "PyDict_SetItemString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_SetItemString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.py_object,))
 # Py_ssize_t PyDict_Size(PyObject* p)
-_register("PyDict_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyDict_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # int PyDict_Update(PyObject* a, PyObject* b)
-_register(
-    "PyDict_Update",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyDict_Update', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyDict_Values(PyObject* p)
-_register("PyDict_Values", ctypes.py_object, (ctypes.py_object,))
+_register('PyDict_Values', ctypes.py_object, (ctypes.py_object,))
 # int PyErr_BadArgument()
-_register("PyErr_BadArgument", ctypes.c_int, ())
+_register('PyErr_BadArgument', ctypes.c_int, ())
 # void PyErr_BadInternalCall()
-_register("PyErr_BadInternalCall", None, ())
+_register('PyErr_BadInternalCall', None, ())
 # int PyErr_CheckSignals()
-_register("PyErr_CheckSignals", ctypes.c_int, ())
+_register('PyErr_CheckSignals', ctypes.c_int, ())
 # void PyErr_Clear()
-_register("PyErr_Clear", None, ())
+_register('PyErr_Clear', None, ())
 # int PyErr_ExceptionMatches(PyObject* exc)
-_register("PyErr_ExceptionMatches", ctypes.c_int, (ctypes.py_object,))
+_register('PyErr_ExceptionMatches', ctypes.c_int, (ctypes.py_object,))
 # void PyErr_Fetch(PyObject** ptype, PyObject** pvalue, PyObject** ptraceback)
-_register(
-    "PyErr_Fetch",
-    None,
-    (
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-    ),
-)
+_register('PyErr_Fetch', None, (ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),))
 # PyObject* PyErr_Format(PyObject* exception, const char* format, ...)
-_register("PyErr_Format", ctypes.py_object)
+_register('PyErr_Format', ctypes.py_object)
 # PyObject* PyErr_FormatV(PyObject* exception, const char* format, va_list vargs)
-_register(
-    "PyErr_FormatV",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-    minver="3.5",
-)
+_register('PyErr_FormatV', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,ctypes.c_void_p,), minver="3.5",)
 # void PyErr_GetExcInfo(PyObject** ptype, PyObject** pvalue, PyObject** ptraceback)
-_register(
-    "PyErr_GetExcInfo",
-    None,
-    (
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-    ),
-    minver="3.3",
-)
+_register('PyErr_GetExcInfo', None, (ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),), minver="3.3",)
 # PyObject* PyErr_GetHandledException(void)
-_register(
-    "PyErr_GetHandledException",
-    ctypes.py_object,
-    (),
-    minver="3.11",
-)
+_register('PyErr_GetHandledException', ctypes.py_object, (), minver="3.11",)
 # int PyErr_GivenExceptionMatches(PyObject* given, PyObject* exc)
-_register(
-    "PyErr_GivenExceptionMatches",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_GivenExceptionMatches', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyErr_NewException(const char* name, PyObject* base, PyObject* dict)
-_register(
-    "PyErr_NewException",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_NewException', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyErr_NewExceptionWithDoc(const char* name, const char* doc, PyObject* base, PyObject* dict)
-_register(
-    "PyErr_NewExceptionWithDoc",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.2",
-)
+_register('PyErr_NewExceptionWithDoc', ctypes.py_object, (ctypes.c_char_p,ctypes.c_char_p,ctypes.py_object,ctypes.py_object,), minver="3.2",)
 # PyObject* PyErr_NoMemory()
-_register("PyErr_NoMemory", ctypes.py_object, ())
+_register('PyErr_NoMemory', ctypes.py_object, ())
 # void PyErr_NormalizeException(PyObject** exc, PyObject** val, PyObject** tb)
-_register(
-    "PyErr_NormalizeException",
-    None,
-    (
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-    ),
-)
+_register('PyErr_NormalizeException', None, (ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),))
 # PyObject* PyErr_Occurred()
-_register("PyErr_Occurred", ctypes.py_object, ())
+_register('PyErr_Occurred', ctypes.py_object, ())
 # void PyErr_Print()
-_register("PyErr_Print", None, ())
+_register('PyErr_Print', None, ())
 # void PyErr_PrintEx(int set_sys_last_vars)
-_register("PyErr_PrintEx", None, (ctypes.c_int,))
+_register('PyErr_PrintEx', None, (ctypes.c_int,))
 # int PyErr_ResourceWarning(PyObject* source, Py_ssize_t stack_level, const char* format, ...)
-_register(
-    "PyErr_ResourceWarning",
-    ctypes.c_int,
-    minver="3.6",
-)
+_register('PyErr_ResourceWarning', ctypes.c_int, minver="3.6",)
 # void PyErr_Restore(PyObject* type, PyObject* value, PyObject* traceback)
-_register(
-    "PyErr_Restore",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_Restore', None, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyErr_SetExcFromWindowsErr(PyObject* type, int ierr)
-_register(
-    "PyErr_SetExcFromWindowsErr",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyErr_SetExcFromWindowsErr', ctypes.py_object, (ctypes.py_object,ctypes.c_int,))
 # PyObject* PyErr_SetExcFromWindowsErrWithFilename(PyObject* type, int ierr, const char* filename)
-_register(
-    "PyErr_SetExcFromWindowsErrWithFilename",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyErr_SetExcFromWindowsErrWithFilename', ctypes.py_object, (ctypes.py_object,ctypes.c_int,ctypes.c_char_p,))
 # PyObject* PyErr_SetExcFromWindowsErrWithFilenameObject(PyObject* type, int ierr, PyObject* filename)
-_register(
-    "PyErr_SetExcFromWindowsErrWithFilenameObject",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_SetExcFromWindowsErrWithFilenameObject', ctypes.py_object, (ctypes.py_object,ctypes.c_int,ctypes.py_object,))
 # PyObject* PyErr_SetExcFromWindowsErrWithFilenameObjects(PyObject* type, int ierr, PyObject* filename, PyObject* filename2)
-_register(
-    "PyErr_SetExcFromWindowsErrWithFilenameObjects",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.4",
-)
+_register('PyErr_SetExcFromWindowsErrWithFilenameObjects', ctypes.py_object, (ctypes.py_object,ctypes.c_int,ctypes.py_object,ctypes.py_object,), minver="3.4",)
 # void PyErr_SetExcInfo(PyObject* type, PyObject* value, PyObject* traceback)
-_register(
-    "PyErr_SetExcInfo",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.3",
-)
+_register('PyErr_SetExcInfo', None, (ctypes.py_object,ctypes.py_object,ctypes.py_object,), minver="3.3",)
 # PyObject* PyErr_SetFromErrno(PyObject* type)
-_register("PyErr_SetFromErrno", ctypes.py_object, (ctypes.py_object,))
+_register('PyErr_SetFromErrno', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyErr_SetFromErrnoWithFilename(PyObject* type, const char* filename)
-_register(
-    "PyErr_SetFromErrnoWithFilename",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyErr_SetFromErrnoWithFilename', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyErr_SetFromErrnoWithFilenameObject(PyObject* type, PyObject* filenameObject)
-_register(
-    "PyErr_SetFromErrnoWithFilenameObject",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_SetFromErrnoWithFilenameObject', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyErr_SetFromErrnoWithFilenameObjects(PyObject* type, PyObject* filenameObject, PyObject* filenameObject2)
-_register(
-    "PyErr_SetFromErrnoWithFilenameObjects",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.4",
-)
+_register('PyErr_SetFromErrnoWithFilenameObjects', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,), minver="3.4",)
 # PyObject* PyErr_SetFromWindowsErr(int ierr)
-_register("PyErr_SetFromWindowsErr", ctypes.py_object, (ctypes.c_int,))
+_register('PyErr_SetFromWindowsErr', ctypes.py_object, (ctypes.c_int,))
 # PyObject* PyErr_SetFromWindowsErrWithFilename(int ierr, const char* filename)
-_register(
-    "PyErr_SetFromWindowsErrWithFilename",
-    ctypes.py_object,
-    (
-        ctypes.c_int,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyErr_SetFromWindowsErrWithFilename', ctypes.py_object, (ctypes.c_int,ctypes.c_char_p,))
 # void PyErr_SetHandledException(PyObject* exc)
-_register(
-    "PyErr_SetHandledException",
-    None,
-    (ctypes.py_object,),
-    minver="3.11",
-)
+_register('PyErr_SetHandledException', None, (ctypes.py_object,), minver="3.11",)
 # PyObject* PyErr_SetImportError(PyObject* msg, PyObject* name, PyObject* path)
-_register(
-    "PyErr_SetImportError",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.3",
-)
+_register('PyErr_SetImportError', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,), minver="3.3",)
 # PyObject* PyErr_SetImportErrorSubclass(PyObject* exception, PyObject* msg, PyObject* name, PyObject* path)
-_register(
-    "PyErr_SetImportErrorSubclass",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.6",
-)
+_register('PyErr_SetImportErrorSubclass', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.py_object,), minver="3.6",)
 # void PyErr_SetInterrupt()
-_register("PyErr_SetInterrupt", None, ())
+_register('PyErr_SetInterrupt', None, ())
 # int PyErr_SetInterruptEx(int signum)
-_register(
-    "PyErr_SetInterruptEx",
-    ctypes.c_int,
-    (ctypes.c_int,),
-    minver="3.10",
-)
+_register('PyErr_SetInterruptEx', ctypes.c_int, (ctypes.c_int,), minver="3.10",)
 # void PyErr_SetNone(PyObject* type)
-_register("PyErr_SetNone", None, (ctypes.py_object,))
+_register('PyErr_SetNone', None, (ctypes.py_object,))
 # void PyErr_SetObject(PyObject* type, PyObject* value)
-_register(
-    "PyErr_SetObject",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_SetObject', None, (ctypes.py_object,ctypes.py_object,))
 # void PyErr_SetString(PyObject* type, const char* message)
-_register(
-    "PyErr_SetString",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyErr_SetString', None, (ctypes.py_object,ctypes.c_char_p,))
 # void PyErr_SyntaxLocation(const char* filename, int lineno)
-_register(
-    "PyErr_SyntaxLocation",
-    None,
-    (
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
-)
+_register('PyErr_SyntaxLocation', None, (ctypes.c_char_p,ctypes.c_int,))
 # void PyErr_SyntaxLocationEx(const char* filename, int lineno, int col_offset)
-_register(
-    "PyErr_SyntaxLocationEx",
-    None,
-    (
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_int,
-    ),
-    minver="3.2",
-)
+_register('PyErr_SyntaxLocationEx', None, (ctypes.c_char_p,ctypes.c_int,ctypes.c_int,), minver="3.2",)
 # int PyErr_WarnEx(PyObject* category, const char* message, Py_ssize_t stack_level)
-_register(
-    "PyErr_WarnEx",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyErr_WarnEx', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.c_ssize_t,))
 # int PyErr_WarnExplicit(PyObject* category, const char* message, const char* filename, int lineno, const char* module, PyObject* registry)
-_register(
-    "PyErr_WarnExplicit",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyErr_WarnExplicit', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int,ctypes.c_char_p,ctypes.py_object,))
 # int PyErr_WarnFormat(PyObject* category, Py_ssize_t stack_level, const char* format, ...)
-_register(
-    "PyErr_WarnFormat",
-    ctypes.c_int,
-    minver="3.2",
-)
+_register('PyErr_WarnFormat', ctypes.c_int, minver="3.2",)
 # void PyErr_WriteUnraisable(PyObject* obj)
-_register("PyErr_WriteUnraisable", None, (ctypes.py_object,))
+_register('PyErr_WriteUnraisable', None, (ctypes.py_object,))
 # void PyEval_AcquireLock()
-_register("PyEval_AcquireLock", None, ())
+_register('PyEval_AcquireLock', None, ())
 # void PyEval_AcquireThread(PyThreadState* tstate)
-_register("PyEval_AcquireThread", None, (ctypes.POINTER(PyThreadState),))
+_register('PyEval_AcquireThread', None, (ctypes.POINTER(PyThreadState),))
 # PyObject* PyEval_EvalCode(PyObject* co, PyObject* globals, PyObject* locals)
-_register(
-    "PyEval_EvalCode",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyEval_EvalCode', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyEval_EvalCodeEx(PyObject* co, PyObject* globals, PyObject* locals, PyObject* const* args, int argcount, PyObject* const* kws, int kwcount, PyObject* const* defs, int defcount, PyObject* kwdefs, PyObject* closure)
-_register(
-    "PyEval_EvalCodeEx",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.c_int,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyEval_EvalCodeEx', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.POINTER(ctypes.py_object),ctypes.c_int,ctypes.POINTER(ctypes.py_object),ctypes.c_int,ctypes.POINTER(ctypes.py_object),ctypes.c_int,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyEval_EvalFrame(PyFrameObject* f)
-_register("PyEval_EvalFrame", ctypes.py_object, (ctypes.POINTER(PyFrameObject),))
+_register('PyEval_EvalFrame', ctypes.py_object, (ctypes.POINTER(PyFrameObject),))
 # PyObject* PyEval_EvalFrameEx(PyFrameObject* f, int throwflag)
-_register(
-    "PyEval_EvalFrameEx",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyFrameObject),
-        ctypes.c_int,
-    ),
-)
+_register('PyEval_EvalFrameEx', ctypes.py_object, (ctypes.POINTER(PyFrameObject),ctypes.c_int,))
 # PyObject* PyEval_GetBuiltins(void)
-_register("PyEval_GetBuiltins", ctypes.py_object, ())
+_register('PyEval_GetBuiltins', ctypes.py_object, ())
 # PyFrameObject* PyEval_GetFrame(void)
-_register("PyEval_GetFrame", ctypes.POINTER(PyFrameObject), ())
+_register('PyEval_GetFrame', ctypes.POINTER(PyFrameObject), ())
 # const char* PyEval_GetFuncDesc(PyObject* func)
-_register("PyEval_GetFuncDesc", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyEval_GetFuncDesc', ctypes.c_char_p, (ctypes.py_object,))
 # const char* PyEval_GetFuncName(PyObject* func)
-_register("PyEval_GetFuncName", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyEval_GetFuncName', ctypes.c_char_p, (ctypes.py_object,))
 # PyObject* PyEval_GetGlobals(void)
-_register("PyEval_GetGlobals", ctypes.py_object, ())
+_register('PyEval_GetGlobals', ctypes.py_object, ())
 # PyObject* PyEval_GetLocals(void)
-_register("PyEval_GetLocals", ctypes.py_object, ())
+_register('PyEval_GetLocals', ctypes.py_object, ())
 # void PyEval_InitThreads()
-_register("PyEval_InitThreads", None, ())
+_register('PyEval_InitThreads', None, ())
 # void PyEval_ReleaseLock()
-_register("PyEval_ReleaseLock", None, ())
+_register('PyEval_ReleaseLock', None, ())
 # void PyEval_ReleaseThread(PyThreadState* tstate)
-_register("PyEval_ReleaseThread", None, (ctypes.POINTER(PyThreadState),))
+_register('PyEval_ReleaseThread', None, (ctypes.POINTER(PyThreadState),))
 # void PyEval_RestoreThread(PyThreadState* tstate)
-_register("PyEval_RestoreThread", None, (ctypes.POINTER(PyThreadState),))
+_register('PyEval_RestoreThread', None, (ctypes.POINTER(PyThreadState),))
 # PyThreadState* PyEval_SaveThread()
-_register("PyEval_SaveThread", ctypes.POINTER(PyThreadState), ())
+_register('PyEval_SaveThread', ctypes.POINTER(PyThreadState), ())
 # int PyEval_ThreadsInitialized()
-_register("PyEval_ThreadsInitialized", ctypes.c_int, ())
+_register('PyEval_ThreadsInitialized', ctypes.c_int, ())
 # PyObject* PyException_GetCause(PyObject* ex)
-_register("PyException_GetCause", ctypes.py_object, (ctypes.py_object,))
+_register('PyException_GetCause', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyException_GetContext(PyObject* ex)
-_register("PyException_GetContext", ctypes.py_object, (ctypes.py_object,))
+_register('PyException_GetContext', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyException_GetTraceback(PyObject* ex)
-_register("PyException_GetTraceback", ctypes.py_object, (ctypes.py_object,))
+_register('PyException_GetTraceback', ctypes.py_object, (ctypes.py_object,))
 # void PyException_SetCause(PyObject* ex, PyObject* cause)
-_register(
-    "PyException_SetCause",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyException_SetCause', None, (ctypes.py_object,ctypes.py_object,))
 # void PyException_SetContext(PyObject* ex, PyObject* ctx)
-_register(
-    "PyException_SetContext",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyException_SetContext', None, (ctypes.py_object,ctypes.py_object,))
 # int PyException_SetTraceback(PyObject* ex, PyObject* tb)
-_register(
-    "PyException_SetTraceback",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyException_SetTraceback', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyFile_FromFd(int fd, const char* name, const char* mode, int buffering, const char* encoding, const char* errors, const char* newline, int closefd)
-_register(
-    "PyFile_FromFd",
-    ctypes.py_object,
-    (
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
-)
+_register('PyFile_FromFd', ctypes.py_object, (ctypes.c_int,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int,))
 # PyObject* PyFile_GetLine(PyObject* p, int n)
-_register(
-    "PyFile_GetLine",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyFile_GetLine', ctypes.py_object, (ctypes.py_object,ctypes.c_int,))
 # int PyFile_WriteObject(PyObject* obj, PyObject* p, int flags)
-_register(
-    "PyFile_WriteObject",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyFile_WriteObject', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # int PyFile_WriteString(const char* s, PyObject* p)
-_register(
-    "PyFile_WriteString",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyFile_WriteString', ctypes.c_int, (ctypes.c_char_p,ctypes.py_object,))
 # double PyFloat_AsDouble(PyObject* pyfloat)
-_register("PyFloat_AsDouble", ctypes.c_double, (ctypes.py_object,))
+_register('PyFloat_AsDouble', ctypes.c_double, (ctypes.py_object,))
 # PyObject* PyFloat_FromDouble(double v)
-_register("PyFloat_FromDouble", ctypes.py_object, (ctypes.c_double,))
+_register('PyFloat_FromDouble', ctypes.py_object, (ctypes.c_double,))
 # PyObject* PyFloat_FromString(PyObject* str)
-_register("PyFloat_FromString", ctypes.py_object, (ctypes.py_object,))
+_register('PyFloat_FromString', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyFloat_GetInfo(void)
-_register("PyFloat_GetInfo", ctypes.py_object, ())
+_register('PyFloat_GetInfo', ctypes.py_object, ())
 # double PyFloat_GetMax()
-_register("PyFloat_GetMax", ctypes.c_double, ())
+_register('PyFloat_GetMax', ctypes.c_double, ())
 # double PyFloat_GetMin()
-_register("PyFloat_GetMin", ctypes.c_double, ())
+_register('PyFloat_GetMin', ctypes.c_double, ())
 # PyCodeObject* PyFrame_GetCode(PyFrameObject* frame)
-_register(
-    "PyFrame_GetCode",
-    ctypes.POINTER(PyCodeObject),
-    (ctypes.POINTER(PyFrameObject),),
-    minver="3.9",
-)
+_register('PyFrame_GetCode', ctypes.POINTER(PyCodeObject), (ctypes.POINTER(PyFrameObject),), minver="3.9",)
 # int PyFrame_GetLineNumber(PyFrameObject* frame)
-_register("PyFrame_GetLineNumber", ctypes.c_int, (ctypes.POINTER(PyFrameObject),))
+_register('PyFrame_GetLineNumber', ctypes.c_int, (ctypes.POINTER(PyFrameObject),))
 # PyObject* PyFrozenSet_New(PyObject* iterable)
-_register("PyFrozenSet_New", ctypes.py_object, (ctypes.py_object,))
+_register('PyFrozenSet_New', ctypes.py_object, (ctypes.py_object,))
 # Py_ssize_t PyGC_Collect(void)
-_register("PyGC_Collect", ctypes.c_ssize_t, ())
+_register('PyGC_Collect', ctypes.c_ssize_t, ())
 # int PyGC_Disable(void)
-_register(
-    "PyGC_Disable",
-    ctypes.c_int,
-    (),
-    minver="3.10",
-)
+_register('PyGC_Disable', ctypes.c_int, (), minver="3.10",)
 # int PyGC_Enable(void)
-_register(
-    "PyGC_Enable",
-    ctypes.c_int,
-    (),
-    minver="3.10",
-)
+_register('PyGC_Enable', ctypes.c_int, (), minver="3.10",)
 # int PyGC_IsEnabled(void)
-_register(
-    "PyGC_IsEnabled",
-    ctypes.c_int,
-    (),
-    minver="3.10",
-)
+_register('PyGC_IsEnabled', ctypes.c_int, (), minver="3.10",)
 # PyGILState_STATE PyGILState_Ensure()
-_register("PyGILState_Ensure", ctypes.c_int, ())
+_register('PyGILState_Ensure', ctypes.c_int, ())
 # PyThreadState* PyGILState_GetThisThreadState()
-_register("PyGILState_GetThisThreadState", ctypes.POINTER(PyThreadState), ())
+_register('PyGILState_GetThisThreadState', ctypes.POINTER(PyThreadState), ())
 # PyObject* PyImport_AddModule(const char* name)
-_register("PyImport_AddModule", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyImport_AddModule', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyImport_AddModuleObject(PyObject* name)
-_register(
-    "PyImport_AddModuleObject",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.3",
-)
+_register('PyImport_AddModuleObject', ctypes.py_object, (ctypes.py_object,), minver="3.3",)
 # PyObject* PyImport_ExecCodeModule(const char* name, PyObject* co)
-_register(
-    "PyImport_ExecCodeModule",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyImport_ExecCodeModule', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,))
 # PyObject* PyImport_ExecCodeModuleEx(const char* name, PyObject* co, const char* pathname)
-_register(
-    "PyImport_ExecCodeModuleEx",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyImport_ExecCodeModuleEx', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyImport_ExecCodeModuleObject(PyObject* name, PyObject* co, PyObject* pathname, PyObject* cpathname)
-_register(
-    "PyImport_ExecCodeModuleObject",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.3",
-)
+_register('PyImport_ExecCodeModuleObject', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.py_object,), minver="3.3",)
 # PyObject* PyImport_ExecCodeModuleWithPathnames(const char* name, PyObject* co, const char* pathname, const char* cpathname)
-_register(
-    "PyImport_ExecCodeModuleWithPathnames",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-    minver="3.2",
-)
+_register('PyImport_ExecCodeModuleWithPathnames', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,), minver="3.2",)
 # PyObject* PyImport_GetImporter(PyObject* path)
-_register("PyImport_GetImporter", ctypes.py_object, (ctypes.py_object,))
+_register('PyImport_GetImporter', ctypes.py_object, (ctypes.py_object,))
 # long PyImport_GetMagicNumber()
-_register("PyImport_GetMagicNumber", ctypes.c_long, ())
+_register('PyImport_GetMagicNumber', ctypes.c_long, ())
 # const char* PyImport_GetMagicTag()
-_register(
-    "PyImport_GetMagicTag",
-    ctypes.c_char_p,
-    (),
-    minver="3.2",
-)
+_register('PyImport_GetMagicTag', ctypes.c_char_p, (), minver="3.2",)
 # PyObject* PyImport_GetModule(PyObject* name)
-_register(
-    "PyImport_GetModule",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.7",
-)
+_register('PyImport_GetModule', ctypes.py_object, (ctypes.py_object,), minver="3.7",)
 # PyObject* PyImport_GetModuleDict()
-_register("PyImport_GetModuleDict", ctypes.py_object, ())
+_register('PyImport_GetModuleDict', ctypes.py_object, ())
 # PyObject* PyImport_Import(PyObject* name)
-_register("PyImport_Import", ctypes.py_object, (ctypes.py_object,))
+_register('PyImport_Import', ctypes.py_object, (ctypes.py_object,))
 # int PyImport_ImportFrozenModule(const char* name)
-_register("PyImport_ImportFrozenModule", ctypes.c_int, (ctypes.c_char_p,))
+_register('PyImport_ImportFrozenModule', ctypes.c_int, (ctypes.c_char_p,))
 # int PyImport_ImportFrozenModuleObject(PyObject* name)
-_register(
-    "PyImport_ImportFrozenModuleObject",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.3",
-)
+_register('PyImport_ImportFrozenModuleObject', ctypes.c_int, (ctypes.py_object,), minver="3.3",)
 # PyObject* PyImport_ImportModule(const char* name)
-_register("PyImport_ImportModule", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyImport_ImportModule', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyImport_ImportModuleLevel(const char* name, PyObject* globals, PyObject* locals, PyObject* fromlist, int level)
-_register(
-    "PyImport_ImportModuleLevel",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyImport_ImportModuleLevel', ctypes.py_object, (ctypes.c_char_p,ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # PyObject* PyImport_ImportModuleLevelObject(PyObject* name, PyObject* globals, PyObject* locals, PyObject* fromlist, int level)
-_register(
-    "PyImport_ImportModuleLevelObject",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-    minver="3.3",
-)
+_register('PyImport_ImportModuleLevelObject', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.c_int,), minver="3.3",)
 # PyObject* PyImport_ImportModuleNoBlock(const char* name)
-_register("PyImport_ImportModuleNoBlock", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyImport_ImportModuleNoBlock', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyImport_ReloadModule(PyObject* m)
-_register("PyImport_ReloadModule", ctypes.py_object, (ctypes.py_object,))
+_register('PyImport_ReloadModule', ctypes.py_object, (ctypes.py_object,))
 # int PyIndex_Check(PyObject* o)
-_register("PyIndex_Check", ctypes.c_int, (ctypes.py_object,))
+_register('PyIndex_Check', ctypes.c_int, (ctypes.py_object,))
 # void PyInterpreterState_Clear(PyInterpreterState* interp)
-_register("PyInterpreterState_Clear", None, (ctypes.POINTER(PyInterpreterState),))
+_register('PyInterpreterState_Clear', None, (ctypes.POINTER(PyInterpreterState),))
 # void PyInterpreterState_Delete(PyInterpreterState* interp)
-_register("PyInterpreterState_Delete", None, (ctypes.POINTER(PyInterpreterState),))
+_register('PyInterpreterState_Delete', None, (ctypes.POINTER(PyInterpreterState),))
 # PyInterpreterState* PyInterpreterState_Get(void)
-_register(
-    "PyInterpreterState_Get",
-    ctypes.POINTER(PyInterpreterState),
-    (),
-    minver="3.9",
-)
+_register('PyInterpreterState_Get', ctypes.POINTER(PyInterpreterState), (), minver="3.9",)
 # PyObject* PyInterpreterState_GetDict(PyInterpreterState* interp)
-_register(
-    "PyInterpreterState_GetDict",
-    ctypes.py_object,
-    (ctypes.POINTER(PyInterpreterState),),
-    minver="3.8",
-)
+_register('PyInterpreterState_GetDict', ctypes.py_object, (ctypes.POINTER(PyInterpreterState),), minver="3.8",)
 # int64_t PyInterpreterState_GetID(PyInterpreterState* interp)
-_register(
-    "PyInterpreterState_GetID",
-    ctypes.c_int64,
-    (ctypes.POINTER(PyInterpreterState),),
-    minver="3.7",
-)
+_register('PyInterpreterState_GetID', ctypes.c_int64, (ctypes.POINTER(PyInterpreterState),), minver="3.7",)
 # PyInterpreterState* PyInterpreterState_New()
-_register("PyInterpreterState_New", ctypes.POINTER(PyInterpreterState), ())
+_register('PyInterpreterState_New', ctypes.POINTER(PyInterpreterState), ())
 # int PyIter_Check(PyObject* o)
-_register("PyIter_Check", ctypes.c_int, (ctypes.py_object,))
+_register('PyIter_Check', ctypes.c_int, (ctypes.py_object,))
 # PyObject* PyIter_Next(PyObject* o)
-_register("PyIter_Next", ctypes.py_object, (ctypes.py_object,))
+_register('PyIter_Next', ctypes.py_object, (ctypes.py_object,))
+# PySendResult PyIter_Send(PyObject* iter, PyObject* arg, PyObject** presult)
+_register('PyIter_Send', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.POINTER(ctypes.py_object),), minver="3.10",)
 # int PyList_Append(PyObject* list, PyObject* item)
-_register(
-    "PyList_Append",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyList_Append', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyList_AsTuple(PyObject* list)
-_register("PyList_AsTuple", ctypes.py_object, (ctypes.py_object,))
+_register('PyList_AsTuple', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyList_GetItem(PyObject* list, Py_ssize_t index)
-_register(
-    "PyList_GetItem",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyList_GetItem', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyList_GetSlice(PyObject* list, Py_ssize_t low, Py_ssize_t high)
-_register(
-    "PyList_GetSlice",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyList_GetSlice', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,))
 # int PyList_Insert(PyObject* list, Py_ssize_t index, PyObject* item)
-_register(
-    "PyList_Insert",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PyList_Insert', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.py_object,))
 # PyObject* PyList_New(Py_ssize_t len)
-_register("PyList_New", ctypes.py_object, (ctypes.c_ssize_t,))
+_register('PyList_New', ctypes.py_object, (ctypes.c_ssize_t,))
 # int PyList_Reverse(PyObject* list)
-_register("PyList_Reverse", ctypes.c_int, (ctypes.py_object,))
+_register('PyList_Reverse', ctypes.c_int, (ctypes.py_object,))
 # int PyList_SetItem(PyObject* list, Py_ssize_t index, PyObject* item)
-_register(
-    "PyList_SetItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PyList_SetItem', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.py_object,))
 # int PyList_SetSlice(PyObject* list, Py_ssize_t low, Py_ssize_t high, PyObject* itemlist)
-_register(
-    "PyList_SetSlice",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PyList_SetSlice', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.py_object,))
 # Py_ssize_t PyList_Size(PyObject* list)
-_register("PyList_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyList_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # int PyList_Sort(PyObject* list)
-_register("PyList_Sort", ctypes.c_int, (ctypes.py_object,))
+_register('PyList_Sort', ctypes.c_int, (ctypes.py_object,))
 # double PyLong_AsDouble(PyObject* pylong)
-_register("PyLong_AsDouble", ctypes.c_double, (ctypes.py_object,))
+_register('PyLong_AsDouble', ctypes.c_double, (ctypes.py_object,))
 # long PyLong_AsLong(PyObject* obj)
-_register("PyLong_AsLong", ctypes.c_long, (ctypes.py_object,))
+_register('PyLong_AsLong', ctypes.c_long, (ctypes.py_object,))
 # long PyLong_AsLongAndOverflow(PyObject* obj, int* overflow)
-_register(
-    "PyLong_AsLongAndOverflow",
-    ctypes.c_long,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_int),
-    ),
-)
+_register('PyLong_AsLongAndOverflow', ctypes.c_long, (ctypes.py_object,ctypes.POINTER(ctypes.c_int),))
 # long long PyLong_AsLongLong(PyObject* obj)
-_register("PyLong_AsLongLong", ctypes.c_longlong, (ctypes.py_object,))
+_register('PyLong_AsLongLong', ctypes.c_longlong, (ctypes.py_object,))
 # long long PyLong_AsLongLongAndOverflow(PyObject* obj, int* overflow)
-_register(
-    "PyLong_AsLongLongAndOverflow",
-    ctypes.c_longlong,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_int),
-    ),
-    minver="3.2",
-)
+_register('PyLong_AsLongLongAndOverflow', ctypes.c_longlong, (ctypes.py_object,ctypes.POINTER(ctypes.c_int),), minver="3.2",)
 # size_t PyLong_AsSize_t(PyObject* pylong)
-_register("PyLong_AsSize_t", ctypes.c_size_t, (ctypes.py_object,))
+_register('PyLong_AsSize_t', ctypes.c_size_t, (ctypes.py_object,))
 # Py_ssize_t PyLong_AsSsize_t(PyObject* pylong)
-_register("PyLong_AsSsize_t", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyLong_AsSsize_t', ctypes.c_ssize_t, (ctypes.py_object,))
 # unsigned long PyLong_AsUnsignedLong(PyObject* pylong)
-_register("PyLong_AsUnsignedLong", ctypes.c_ulong, (ctypes.py_object,))
+_register('PyLong_AsUnsignedLong', ctypes.c_ulong, (ctypes.py_object,))
 # unsigned long long PyLong_AsUnsignedLongLong(PyObject* pylong)
-_register("PyLong_AsUnsignedLongLong", ctypes.c_ulonglong, (ctypes.py_object,))
+_register('PyLong_AsUnsignedLongLong', ctypes.c_ulonglong, (ctypes.py_object,))
 # unsigned long long PyLong_AsUnsignedLongLongMask(PyObject* obj)
-_register("PyLong_AsUnsignedLongLongMask", ctypes.c_ulonglong, (ctypes.py_object,))
+_register('PyLong_AsUnsignedLongLongMask', ctypes.c_ulonglong, (ctypes.py_object,))
 # unsigned long PyLong_AsUnsignedLongMask(PyObject* obj)
-_register("PyLong_AsUnsignedLongMask", ctypes.c_ulong, (ctypes.py_object,))
+_register('PyLong_AsUnsignedLongMask', ctypes.c_ulong, (ctypes.py_object,))
 # void* PyLong_AsVoidPtr(PyObject* pylong)
-_register("PyLong_AsVoidPtr", ctypes.c_void_p, (ctypes.py_object,))
+_register('PyLong_AsVoidPtr', ctypes.c_void_p, (ctypes.py_object,))
 # PyObject* PyLong_FromDouble(double v)
-_register("PyLong_FromDouble", ctypes.py_object, (ctypes.c_double,))
+_register('PyLong_FromDouble', ctypes.py_object, (ctypes.c_double,))
 # PyObject* PyLong_FromLong(long v)
-_register("PyLong_FromLong", ctypes.py_object, (ctypes.c_long,))
+_register('PyLong_FromLong', ctypes.py_object, (ctypes.c_long,))
 # PyObject* PyLong_FromLongLong(long long v)
-_register("PyLong_FromLongLong", ctypes.py_object, (ctypes.c_longlong,))
+_register('PyLong_FromLongLong', ctypes.py_object, (ctypes.c_longlong,))
 # PyObject* PyLong_FromSize_t(size_t v)
-_register("PyLong_FromSize_t", ctypes.py_object, (ctypes.c_size_t,))
+_register('PyLong_FromSize_t', ctypes.py_object, (ctypes.c_size_t,))
 # PyObject* PyLong_FromSsize_t(Py_ssize_t v)
-_register("PyLong_FromSsize_t", ctypes.py_object, (ctypes.c_ssize_t,))
+_register('PyLong_FromSsize_t', ctypes.py_object, (ctypes.c_ssize_t,))
 # PyObject* PyLong_FromString(const char* str, char** pend, int base)
-_register(
-    "PyLong_FromString",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.c_int,
-    ),
-)
+_register('PyLong_FromString', ctypes.py_object, (ctypes.c_char_p,ctypes.POINTER(ctypes.c_char_p),ctypes.c_int,))
 # PyObject* PyLong_FromUnsignedLong(unsigned long v)
-_register("PyLong_FromUnsignedLong", ctypes.py_object, (ctypes.c_ulong,))
+_register('PyLong_FromUnsignedLong', ctypes.py_object, (ctypes.c_ulong,))
 # PyObject* PyLong_FromUnsignedLongLong(unsigned long long v)
-_register("PyLong_FromUnsignedLongLong", ctypes.py_object, (ctypes.c_ulonglong,))
+_register('PyLong_FromUnsignedLongLong', ctypes.py_object, (ctypes.c_ulonglong,))
 # PyObject* PyLong_FromVoidPtr(void* p)
-_register("PyLong_FromVoidPtr", ctypes.py_object, (ctypes.c_void_p,))
+_register('PyLong_FromVoidPtr', ctypes.py_object, (ctypes.c_void_p,))
 # int PyMapping_Check(PyObject* o)
-_register("PyMapping_Check", ctypes.c_int, (ctypes.py_object,))
+_register('PyMapping_Check', ctypes.c_int, (ctypes.py_object,))
 # PyObject* PyMapping_GetItemString(PyObject* o, const char* key)
-_register(
-    "PyMapping_GetItemString",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyMapping_GetItemString', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,))
 # int PyMapping_HasKey(PyObject* o, PyObject* key)
-_register(
-    "PyMapping_HasKey",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyMapping_HasKey', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PyMapping_HasKeyString(PyObject* o, const char* key)
-_register(
-    "PyMapping_HasKeyString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyMapping_HasKeyString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyMapping_Items(PyObject* o)
-_register("PyMapping_Items", ctypes.py_object, (ctypes.py_object,))
+_register('PyMapping_Items', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyMapping_Keys(PyObject* o)
-_register("PyMapping_Keys", ctypes.py_object, (ctypes.py_object,))
+_register('PyMapping_Keys', ctypes.py_object, (ctypes.py_object,))
 # Py_ssize_t PyMapping_Length(PyObject* o)
-_register("PyMapping_Length", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyMapping_Length', ctypes.c_ssize_t, (ctypes.py_object,))
 # int PyMapping_SetItemString(PyObject* o, const char* key, PyObject* v)
-_register(
-    "PyMapping_SetItemString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyMapping_SetItemString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.py_object,))
 # Py_ssize_t PyMapping_Size(PyObject* o)
-_register("PyMapping_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyMapping_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PyMapping_Values(PyObject* o)
-_register("PyMapping_Values", ctypes.py_object, (ctypes.py_object,))
+_register('PyMapping_Values', ctypes.py_object, (ctypes.py_object,))
 # void* PyMem_Calloc(size_t nelem, size_t elsize)
-_register(
-    "PyMem_Calloc",
-    ctypes.c_void_p,
-    (
-        ctypes.c_size_t,
-        ctypes.c_size_t,
-    ),
-    minver="3.5",
-)
+_register('PyMem_Calloc', ctypes.c_void_p, (ctypes.c_size_t,ctypes.c_size_t,), minver="3.5",)
 # void PyMem_Free(void* p)
-_register("PyMem_Free", None, (ctypes.c_void_p,))
+_register('PyMem_Free', None, (ctypes.c_void_p,))
 # void* PyMem_Malloc(size_t n)
-_register("PyMem_Malloc", ctypes.c_void_p, (ctypes.c_size_t,))
+_register('PyMem_Malloc', ctypes.c_void_p, (ctypes.c_size_t,))
 # void* PyMem_Realloc(void* p, size_t n)
-_register(
-    "PyMem_Realloc",
-    ctypes.c_void_p,
-    (
-        ctypes.c_void_p,
-        ctypes.c_size_t,
-    ),
-)
+_register('PyMem_Realloc', ctypes.c_void_p, (ctypes.c_void_p,ctypes.c_size_t,))
 # PyObject* PyMemoryView_FromBuffer(const Py_buffer* view)
-_register("PyMemoryView_FromBuffer", ctypes.py_object, (ctypes.POINTER(Py_buffer),))
+_register('PyMemoryView_FromBuffer', ctypes.py_object, (ctypes.POINTER(Py_buffer),))
 # PyObject* PyMemoryView_FromMemory(char* mem, Py_ssize_t size, int flags)
-_register(
-    "PyMemoryView_FromMemory",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_int,
-    ),
-    minver="3.3",
-)
+_register('PyMemoryView_FromMemory', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_int,), minver="3.3",)
 # PyObject* PyMemoryView_FromObject(PyObject* obj)
-_register("PyMemoryView_FromObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyMemoryView_FromObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyMemoryView_GetContiguous(PyObject* obj, int buffertype, char order)
-_register(
-    "PyMemoryView_GetContiguous",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-        ctypes.c_char,
-    ),
-)
+_register('PyMemoryView_GetContiguous', ctypes.py_object, (ctypes.py_object,ctypes.c_int,ctypes.c_char,))
 # PyObject* PyModuleDef_Init(PyModuleDef* def)
-_register(
-    "PyModuleDef_Init",
-    ctypes.py_object,
-    (ctypes.POINTER(PyModuleDef),),
-    minver="3.5",
-)
+_register('PyModuleDef_Init', ctypes.py_object, (ctypes.POINTER(PyModuleDef),), minver="3.5",)
 # int PyModule_AddFunctions(PyObject* module, PyMethodDef* functions)
-_register(
-    "PyModule_AddFunctions",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(PyMethodDef),
-    ),
-    minver="3.5",
-)
+_register('PyModule_AddFunctions', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(PyMethodDef),), minver="3.5",)
 # int PyModule_AddIntConstant(PyObject* module, const char* name, long value)
-_register(
-    "PyModule_AddIntConstant",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_long,
-    ),
-)
+_register('PyModule_AddIntConstant', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.c_long,))
 # int PyModule_AddObject(PyObject* module, const char* name, PyObject* value)
-_register(
-    "PyModule_AddObject",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyModule_AddObject', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.py_object,))
 # int PyModule_AddObjectRef(PyObject* module, const char* name, PyObject* value)
-_register(
-    "PyModule_AddObjectRef",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-    minver="3.10",
-)
+_register('PyModule_AddObjectRef', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.py_object,), minver="3.10",)
 # int PyModule_AddStringConstant(PyObject* module, const char* name, const char* value)
-_register(
-    "PyModule_AddStringConstant",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyModule_AddStringConstant', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,))
 # int PyModule_AddType(PyObject* module, PyTypeObject* type)
-_register(
-    "PyModule_AddType",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(PyTypeObject),
-    ),
-    minver="3.9",
-)
+_register('PyModule_AddType', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(PyTypeObject),), minver="3.9",)
 # PyObject* PyModule_Create2(PyModuleDef* def, int module_api_version)
-_register(
-    "PyModule_Create2",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyModuleDef),
-        ctypes.c_int,
-    ),
-)
+_register('PyModule_Create2', ctypes.py_object, (ctypes.POINTER(PyModuleDef),ctypes.c_int,))
 # int PyModule_ExecDef(PyObject* module, PyModuleDef* def)
-_register(
-    "PyModule_ExecDef",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(PyModuleDef),
-    ),
-    minver="3.5",
-)
+_register('PyModule_ExecDef', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(PyModuleDef),), minver="3.5",)
 # PyObject* PyModule_FromDefAndSpec2(PyModuleDef* def, PyObject* spec, int module_api_version)
-_register(
-    "PyModule_FromDefAndSpec2",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyModuleDef),
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-    minver="3.5",
-)
+_register('PyModule_FromDefAndSpec2', ctypes.py_object, (ctypes.POINTER(PyModuleDef),ctypes.py_object,ctypes.c_int,), minver="3.5",)
 # PyModuleDef* PyModule_GetDef(PyObject* module)
-_register("PyModule_GetDef", ctypes.POINTER(PyModuleDef), (ctypes.py_object,))
+_register('PyModule_GetDef', ctypes.POINTER(PyModuleDef), (ctypes.py_object,))
 # PyObject* PyModule_GetDict(PyObject* module)
-_register("PyModule_GetDict", ctypes.py_object, (ctypes.py_object,))
+_register('PyModule_GetDict', ctypes.py_object, (ctypes.py_object,))
 # const char* PyModule_GetFilename(PyObject* module)
-_register("PyModule_GetFilename", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyModule_GetFilename', ctypes.c_char_p, (ctypes.py_object,))
 # PyObject* PyModule_GetFilenameObject(PyObject* module)
-_register(
-    "PyModule_GetFilenameObject",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.2",
-)
+_register('PyModule_GetFilenameObject', ctypes.py_object, (ctypes.py_object,), minver="3.2",)
 # const char* PyModule_GetName(PyObject* module)
-_register("PyModule_GetName", ctypes.c_char_p, (ctypes.py_object,))
+_register('PyModule_GetName', ctypes.c_char_p, (ctypes.py_object,))
 # PyObject* PyModule_GetNameObject(PyObject* module)
-_register(
-    "PyModule_GetNameObject",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.3",
-)
+_register('PyModule_GetNameObject', ctypes.py_object, (ctypes.py_object,), minver="3.3",)
 # void* PyModule_GetState(PyObject* module)
-_register("PyModule_GetState", ctypes.c_void_p, (ctypes.py_object,))
+_register('PyModule_GetState', ctypes.c_void_p, (ctypes.py_object,))
 # PyObject* PyModule_New(const char* name)
-_register("PyModule_New", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyModule_New', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyModule_NewObject(PyObject* name)
-_register(
-    "PyModule_NewObject",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.3",
-)
+_register('PyModule_NewObject', ctypes.py_object, (ctypes.py_object,), minver="3.3",)
 # int PyModule_SetDocString(PyObject* module, const char* docstring)
-_register(
-    "PyModule_SetDocString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-    minver="3.5",
-)
+_register('PyModule_SetDocString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,), minver="3.5",)
 # PyObject* PyNumber_Absolute(PyObject* o)
-_register("PyNumber_Absolute", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Absolute', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_Add(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Add",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Add', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_And(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_And",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_And', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # Py_ssize_t PyNumber_AsSsize_t(PyObject* o, PyObject* exc)
-_register(
-    "PyNumber_AsSsize_t",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_AsSsize_t', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,))
 # int PyNumber_Check(PyObject* o)
-_register("PyNumber_Check", ctypes.c_int, (ctypes.py_object,))
+_register('PyNumber_Check', ctypes.c_int, (ctypes.py_object,))
 # PyObject* PyNumber_Divmod(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Divmod",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Divmod', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Float(PyObject* o)
-_register("PyNumber_Float", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Float', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_FloorDivide(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_FloorDivide",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_FloorDivide', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceAdd(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceAdd",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceAdd', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceAnd(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceAnd",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceAnd', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceFloorDivide(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceFloorDivide",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceFloorDivide', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceLshift(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceLshift",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceLshift', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceMatrixMultiply(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceMatrixMultiply",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.5",
-)
+_register('PyNumber_InPlaceMatrixMultiply', ctypes.py_object, (ctypes.py_object,ctypes.py_object,), minver="3.5",)
 # PyObject* PyNumber_InPlaceMultiply(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceMultiply",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceMultiply', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceOr(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceOr",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceOr', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlacePower(PyObject* o1, PyObject* o2, PyObject* o3)
-_register(
-    "PyNumber_InPlacePower",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlacePower', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceRemainder(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceRemainder",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceRemainder', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceRshift(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceRshift",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceRshift', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceSubtract(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceSubtract",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceSubtract', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceTrueDivide(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceTrueDivide",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceTrueDivide', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_InPlaceXor(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_InPlaceXor",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_InPlaceXor', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Index(PyObject* o)
-_register("PyNumber_Index", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Index', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_Invert(PyObject* o)
-_register("PyNumber_Invert", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Invert', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_Long(PyObject* o)
-_register("PyNumber_Long", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Long', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_Lshift(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Lshift",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Lshift', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_MatrixMultiply(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_MatrixMultiply",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.5",
-)
+_register('PyNumber_MatrixMultiply', ctypes.py_object, (ctypes.py_object,ctypes.py_object,), minver="3.5",)
 # PyObject* PyNumber_Multiply(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Multiply",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Multiply', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Negative(PyObject* o)
-_register("PyNumber_Negative", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Negative', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_Or(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Or",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Or', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Positive(PyObject* o)
-_register("PyNumber_Positive", ctypes.py_object, (ctypes.py_object,))
+_register('PyNumber_Positive', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyNumber_Power(PyObject* o1, PyObject* o2, PyObject* o3)
-_register(
-    "PyNumber_Power",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Power', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Remainder(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Remainder",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Remainder', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Rshift(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Rshift",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Rshift', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Subtract(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Subtract",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Subtract', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_ToBase(PyObject* n, int base)
-_register(
-    "PyNumber_ToBase",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyNumber_ToBase', ctypes.py_object, (ctypes.py_object,ctypes.c_int,))
 # PyObject* PyNumber_TrueDivide(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_TrueDivide",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_TrueDivide', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyNumber_Xor(PyObject* o1, PyObject* o2)
-_register(
-    "PyNumber_Xor",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyNumber_Xor', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # void PyOS_AfterFork()
-_register("PyOS_AfterFork", None, ())
+_register('PyOS_AfterFork', None, ())
 # void PyOS_AfterFork_Child()
-_register(
-    "PyOS_AfterFork_Child",
-    None,
-    (),
-    minver="3.7",
-)
+_register('PyOS_AfterFork_Child', None, (), minver="3.7",)
 # void PyOS_AfterFork_Parent()
-_register(
-    "PyOS_AfterFork_Parent",
-    None,
-    (),
-    minver="3.7",
-)
+_register('PyOS_AfterFork_Parent', None, (), minver="3.7",)
 # void PyOS_BeforeFork()
-_register(
-    "PyOS_BeforeFork",
-    None,
-    (),
-    minver="3.7",
-)
+_register('PyOS_BeforeFork', None, (), minver="3.7",)
 # int PyOS_CheckStack()
-_register("PyOS_CheckStack", ctypes.c_int, ())
+_register('PyOS_CheckStack', ctypes.c_int, ())
 # PyObject* PyOS_FSPath(PyObject* path)
-_register(
-    "PyOS_FSPath",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.6",
-)
+_register('PyOS_FSPath', ctypes.py_object, (ctypes.py_object,), minver="3.6",)
 # char* PyOS_double_to_string(double val, char format_code, int precision, int flags, int* ptype)
-_register(
-    "PyOS_double_to_string",
-    ctypes.c_char_p,
-    (
-        ctypes.c_double,
-        ctypes.c_char,
-        ctypes.c_int,
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_int),
-    ),
-    minver="3.1",
-)
+_register('PyOS_double_to_string', ctypes.c_char_p, (ctypes.c_double,ctypes.c_char,ctypes.c_int,ctypes.c_int,ctypes.POINTER(ctypes.c_int),), minver="3.1",)
 # PyOS_sighandler_t PyOS_getsig(int i)
-_register("PyOS_getsig", ctypes.c_void_p, (ctypes.c_int,))
+_register('PyOS_getsig', ctypes.c_void_p, (ctypes.c_int,))
 # PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
-_register(
-    "PyOS_setsig",
-    ctypes.c_void_p,
-    (
-        ctypes.c_int,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyOS_setsig', ctypes.c_void_p, (ctypes.c_int,ctypes.c_void_p,))
 # int PyOS_snprintf(char* str, size_t size, const char* format, ...)
-_register("PyOS_snprintf", ctypes.c_int)
+_register('PyOS_snprintf', ctypes.c_int)
 # double PyOS_string_to_double(const char* s, char** endptr, PyObject* overflow_exception)
-_register(
-    "PyOS_string_to_double",
-    ctypes.c_double,
-    (
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.py_object,
-    ),
-    minver="3.1",
-)
+_register('PyOS_string_to_double', ctypes.c_double, (ctypes.c_char_p,ctypes.POINTER(ctypes.c_char_p),ctypes.py_object,), minver="3.1",)
 # int PyOS_vsnprintf(char* str, size_t size, const char* format, va_list va)
-_register(
-    "PyOS_vsnprintf",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.c_size_t,
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyOS_vsnprintf', ctypes.c_int, (ctypes.c_char_p,ctypes.c_size_t,ctypes.c_char_p,ctypes.c_void_p,))
 # PyObject* PyObject_ASCII(PyObject* o)
-_register("PyObject_ASCII", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_ASCII', ctypes.py_object, (ctypes.py_object,))
 # int PyObject_AsCharBuffer(PyObject* obj, const char** buffer, Py_ssize_t* buffer_len)
-_register(
-    "PyObject_AsCharBuffer",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyObject_AsCharBuffer', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_char_p),ctypes.POINTER(ctypes.c_ssize_t),))
 # int PyObject_AsFileDescriptor(PyObject* p)
-_register("PyObject_AsFileDescriptor", ctypes.c_int, (ctypes.py_object,))
+_register('PyObject_AsFileDescriptor', ctypes.c_int, (ctypes.py_object,))
 # int PyObject_AsReadBuffer(PyObject* obj, const void** buffer, Py_ssize_t* buffer_len)
-_register(
-    "PyObject_AsReadBuffer",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_void_p),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyObject_AsReadBuffer', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_void_p),ctypes.POINTER(ctypes.c_ssize_t),))
 # int PyObject_AsWriteBuffer(PyObject* obj, void** buffer, Py_ssize_t* buffer_len)
-_register(
-    "PyObject_AsWriteBuffer",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_void_p),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyObject_AsWriteBuffer', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_void_p),ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyObject_Bytes(PyObject* o)
-_register("PyObject_Bytes", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_Bytes', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyObject_Call(PyObject* callable, PyObject* args, PyObject* kwargs)
-_register(
-    "PyObject_Call",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_Call', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # PyObject* PyObject_CallFunction(PyObject* callable, const char* format, ...)
-_register("PyObject_CallFunction", ctypes.py_object)
+_register('PyObject_CallFunction', ctypes.py_object)
 # PyObject* PyObject_CallFunctionObjArgs(PyObject* callable, ...)
-_register("PyObject_CallFunctionObjArgs", ctypes.py_object)
+_register('PyObject_CallFunctionObjArgs', ctypes.py_object)
 # PyObject* PyObject_CallMethod(PyObject* obj, const char* name, const char* format, ...)
-_register("PyObject_CallMethod", ctypes.py_object)
+_register('PyObject_CallMethod', ctypes.py_object)
 # PyObject* PyObject_CallMethodObjArgs(PyObject* obj, PyObject* name, ...)
-_register("PyObject_CallMethodObjArgs", ctypes.py_object)
+_register('PyObject_CallMethodObjArgs', ctypes.py_object)
 # PyObject* PyObject_CallNoArgs(PyObject* callable)
-_register(
-    "PyObject_CallNoArgs",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.9",
-)
+_register('PyObject_CallNoArgs', ctypes.py_object, (ctypes.py_object,), minver="3.9",)
 # PyObject* PyObject_CallObject(PyObject* callable, PyObject* args)
-_register(
-    "PyObject_CallObject",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_CallObject', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # void* PyObject_Calloc(size_t nelem, size_t elsize)
-_register(
-    "PyObject_Calloc",
-    ctypes.c_void_p,
-    (
-        ctypes.c_size_t,
-        ctypes.c_size_t,
-    ),
-    minver="3.5",
-)
+_register('PyObject_Calloc', ctypes.c_void_p, (ctypes.c_size_t,ctypes.c_size_t,), minver="3.5",)
 # int PyObject_CheckBuffer(PyObject* obj)
-_register("PyObject_CheckBuffer", ctypes.c_int, (ctypes.py_object,))
+_register('PyObject_CheckBuffer', ctypes.c_int, (ctypes.py_object,))
 # int PyObject_CheckReadBuffer(PyObject* o)
-_register("PyObject_CheckReadBuffer", ctypes.c_int, (ctypes.py_object,))
+_register('PyObject_CheckReadBuffer', ctypes.c_int, (ctypes.py_object,))
 # int PyObject_CopyData(Py_buffer* dest, Py_buffer* src)
-_register(
-    "PyObject_CopyData",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(Py_buffer),
-        ctypes.POINTER(Py_buffer),
-    ),
-)
+_register('PyObject_CopyData', ctypes.c_int, (ctypes.POINTER(Py_buffer),ctypes.POINTER(Py_buffer),))
 # int PyObject_DelItem(PyObject* o, PyObject* key)
-_register(
-    "PyObject_DelItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_DelItem', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyObject_Dir(PyObject* o)
-_register("PyObject_Dir", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_Dir', ctypes.py_object, (ctypes.py_object,))
 # void PyObject_Free(void* p)
-_register("PyObject_Free", None, (ctypes.c_void_p,))
+_register('PyObject_Free', None, (ctypes.c_void_p,))
 # void PyObject_GC_Del(void* op)
-_register("PyObject_GC_Del", None, (ctypes.c_void_p,))
+_register('PyObject_GC_Del', None, (ctypes.c_void_p,))
 # int PyObject_GC_IsFinalized(PyObject* op)
-_register(
-    "PyObject_GC_IsFinalized",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.9",
-)
+_register('PyObject_GC_IsFinalized', ctypes.c_int, (ctypes.py_object,), minver="3.9",)
 # int PyObject_GC_IsTracked(PyObject* op)
-_register(
-    "PyObject_GC_IsTracked",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.9",
-)
+_register('PyObject_GC_IsTracked', ctypes.c_int, (ctypes.py_object,), minver="3.9",)
 # void PyObject_GC_Track(PyObject* op)
-_register("PyObject_GC_Track", None, (ctypes.py_object,))
+_register('PyObject_GC_Track', None, (ctypes.py_object,))
 # void PyObject_GC_UnTrack(void* op)
-_register("PyObject_GC_UnTrack", None, (ctypes.c_void_p,))
+_register('PyObject_GC_UnTrack', None, (ctypes.c_void_p,))
 # PyObject* PyObject_GenericGetAttr(PyObject* o, PyObject* name)
-_register(
-    "PyObject_GenericGetAttr",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_GenericGetAttr', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyObject_GenericGetDict(PyObject* o, void* context)
-_register(
-    "PyObject_GenericGetDict",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-    minver="3.3",
-)
+_register('PyObject_GenericGetDict', ctypes.py_object, (ctypes.py_object,ctypes.c_void_p,), minver="3.3",)
 # int PyObject_GenericSetAttr(PyObject* o, PyObject* name, PyObject* value)
-_register(
-    "PyObject_GenericSetAttr",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_GenericSetAttr', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # int PyObject_GenericSetDict(PyObject* o, PyObject* value, void* context)
-_register(
-    "PyObject_GenericSetDict",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-    minver="3.3",
-)
+_register('PyObject_GenericSetDict', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.c_void_p,), minver="3.3",)
 # PyObject* PyObject_GetAIter(PyObject* o)
-_register(
-    "PyObject_GetAIter",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('PyObject_GetAIter', ctypes.py_object, (ctypes.py_object,), minver="3.10",)
 # PyObject* PyObject_GetAttr(PyObject* o, PyObject* attr_name)
-_register(
-    "PyObject_GetAttr",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_GetAttr', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyObject_GetAttrString(PyObject* o, const char* attr_name)
-_register(
-    "PyObject_GetAttrString",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyObject_GetAttrString', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,))
 # int PyObject_GetBuffer(PyObject* exporter, Py_buffer* view, int flags)
-_register(
-    "PyObject_GetBuffer",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(Py_buffer),
-        ctypes.c_int,
-    ),
-)
+_register('PyObject_GetBuffer', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(Py_buffer),ctypes.c_int,))
 # PyObject* PyObject_GetItem(PyObject* o, PyObject* key)
-_register(
-    "PyObject_GetItem",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_GetItem', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyObject_GetIter(PyObject* o)
-_register("PyObject_GetIter", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_GetIter', ctypes.py_object, (ctypes.py_object,))
 # int PyObject_HasAttr(PyObject* o, PyObject* attr_name)
-_register(
-    "PyObject_HasAttr",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_HasAttr', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PyObject_HasAttrString(PyObject* o, const char* attr_name)
-_register(
-    "PyObject_HasAttrString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyObject_HasAttrString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # Py_hash_t PyObject_Hash(PyObject* o)
-_register("PyObject_Hash", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyObject_Hash', ctypes.c_ssize_t, (ctypes.py_object,))
 # Py_hash_t PyObject_HashNotImplemented(PyObject* o)
-_register("PyObject_HashNotImplemented", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyObject_HashNotImplemented', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PyObject_Init(PyObject* op, PyTypeObject* type)
-_register(
-    "PyObject_Init",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(PyTypeObject),
-    ),
-)
+_register('PyObject_Init', ctypes.py_object, (ctypes.py_object,ctypes.POINTER(PyTypeObject),))
 # PyVarObject* PyObject_InitVar(PyVarObject* op, PyTypeObject* type, Py_ssize_t size)
-_register(
-    "PyObject_InitVar",
-    ctypes.POINTER(PyVarObject),
-    (
-        ctypes.POINTER(PyVarObject),
-        ctypes.POINTER(PyTypeObject),
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyObject_InitVar', ctypes.POINTER(PyVarObject), (ctypes.POINTER(PyVarObject),ctypes.POINTER(PyTypeObject),ctypes.c_ssize_t,))
 # int PyObject_IsInstance(PyObject* inst, PyObject* cls)
-_register(
-    "PyObject_IsInstance",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_IsInstance', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PyObject_IsSubclass(PyObject* derived, PyObject* cls)
-_register(
-    "PyObject_IsSubclass",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_IsSubclass', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PyObject_IsTrue(PyObject* o)
-_register("PyObject_IsTrue", ctypes.c_int, (ctypes.py_object,))
+_register('PyObject_IsTrue', ctypes.c_int, (ctypes.py_object,))
 # Py_ssize_t PyObject_Length(PyObject* o)
-_register("PyObject_Length", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyObject_Length', ctypes.c_ssize_t, (ctypes.py_object,))
 # void* PyObject_Malloc(size_t n)
-_register("PyObject_Malloc", ctypes.c_void_p, (ctypes.c_size_t,))
+_register('PyObject_Malloc', ctypes.c_void_p, (ctypes.c_size_t,))
 # int PyObject_Not(PyObject* o)
-_register("PyObject_Not", ctypes.c_int, (ctypes.py_object,))
+_register('PyObject_Not', ctypes.c_int, (ctypes.py_object,))
 # void* PyObject_Realloc(void* p, size_t n)
-_register(
-    "PyObject_Realloc",
-    ctypes.c_void_p,
-    (
-        ctypes.c_void_p,
-        ctypes.c_size_t,
-    ),
-)
+_register('PyObject_Realloc', ctypes.c_void_p, (ctypes.c_void_p,ctypes.c_size_t,))
 # PyObject* PyObject_Repr(PyObject* o)
-_register("PyObject_Repr", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_Repr', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyObject_RichCompare(PyObject* o1, PyObject* o2, int opid)
-_register(
-    "PyObject_RichCompare",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyObject_RichCompare', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # int PyObject_RichCompareBool(PyObject* o1, PyObject* o2, int opid)
-_register(
-    "PyObject_RichCompareBool",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyObject_RichCompareBool', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # int PyObject_SetAttr(PyObject* o, PyObject* attr_name, PyObject* v)
-_register(
-    "PyObject_SetAttr",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_SetAttr', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # int PyObject_SetAttrString(PyObject* o, const char* attr_name, PyObject* v)
-_register(
-    "PyObject_SetAttrString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_SetAttrString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,ctypes.py_object,))
 # int PyObject_SetItem(PyObject* o, PyObject* key, PyObject* v)
-_register(
-    "PyObject_SetItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyObject_SetItem', ctypes.c_int, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # Py_ssize_t PyObject_Size(PyObject* o)
-_register("PyObject_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyObject_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PyObject_Str(PyObject* o)
-_register("PyObject_Str", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_Str', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyObject_Type(PyObject* o)
-_register("PyObject_Type", ctypes.py_object, (ctypes.py_object,))
+_register('PyObject_Type', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PySeqIter_New(PyObject* seq)
-_register("PySeqIter_New", ctypes.py_object, (ctypes.py_object,))
+_register('PySeqIter_New', ctypes.py_object, (ctypes.py_object,))
 # int PySequence_Check(PyObject* o)
-_register("PySequence_Check", ctypes.c_int, (ctypes.py_object,))
+_register('PySequence_Check', ctypes.c_int, (ctypes.py_object,))
 # PyObject* PySequence_Concat(PyObject* o1, PyObject* o2)
-_register(
-    "PySequence_Concat",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_Concat', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # int PySequence_Contains(PyObject* o, PyObject* value)
-_register(
-    "PySequence_Contains",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_Contains', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # Py_ssize_t PySequence_Count(PyObject* o, PyObject* value)
-_register(
-    "PySequence_Count",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_Count', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,))
 # int PySequence_DelItem(PyObject* o, Py_ssize_t i)
-_register(
-    "PySequence_DelItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PySequence_DelItem', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # int PySequence_DelSlice(PyObject* o, Py_ssize_t i1, Py_ssize_t i2)
-_register(
-    "PySequence_DelSlice",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PySequence_DelSlice', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,))
 # PyObject* PySequence_Fast(PyObject* o, const char* m)
-_register(
-    "PySequence_Fast",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PySequence_Fast', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PySequence_GetItem(PyObject* o, Py_ssize_t i)
-_register(
-    "PySequence_GetItem",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PySequence_GetItem', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PySequence_GetSlice(PyObject* o, Py_ssize_t i1, Py_ssize_t i2)
-_register(
-    "PySequence_GetSlice",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PySequence_GetSlice', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,))
 # PyObject* PySequence_InPlaceConcat(PyObject* o1, PyObject* o2)
-_register(
-    "PySequence_InPlaceConcat",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_InPlaceConcat', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PySequence_InPlaceRepeat(PyObject* o, Py_ssize_t count)
-_register(
-    "PySequence_InPlaceRepeat",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PySequence_InPlaceRepeat', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,))
 # Py_ssize_t PySequence_Index(PyObject* o, PyObject* value)
-_register(
-    "PySequence_Index",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_Index', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,))
 # Py_ssize_t PySequence_Length(PyObject* o)
-_register("PySequence_Length", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PySequence_Length', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PySequence_List(PyObject* o)
-_register("PySequence_List", ctypes.py_object, (ctypes.py_object,))
+_register('PySequence_List', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PySequence_Repeat(PyObject* o, Py_ssize_t count)
-_register(
-    "PySequence_Repeat",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PySequence_Repeat', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,))
 # int PySequence_SetItem(PyObject* o, Py_ssize_t i, PyObject* v)
-_register(
-    "PySequence_SetItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_SetItem', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.py_object,))
 # int PySequence_SetSlice(PyObject* o, Py_ssize_t i1, Py_ssize_t i2, PyObject* v)
-_register(
-    "PySequence_SetSlice",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PySequence_SetSlice', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.py_object,))
 # Py_ssize_t PySequence_Size(PyObject* o)
-_register("PySequence_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PySequence_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PySequence_Tuple(PyObject* o)
-_register("PySequence_Tuple", ctypes.py_object, (ctypes.py_object,))
+_register('PySequence_Tuple', ctypes.py_object, (ctypes.py_object,))
 # int PySet_Add(PyObject* set, PyObject* key)
-_register(
-    "PySet_Add",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySet_Add', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PySet_Clear(PyObject* set)
-_register("PySet_Clear", ctypes.c_int, (ctypes.py_object,))
+_register('PySet_Clear', ctypes.c_int, (ctypes.py_object,))
 # int PySet_Contains(PyObject* anyset, PyObject* key)
-_register(
-    "PySet_Contains",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySet_Contains', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PySet_Discard(PyObject* set, PyObject* key)
-_register(
-    "PySet_Discard",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySet_Discard', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PySet_New(PyObject* iterable)
-_register("PySet_New", ctypes.py_object, (ctypes.py_object,))
+_register('PySet_New', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PySet_Pop(PyObject* set)
-_register("PySet_Pop", ctypes.py_object, (ctypes.py_object,))
+_register('PySet_Pop', ctypes.py_object, (ctypes.py_object,))
 # Py_ssize_t PySet_Size(PyObject* anyset)
-_register("PySet_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PySet_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # Py_ssize_t PySlice_AdjustIndices(Py_ssize_t length, Py_ssize_t* start, Py_ssize_t* stop, Py_ssize_t step)
-_register(
-    "PySlice_AdjustIndices",
-    ctypes.c_ssize_t,
-    (
-        ctypes.c_ssize_t,
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.c_ssize_t,
-    ),
-    minver="3.6.1",
-)
+_register('PySlice_AdjustIndices', ctypes.c_ssize_t, (ctypes.c_ssize_t,ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),ctypes.c_ssize_t,), minver="3.6.1",)
 # int PySlice_GetIndices(PyObject* slice, Py_ssize_t length, Py_ssize_t* start, Py_ssize_t* stop, Py_ssize_t* step)
-_register(
-    "PySlice_GetIndices",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PySlice_GetIndices', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),))
 # int PySlice_GetIndicesEx(PyObject* slice, Py_ssize_t length, Py_ssize_t* start, Py_ssize_t* stop, Py_ssize_t* step, Py_ssize_t* slicelength)
-_register(
-    "PySlice_GetIndicesEx",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PySlice_GetIndicesEx', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PySlice_New(PyObject* start, PyObject* stop, PyObject* step)
-_register(
-    "PySlice_New",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PySlice_New', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # int PySlice_Unpack(PyObject* slice, Py_ssize_t* start, Py_ssize_t* stop, Py_ssize_t* step)
-_register(
-    "PySlice_Unpack",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-    minver="3.6.1",
-)
+_register('PySlice_Unpack', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),ctypes.POINTER(ctypes.c_ssize_t),), minver="3.6.1",)
 # int PyState_AddModule(PyObject* module, PyModuleDef* def)
-_register(
-    "PyState_AddModule",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(PyModuleDef),
-    ),
-    minver="3.3",
-)
+_register('PyState_AddModule', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(PyModuleDef),), minver="3.3",)
 # PyObject* PyState_FindModule(PyModuleDef* def)
-_register("PyState_FindModule", ctypes.py_object, (ctypes.POINTER(PyModuleDef),))
+_register('PyState_FindModule', ctypes.py_object, (ctypes.POINTER(PyModuleDef),))
 # int PyState_RemoveModule(PyModuleDef* def)
-_register(
-    "PyState_RemoveModule",
-    ctypes.c_int,
-    (ctypes.POINTER(PyModuleDef),),
-    minver="3.3",
-)
+_register('PyState_RemoveModule', ctypes.c_int, (ctypes.POINTER(PyModuleDef),), minver="3.3",)
 # PyObject* PyStructSequence_GetItem(PyObject* p, Py_ssize_t pos)
-_register(
-    "PyStructSequence_GetItem",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyStructSequence_GetItem', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyStructSequence_New(PyTypeObject* type)
-_register("PyStructSequence_New", ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
+_register('PyStructSequence_New', ctypes.py_object, (ctypes.POINTER(PyTypeObject),))
 # PyTypeObject* PyStructSequence_NewType(PyStructSequence_Desc* desc)
-_register("PyStructSequence_NewType", ctypes.POINTER(PyTypeObject), ())
+_register('PyStructSequence_NewType', ctypes.POINTER(PyTypeObject), ())
 # void PyStructSequence_SetItem(PyObject* p, Py_ssize_t pos, PyObject* o)
-_register(
-    "PyStructSequence_SetItem",
-    None,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PyStructSequence_SetItem', None, (ctypes.py_object,ctypes.c_ssize_t,ctypes.py_object,))
 # void PySys_AddWarnOption(const wchar_t* s)
-_register("PySys_AddWarnOption", None, (ctypes.c_wchar_p,))
+_register('PySys_AddWarnOption', None, (ctypes.c_wchar_p,))
 # void PySys_AddWarnOptionUnicode(PyObject* unicode)
-_register("PySys_AddWarnOptionUnicode", None, (ctypes.py_object,))
+_register('PySys_AddWarnOptionUnicode', None, (ctypes.py_object,))
 # void PySys_AddXOption(const wchar_t* s)
-_register(
-    "PySys_AddXOption",
-    None,
-    (ctypes.c_wchar_p,),
-    minver="3.2",
-)
+_register('PySys_AddXOption', None, (ctypes.c_wchar_p,), minver="3.2",)
 # void PySys_FormatStderr(const char* format, ...)
-_register(
-    "PySys_FormatStderr",
-    None,
-    minver="3.2",
-)
+_register('PySys_FormatStderr', None, minver="3.2",)
 # void PySys_FormatStdout(const char* format, ...)
-_register(
-    "PySys_FormatStdout",
-    None,
-    minver="3.2",
-)
+_register('PySys_FormatStdout', None, minver="3.2",)
 # PyObject* PySys_GetObject(const char* name)
-_register("PySys_GetObject", ctypes.py_object, (ctypes.c_char_p,))
+_register('PySys_GetObject', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PySys_GetXOptions()
-_register(
-    "PySys_GetXOptions",
-    ctypes.py_object,
-    (),
-    minver="3.2",
-)
+_register('PySys_GetXOptions', ctypes.py_object, (), minver="3.2",)
 # void PySys_ResetWarnOptions()
-_register("PySys_ResetWarnOptions", None, ())
+_register('PySys_ResetWarnOptions', None, ())
 # void PySys_SetArgv(int argc, wchar_t** argv)
-_register(
-    "PySys_SetArgv",
-    None,
-    (
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_wchar_p),
-    ),
-)
+_register('PySys_SetArgv', None, (ctypes.c_int,ctypes.POINTER(ctypes.c_wchar_p),))
 # void PySys_SetArgvEx(int argc, wchar_t** argv, int updatepath)
-_register(
-    "PySys_SetArgvEx",
-    None,
-    (
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_wchar_p),
-        ctypes.c_int,
-    ),
-    minver="3.1.3",
-)
+_register('PySys_SetArgvEx', None, (ctypes.c_int,ctypes.POINTER(ctypes.c_wchar_p),ctypes.c_int,), minver="3.1.3",)
 # int PySys_SetObject(const char* name, PyObject* v)
-_register(
-    "PySys_SetObject",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('PySys_SetObject', ctypes.c_int, (ctypes.c_char_p,ctypes.py_object,))
 # void PySys_SetPath(const wchar_t* path)
-_register("PySys_SetPath", None, (ctypes.c_wchar_p,))
+_register('PySys_SetPath', None, (ctypes.c_wchar_p,))
 # void PySys_WriteStderr(const char* format, ...)
-_register("PySys_WriteStderr", None)
+_register('PySys_WriteStderr', None)
 # void PySys_WriteStdout(const char* format, ...)
-_register("PySys_WriteStdout", None)
+_register('PySys_WriteStdout', None)
 # void PyThreadState_Clear(PyThreadState* tstate)
-_register("PyThreadState_Clear", None, (ctypes.POINTER(PyThreadState),))
+_register('PyThreadState_Clear', None, (ctypes.POINTER(PyThreadState),))
 # void PyThreadState_Delete(PyThreadState* tstate)
-_register("PyThreadState_Delete", None, (ctypes.POINTER(PyThreadState),))
+_register('PyThreadState_Delete', None, (ctypes.POINTER(PyThreadState),))
 # PyThreadState* PyThreadState_Get()
-_register("PyThreadState_Get", ctypes.POINTER(PyThreadState), ())
+_register('PyThreadState_Get', ctypes.POINTER(PyThreadState), ())
 # PyObject* PyThreadState_GetDict()
-_register("PyThreadState_GetDict", ctypes.py_object, ())
+_register('PyThreadState_GetDict', ctypes.py_object, ())
 # PyFrameObject* PyThreadState_GetFrame(PyThreadState* tstate)
-_register(
-    "PyThreadState_GetFrame",
-    ctypes.POINTER(PyFrameObject),
-    (ctypes.POINTER(PyThreadState),),
-    minver="3.9",
-)
+_register('PyThreadState_GetFrame', ctypes.POINTER(PyFrameObject), (ctypes.POINTER(PyThreadState),), minver="3.9",)
 # uint64_t PyThreadState_GetID(PyThreadState* tstate)
-_register(
-    "PyThreadState_GetID",
-    ctypes.c_uint64,
-    (ctypes.POINTER(PyThreadState),),
-    minver="3.9",
-)
+_register('PyThreadState_GetID', ctypes.c_uint64, (ctypes.POINTER(PyThreadState),), minver="3.9",)
 # PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState* tstate)
-_register(
-    "PyThreadState_GetInterpreter",
-    ctypes.POINTER(PyInterpreterState),
-    (ctypes.POINTER(PyThreadState),),
-    minver="3.9",
-)
+_register('PyThreadState_GetInterpreter', ctypes.POINTER(PyInterpreterState), (ctypes.POINTER(PyThreadState),), minver="3.9",)
 # PyThreadState* PyThreadState_New(PyInterpreterState* interp)
-_register(
-    "PyThreadState_New",
-    ctypes.POINTER(PyThreadState),
-    (ctypes.POINTER(PyInterpreterState),),
-)
+_register('PyThreadState_New', ctypes.POINTER(PyThreadState), (ctypes.POINTER(PyInterpreterState),))
 # int PyThreadState_SetAsyncExc(unsigned long id, PyObject* exc)
-_register(
-    "PyThreadState_SetAsyncExc",
-    ctypes.c_int,
-    (
-        ctypes.c_ulong,
-        ctypes.py_object,
-    ),
-)
+_register('PyThreadState_SetAsyncExc', ctypes.c_int, (ctypes.c_ulong,ctypes.py_object,))
 # PyThreadState* PyThreadState_Swap(PyThreadState* tstate)
-_register(
-    "PyThreadState_Swap",
-    ctypes.POINTER(PyThreadState),
-    (ctypes.POINTER(PyThreadState),),
-)
+_register('PyThreadState_Swap', ctypes.POINTER(PyThreadState), (ctypes.POINTER(PyThreadState),))
 # void PyThread_ReInitTLS()
-_register("PyThread_ReInitTLS", None, ())
+_register('PyThread_ReInitTLS', None, ())
 # int PyThread_create_key()
-_register("PyThread_create_key", ctypes.c_int, ())
+_register('PyThread_create_key', ctypes.c_int, ())
 # void PyThread_delete_key(int key)
-_register("PyThread_delete_key", None, (ctypes.c_int,))
+_register('PyThread_delete_key', None, (ctypes.c_int,))
 # void PyThread_delete_key_value(int key)
-_register("PyThread_delete_key_value", None, (ctypes.c_int,))
+_register('PyThread_delete_key_value', None, (ctypes.c_int,))
 # void* PyThread_get_key_value(int key)
-_register("PyThread_get_key_value", ctypes.c_void_p, (ctypes.c_int,))
+_register('PyThread_get_key_value', ctypes.c_void_p, (ctypes.c_int,))
 # int PyThread_set_key_value(int key, void* value)
-_register(
-    "PyThread_set_key_value",
-    ctypes.c_int,
-    (
-        ctypes.c_int,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyThread_set_key_value', ctypes.c_int, (ctypes.c_int,ctypes.c_void_p,))
 # Py_tss_t* PyThread_tss_alloc()
-_register("PyThread_tss_alloc", ctypes.POINTER(Py_tss_t), ())
+_register('PyThread_tss_alloc', ctypes.POINTER(Py_tss_t), ())
 # int PyThread_tss_create(Py_tss_t* key)
-_register("PyThread_tss_create", ctypes.c_int, (ctypes.POINTER(Py_tss_t),))
+_register('PyThread_tss_create', ctypes.c_int, (ctypes.POINTER(Py_tss_t),))
 # void PyThread_tss_delete(Py_tss_t* key)
-_register("PyThread_tss_delete", None, (ctypes.POINTER(Py_tss_t),))
+_register('PyThread_tss_delete', None, (ctypes.POINTER(Py_tss_t),))
 # void PyThread_tss_free(Py_tss_t* key)
-_register("PyThread_tss_free", None, (ctypes.POINTER(Py_tss_t),))
+_register('PyThread_tss_free', None, (ctypes.POINTER(Py_tss_t),))
 # void* PyThread_tss_get(Py_tss_t* key)
-_register("PyThread_tss_get", ctypes.c_void_p, (ctypes.POINTER(Py_tss_t),))
+_register('PyThread_tss_get', ctypes.c_void_p, (ctypes.POINTER(Py_tss_t),))
 # int PyThread_tss_is_created(Py_tss_t* key)
-_register("PyThread_tss_is_created", ctypes.c_int, (ctypes.POINTER(Py_tss_t),))
+_register('PyThread_tss_is_created', ctypes.c_int, (ctypes.POINTER(Py_tss_t),))
 # int PyThread_tss_set(Py_tss_t* key, void* value)
-_register(
-    "PyThread_tss_set",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(Py_tss_t),
-        ctypes.c_void_p,
-    ),
-)
+_register('PyThread_tss_set', ctypes.c_int, (ctypes.POINTER(Py_tss_t),ctypes.c_void_p,))
 # PyObject* PyTuple_GetItem(PyObject* p, Py_ssize_t pos)
-_register(
-    "PyTuple_GetItem",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyTuple_GetItem', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyTuple_GetSlice(PyObject* p, Py_ssize_t low, Py_ssize_t high)
-_register(
-    "PyTuple_GetSlice",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyTuple_GetSlice', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,))
 # PyObject* PyTuple_New(Py_ssize_t len)
-_register("PyTuple_New", ctypes.py_object, (ctypes.c_ssize_t,))
+_register('PyTuple_New', ctypes.py_object, (ctypes.c_ssize_t,))
 # PyObject* PyTuple_Pack(Py_ssize_t n, ...)
-_register("PyTuple_Pack", ctypes.py_object)
+_register('PyTuple_Pack', ctypes.py_object)
 # int PyTuple_SetItem(PyObject* p, Py_ssize_t pos, PyObject* o)
-_register(
-    "PyTuple_SetItem",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-    ),
-)
+_register('PyTuple_SetItem', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,ctypes.py_object,))
 # Py_ssize_t PyTuple_Size(PyObject* p)
-_register("PyTuple_Size", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyTuple_Size', ctypes.c_ssize_t, (ctypes.py_object,))
 # unsigned int PyType_ClearCache()
-_register("PyType_ClearCache", ctypes.c_uint, ())
+_register('PyType_ClearCache', ctypes.c_uint, ())
 # PyObject* PyType_FromModuleAndSpec(PyObject* module, PyType_Spec* spec, PyObject* bases)
-_register(
-    "PyType_FromModuleAndSpec",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(PyType_Spec),
-        ctypes.py_object,
-    ),
-    minver="3.9",
-)
+_register('PyType_FromModuleAndSpec', ctypes.py_object, (ctypes.py_object,ctypes.POINTER(PyType_Spec),ctypes.py_object,), minver="3.9",)
 # PyObject* PyType_FromSpec(PyType_Spec* spec)
-_register("PyType_FromSpec", ctypes.py_object, (ctypes.POINTER(PyType_Spec),))
+_register('PyType_FromSpec', ctypes.py_object, (ctypes.POINTER(PyType_Spec),))
 # PyObject* PyType_FromSpecWithBases(PyType_Spec* spec, PyObject* bases)
-_register(
-    "PyType_FromSpecWithBases",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyType_Spec),
-        ctypes.py_object,
-    ),
-    minver="3.3",
-)
+_register('PyType_FromSpecWithBases', ctypes.py_object, (ctypes.POINTER(PyType_Spec),ctypes.py_object,), minver="3.3",)
 # PyObject* PyType_GenericAlloc(PyTypeObject* type, Py_ssize_t nitems)
-_register(
-    "PyType_GenericAlloc",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyType_GenericAlloc', ctypes.py_object, (ctypes.POINTER(PyTypeObject),ctypes.c_ssize_t,))
 # PyObject* PyType_GenericNew(PyTypeObject* type, PyObject* args, PyObject* kwds)
-_register(
-    "PyType_GenericNew",
-    ctypes.py_object,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyType_GenericNew', ctypes.py_object, (ctypes.POINTER(PyTypeObject),ctypes.py_object,ctypes.py_object,))
 # unsigned long PyType_GetFlags(PyTypeObject* type)
-_register(
-    "PyType_GetFlags",
-    ctypes.c_ulong,
-    (ctypes.POINTER(PyTypeObject),),
-    minver="3.2",
-)
+_register('PyType_GetFlags', ctypes.c_ulong, (ctypes.POINTER(PyTypeObject),), minver="3.2",)
 # PyObject* PyType_GetModule(PyTypeObject* type)
-_register(
-    "PyType_GetModule",
-    ctypes.py_object,
-    (ctypes.POINTER(PyTypeObject),),
-    minver="3.9",
-)
+_register('PyType_GetModule', ctypes.py_object, (ctypes.POINTER(PyTypeObject),), minver="3.9",)
 # void* PyType_GetModuleState(PyTypeObject* type)
-_register(
-    "PyType_GetModuleState",
-    ctypes.c_void_p,
-    (ctypes.POINTER(PyTypeObject),),
-    minver="3.9",
-)
+_register('PyType_GetModuleState', ctypes.c_void_p, (ctypes.POINTER(PyTypeObject),), minver="3.9",)
 # PyObject* PyType_GetName(PyTypeObject* type)
-_register(
-    "PyType_GetName",
-    ctypes.py_object,
-    (ctypes.POINTER(PyTypeObject),),
-    minver="3.11",
-)
+_register('PyType_GetName', ctypes.py_object, (ctypes.POINTER(PyTypeObject),), minver="3.11",)
 # PyObject* PyType_GetQualName(PyTypeObject* type)
-_register(
-    "PyType_GetQualName",
-    ctypes.py_object,
-    (ctypes.POINTER(PyTypeObject),),
-    minver="3.11",
-)
+_register('PyType_GetQualName', ctypes.py_object, (ctypes.POINTER(PyTypeObject),), minver="3.11",)
 # void* PyType_GetSlot(PyTypeObject* type, int slot)
-_register(
-    "PyType_GetSlot",
-    ctypes.c_void_p,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.c_int,
-    ),
-    minver="3.4",
-)
+_register('PyType_GetSlot', ctypes.c_void_p, (ctypes.POINTER(PyTypeObject),ctypes.c_int,), minver="3.4",)
 # int PyType_IsSubtype(PyTypeObject* a, PyTypeObject* b)
-_register(
-    "PyType_IsSubtype",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.POINTER(PyTypeObject),
-    ),
-)
+_register('PyType_IsSubtype', ctypes.c_int, (ctypes.POINTER(PyTypeObject),ctypes.POINTER(PyTypeObject),))
 # void PyType_Modified(PyTypeObject* type)
-_register("PyType_Modified", None, (ctypes.POINTER(PyTypeObject),))
+_register('PyType_Modified', None, (ctypes.POINTER(PyTypeObject),))
 # int PyType_Ready(PyTypeObject* type)
-_register("PyType_Ready", ctypes.c_int, (ctypes.POINTER(PyTypeObject),))
+_register('PyType_Ready', ctypes.c_int, (ctypes.POINTER(PyTypeObject),))
 # PyObject* PyUnicodeDecodeError_Create(const char* encoding, const char* object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char* reason)
-_register(
-    "PyUnicodeDecodeError_Create",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicodeDecodeError_Create', ctypes.py_object, (ctypes.c_char_p,ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicodeDecodeError_GetEncoding(PyObject* exc)
-_register("PyUnicodeDecodeError_GetEncoding", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeDecodeError_GetEncoding', ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeDecodeError_GetEnd(PyObject* exc, Py_ssize_t* end)
-_register(
-    "PyUnicodeDecodeError_GetEnd",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicodeDecodeError_GetEnd', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicodeDecodeError_GetObject(PyObject* exc)
-_register("PyUnicodeDecodeError_GetObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeDecodeError_GetObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicodeDecodeError_GetReason(PyObject* exc)
-_register("PyUnicodeDecodeError_GetReason", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeDecodeError_GetReason', ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeDecodeError_GetStart(PyObject* exc, Py_ssize_t* start)
-_register(
-    "PyUnicodeDecodeError_GetStart",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicodeDecodeError_GetStart', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),))
 # int PyUnicodeDecodeError_SetEnd(PyObject* exc, Py_ssize_t end)
-_register(
-    "PyUnicodeDecodeError_SetEnd",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicodeDecodeError_SetEnd', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # int PyUnicodeDecodeError_SetReason(PyObject* exc, const char* reason)
-_register(
-    "PyUnicodeDecodeError_SetReason",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicodeDecodeError_SetReason', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # int PyUnicodeDecodeError_SetStart(PyObject* exc, Py_ssize_t start)
-_register(
-    "PyUnicodeDecodeError_SetStart",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicodeDecodeError_SetStart', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyUnicodeEncodeError_GetEncoding(PyObject* exc)
-_register("PyUnicodeEncodeError_GetEncoding", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeEncodeError_GetEncoding', ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeEncodeError_GetEnd(PyObject* exc, Py_ssize_t* end)
-_register(
-    "PyUnicodeEncodeError_GetEnd",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicodeEncodeError_GetEnd', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicodeEncodeError_GetObject(PyObject* exc)
-_register("PyUnicodeEncodeError_GetObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeEncodeError_GetObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicodeEncodeError_GetReason(PyObject* exc)
-_register("PyUnicodeEncodeError_GetReason", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeEncodeError_GetReason', ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeEncodeError_GetStart(PyObject* exc, Py_ssize_t* start)
-_register(
-    "PyUnicodeEncodeError_GetStart",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicodeEncodeError_GetStart', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),))
 # int PyUnicodeEncodeError_SetEnd(PyObject* exc, Py_ssize_t end)
-_register(
-    "PyUnicodeEncodeError_SetEnd",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicodeEncodeError_SetEnd', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # int PyUnicodeEncodeError_SetReason(PyObject* exc, const char* reason)
-_register(
-    "PyUnicodeEncodeError_SetReason",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicodeEncodeError_SetReason', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # int PyUnicodeEncodeError_SetStart(PyObject* exc, Py_ssize_t start)
-_register(
-    "PyUnicodeEncodeError_SetStart",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicodeEncodeError_SetStart', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # int PyUnicodeTranslateError_GetEnd(PyObject* exc, Py_ssize_t* end)
-_register(
-    "PyUnicodeTranslateError_GetEnd",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicodeTranslateError_GetEnd', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicodeTranslateError_GetObject(PyObject* exc)
-_register("PyUnicodeTranslateError_GetObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeTranslateError_GetObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicodeTranslateError_GetReason(PyObject* exc)
-_register("PyUnicodeTranslateError_GetReason", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicodeTranslateError_GetReason', ctypes.py_object, (ctypes.py_object,))
 # int PyUnicodeTranslateError_GetStart(PyObject* exc, Py_ssize_t* start)
-_register(
-    "PyUnicodeTranslateError_GetStart",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicodeTranslateError_GetStart', ctypes.c_int, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),))
 # int PyUnicodeTranslateError_SetEnd(PyObject* exc, Py_ssize_t end)
-_register(
-    "PyUnicodeTranslateError_SetEnd",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicodeTranslateError_SetEnd', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # int PyUnicodeTranslateError_SetReason(PyObject* exc, const char* reason)
-_register(
-    "PyUnicodeTranslateError_SetReason",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicodeTranslateError_SetReason', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # int PyUnicodeTranslateError_SetStart(PyObject* exc, Py_ssize_t start)
-_register(
-    "PyUnicodeTranslateError_SetStart",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicodeTranslateError_SetStart', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyUnicode_AsASCIIString(PyObject* unicode)
-_register("PyUnicode_AsASCIIString", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsASCIIString', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsCharmapString(PyObject* unicode, PyObject* mapping)
-_register(
-    "PyUnicode_AsCharmapString",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyUnicode_AsCharmapString', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyUnicode_AsEncodedString(PyObject* unicode, const char* encoding, const char* errors)
-_register(
-    "PyUnicode_AsEncodedString",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_AsEncodedString', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,))
 # PyObject* PyUnicode_AsLatin1String(PyObject* unicode)
-_register("PyUnicode_AsLatin1String", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsLatin1String', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsMBCSString(PyObject* unicode)
-_register("PyUnicode_AsMBCSString", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsMBCSString', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsRawUnicodeEscapeString(PyObject* unicode)
-_register("PyUnicode_AsRawUnicodeEscapeString", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsRawUnicodeEscapeString', ctypes.py_object, (ctypes.py_object,))
 # Py_UCS4* PyUnicode_AsUCS4(PyObject* u, Py_UCS4* buffer, Py_ssize_t buflen, int copy_null)
-_register(
-    "PyUnicode_AsUCS4",
-    ctypes.POINTER(Py_UCS4),
-    (
-        ctypes.py_object,
-        ctypes.POINTER(Py_UCS4),
-        ctypes.c_ssize_t,
-        ctypes.c_int,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_AsUCS4', ctypes.POINTER(Py_UCS4), (ctypes.py_object,ctypes.POINTER(Py_UCS4),ctypes.c_ssize_t,ctypes.c_int,), minver="3.3",)
 # Py_UCS4* PyUnicode_AsUCS4Copy(PyObject* u)
-_register(
-    "PyUnicode_AsUCS4Copy",
-    ctypes.POINTER(Py_UCS4),
-    (ctypes.py_object,),
-    minver="3.3",
-)
+_register('PyUnicode_AsUCS4Copy', ctypes.POINTER(Py_UCS4), (ctypes.py_object,), minver="3.3",)
 # PyObject* PyUnicode_AsUTF16String(PyObject* unicode)
-_register("PyUnicode_AsUTF16String", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsUTF16String', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsUTF32String(PyObject* unicode)
-_register("PyUnicode_AsUTF32String", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsUTF32String', ctypes.py_object, (ctypes.py_object,))
 # const char* PyUnicode_AsUTF8AndSize(PyObject* unicode, Py_ssize_t* size)
-_register(
-    "PyUnicode_AsUTF8AndSize",
-    ctypes.c_char_p,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_AsUTF8AndSize', ctypes.c_char_p, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),), minver="3.3",)
 # PyObject* PyUnicode_AsUTF8String(PyObject* unicode)
-_register("PyUnicode_AsUTF8String", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsUTF8String', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_AsUnicodeEscapeString(PyObject* unicode)
-_register("PyUnicode_AsUnicodeEscapeString", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_AsUnicodeEscapeString', ctypes.py_object, (ctypes.py_object,))
 # Py_ssize_t PyUnicode_AsWideChar(PyObject* unicode, wchar_t* w, Py_ssize_t size)
-_register(
-    "PyUnicode_AsWideChar",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.c_wchar_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_AsWideChar', ctypes.c_ssize_t, (ctypes.py_object,ctypes.c_wchar_p,ctypes.c_ssize_t,))
 # wchar_t* PyUnicode_AsWideCharString(PyObject* unicode, Py_ssize_t* size)
-_register(
-    "PyUnicode_AsWideCharString",
-    ctypes.c_wchar_p,
-    (
-        ctypes.py_object,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-    minver="3.2",
-)
+_register('PyUnicode_AsWideCharString', ctypes.c_wchar_p, (ctypes.py_object,ctypes.POINTER(ctypes.c_ssize_t),), minver="3.2",)
 # int PyUnicode_Compare(PyObject* left, PyObject* right)
-_register(
-    "PyUnicode_Compare",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyUnicode_Compare', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int PyUnicode_CompareWithASCIIString(PyObject* uni, const char* string)
-_register(
-    "PyUnicode_CompareWithASCIIString",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_CompareWithASCIIString', ctypes.c_int, (ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyUnicode_Concat(PyObject* left, PyObject* right)
-_register(
-    "PyUnicode_Concat",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyUnicode_Concat', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # int PyUnicode_Contains(PyObject* container, PyObject* element)
-_register(
-    "PyUnicode_Contains",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyUnicode_Contains', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # Py_ssize_t PyUnicode_Count(PyObject* str, PyObject* substr, Py_ssize_t start, Py_ssize_t end)
-_register(
-    "PyUnicode_Count",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_Count', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,))
 # PyObject* PyUnicode_Decode(const char* s, Py_ssize_t size, const char* encoding, const char* errors)
-_register(
-    "PyUnicode_Decode",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_Decode', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeASCII(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeASCII",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeASCII', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeCharmap(const char* data, Py_ssize_t size, PyObject* mapping, const char* errors)
-_register(
-    "PyUnicode_DecodeCharmap",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeCharmap', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.py_object,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeFSDefault(const char* s)
-_register("PyUnicode_DecodeFSDefault", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyUnicode_DecodeFSDefault', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeFSDefaultAndSize(const char* s, Py_ssize_t size)
-_register(
-    "PyUnicode_DecodeFSDefaultAndSize",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_DecodeFSDefaultAndSize', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,))
 # PyObject* PyUnicode_DecodeLatin1(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeLatin1",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeLatin1', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeLocale(const char* str, const char* errors)
-_register(
-    "PyUnicode_DecodeLocale",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_DecodeLocale', ctypes.py_object, (ctypes.c_char_p,ctypes.c_char_p,), minver="3.3",)
 # PyObject* PyUnicode_DecodeLocaleAndSize(const char* str, Py_ssize_t len, const char* errors)
-_register(
-    "PyUnicode_DecodeLocaleAndSize",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_DecodeLocaleAndSize', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,), minver="3.3",)
 # PyObject* PyUnicode_DecodeMBCS(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeMBCS",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeMBCS', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeMBCSStateful(const char* s, Py_ssize_t size, const char* errors, Py_ssize_t* consumed)
-_register(
-    "PyUnicode_DecodeMBCSStateful",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicode_DecodeMBCSStateful', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicode_DecodeRawUnicodeEscape(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeRawUnicodeEscape",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeRawUnicodeEscape', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeUTF16(const char* s, Py_ssize_t size, const char* errors, int* byteorder)
-_register(
-    "PyUnicode_DecodeUTF16",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_int),
-    ),
-)
+_register('PyUnicode_DecodeUTF16', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_int),))
 # PyObject* PyUnicode_DecodeUTF16Stateful(const char* s, Py_ssize_t size, const char* errors, int* byteorder, Py_ssize_t* consumed)
-_register(
-    "PyUnicode_DecodeUTF16Stateful",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_int),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicode_DecodeUTF16Stateful', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicode_DecodeUTF32(const char* s, Py_ssize_t size, const char* errors, int* byteorder)
-_register(
-    "PyUnicode_DecodeUTF32",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_int),
-    ),
-)
+_register('PyUnicode_DecodeUTF32', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_int),))
 # PyObject* PyUnicode_DecodeUTF32Stateful(const char* s, Py_ssize_t size, const char* errors, int* byteorder, Py_ssize_t* consumed)
-_register(
-    "PyUnicode_DecodeUTF32Stateful",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_int),
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicode_DecodeUTF32Stateful', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicode_DecodeUTF7(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeUTF7",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeUTF7', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeUTF7Stateful(const char* s, Py_ssize_t size, const char* errors, Py_ssize_t* consumed)
-_register(
-    "PyUnicode_DecodeUTF7Stateful",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicode_DecodeUTF7Stateful', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicode_DecodeUTF8(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeUTF8",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeUTF8', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_DecodeUTF8Stateful(const char* s, Py_ssize_t size, const char* errors, Py_ssize_t* consumed)
-_register(
-    "PyUnicode_DecodeUTF8Stateful",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_ssize_t),
-    ),
-)
+_register('PyUnicode_DecodeUTF8Stateful', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_ssize_t),))
 # PyObject* PyUnicode_DecodeUnicodeEscape(const char* s, Py_ssize_t size, const char* errors)
-_register(
-    "PyUnicode_DecodeUnicodeEscape",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_DecodeUnicodeEscape', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,ctypes.c_char_p,))
 # PyObject* PyUnicode_EncodeCodePage(int code_page, PyObject* unicode, const char* errors)
-_register(
-    "PyUnicode_EncodeCodePage",
-    ctypes.py_object,
-    (
-        ctypes.c_int,
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_EncodeCodePage', ctypes.py_object, (ctypes.c_int,ctypes.py_object,ctypes.c_char_p,), minver="3.3",)
 # PyObject* PyUnicode_EncodeFSDefault(PyObject* unicode)
-_register(
-    "PyUnicode_EncodeFSDefault",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.2",
-)
+_register('PyUnicode_EncodeFSDefault', ctypes.py_object, (ctypes.py_object,), minver="3.2",)
 # PyObject* PyUnicode_EncodeLocale(PyObject* unicode, const char* errors)
-_register(
-    "PyUnicode_EncodeLocale",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_EncodeLocale', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,), minver="3.3",)
 # int PyUnicode_FSConverter(PyObject* obj, void* result)
-_register(
-    "PyUnicode_FSConverter",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-    minver="3.1",
-)
+_register('PyUnicode_FSConverter', ctypes.c_int, (ctypes.py_object,ctypes.c_void_p,), minver="3.1",)
 # int PyUnicode_FSDecoder(PyObject* obj, void* result)
-_register(
-    "PyUnicode_FSDecoder",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_void_p,
-    ),
-    minver="3.2",
-)
+_register('PyUnicode_FSDecoder', ctypes.c_int, (ctypes.py_object,ctypes.c_void_p,), minver="3.2",)
 # Py_ssize_t PyUnicode_Find(PyObject* str, PyObject* substr, Py_ssize_t start, Py_ssize_t end, int direction)
-_register(
-    "PyUnicode_Find",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.c_int,
-    ),
-)
+_register('PyUnicode_Find', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.c_int,))
 # Py_ssize_t PyUnicode_FindChar(PyObject* str, Py_UCS4 ch, Py_ssize_t start, Py_ssize_t end, int direction)
-_register(
-    "PyUnicode_FindChar",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        Py_UCS4,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.c_int,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_FindChar', ctypes.c_ssize_t, (ctypes.py_object,Py_UCS4,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.c_int,), minver="3.3",)
 # PyObject* PyUnicode_Format(PyObject* format, PyObject* args)
-_register(
-    "PyUnicode_Format",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyUnicode_Format', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyUnicode_FromEncodedObject(PyObject* obj, const char* encoding, const char* errors)
-_register(
-    "PyUnicode_FromEncodedObject",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_FromEncodedObject', ctypes.py_object, (ctypes.py_object,ctypes.c_char_p,ctypes.c_char_p,))
 # PyObject* PyUnicode_FromFormat(const char* format, ...)
-_register("PyUnicode_FromFormat", ctypes.py_object)
+_register('PyUnicode_FromFormat', ctypes.py_object)
 # PyObject* PyUnicode_FromFormatV(const char* format, va_list vargs)
-_register(
-    "PyUnicode_FromFormatV",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-)
+_register('PyUnicode_FromFormatV', ctypes.py_object, (ctypes.c_char_p,ctypes.c_void_p,))
 # PyObject* PyUnicode_FromObject(PyObject* obj)
-_register("PyUnicode_FromObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyUnicode_FromObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyUnicode_FromString(const char* u)
-_register("PyUnicode_FromString", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyUnicode_FromString', ctypes.py_object, (ctypes.c_char_p,))
 # PyObject* PyUnicode_FromStringAndSize(const char* u, Py_ssize_t size)
-_register(
-    "PyUnicode_FromStringAndSize",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_FromStringAndSize', ctypes.py_object, (ctypes.c_char_p,ctypes.c_ssize_t,))
 # PyObject* PyUnicode_FromWideChar(const wchar_t* w, Py_ssize_t size)
-_register(
-    "PyUnicode_FromWideChar",
-    ctypes.py_object,
-    (
-        ctypes.c_wchar_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_FromWideChar', ctypes.py_object, (ctypes.c_wchar_p,ctypes.c_ssize_t,))
 # Py_ssize_t PyUnicode_GetLength(PyObject* unicode)
-_register(
-    "PyUnicode_GetLength",
-    ctypes.c_ssize_t,
-    (ctypes.py_object,),
-    minver="3.3",
-)
+_register('PyUnicode_GetLength', ctypes.c_ssize_t, (ctypes.py_object,), minver="3.3",)
 # Py_ssize_t PyUnicode_GetSize(PyObject* unicode)
-_register("PyUnicode_GetSize", ctypes.c_ssize_t, (ctypes.py_object,))
+_register('PyUnicode_GetSize', ctypes.c_ssize_t, (ctypes.py_object,))
 # PyObject* PyUnicode_InternFromString(const char* v)
-_register("PyUnicode_InternFromString", ctypes.py_object, (ctypes.c_char_p,))
+_register('PyUnicode_InternFromString', ctypes.py_object, (ctypes.c_char_p,))
 # void PyUnicode_InternInPlace(PyObject** string)
-_register("PyUnicode_InternInPlace", None, (ctypes.POINTER(ctypes.py_object),))
+_register('PyUnicode_InternInPlace', None, (ctypes.POINTER(ctypes.py_object),))
 # int PyUnicode_IsIdentifier(PyObject* o)
-_register("PyUnicode_IsIdentifier", ctypes.c_int, (ctypes.py_object,))
+_register('PyUnicode_IsIdentifier', ctypes.c_int, (ctypes.py_object,))
 # PyObject* PyUnicode_Join(PyObject* separator, PyObject* seq)
-_register(
-    "PyUnicode_Join",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyUnicode_Join', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # Py_UCS4 PyUnicode_ReadChar(PyObject* unicode, Py_ssize_t index)
-_register(
-    "PyUnicode_ReadChar",
-    Py_UCS4,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_ReadChar', Py_UCS4, (ctypes.py_object,ctypes.c_ssize_t,), minver="3.3",)
 # PyObject* PyUnicode_Replace(PyObject* str, PyObject* substr, PyObject* replstr, Py_ssize_t maxcount)
-_register(
-    "PyUnicode_Replace",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_Replace', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyUnicode_RichCompare(PyObject* left, PyObject* right, int op)
-_register(
-    "PyUnicode_RichCompare",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyUnicode_RichCompare', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.c_int,))
 # PyObject* PyUnicode_Split(PyObject* s, PyObject* sep, Py_ssize_t maxsplit)
-_register(
-    "PyUnicode_Split",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('PyUnicode_Split', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.c_ssize_t,))
 # PyObject* PyUnicode_Splitlines(PyObject* s, int keepend)
-_register(
-    "PyUnicode_Splitlines",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('PyUnicode_Splitlines', ctypes.py_object, (ctypes.py_object,ctypes.c_int,))
 # PyObject* PyUnicode_Substring(PyObject* str, Py_ssize_t start, Py_ssize_t end)
-_register(
-    "PyUnicode_Substring",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_Substring', ctypes.py_object, (ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,), minver="3.3",)
 # Py_ssize_t PyUnicode_Tailmatch(PyObject* str, PyObject* substr, Py_ssize_t start, Py_ssize_t end, int direction)
-_register(
-    "PyUnicode_Tailmatch",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        ctypes.c_ssize_t,
-        ctypes.c_int,
-    ),
-)
+_register('PyUnicode_Tailmatch', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,ctypes.c_ssize_t,ctypes.c_ssize_t,ctypes.c_int,))
 # PyObject* PyUnicode_Translate(PyObject* str, PyObject* table, const char* errors)
-_register(
-    "PyUnicode_Translate",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyUnicode_Translate', ctypes.py_object, (ctypes.py_object,ctypes.py_object,ctypes.c_char_p,))
 # int PyUnicode_WriteChar(PyObject* unicode, Py_ssize_t index, Py_UCS4 character)
-_register(
-    "PyUnicode_WriteChar",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-        Py_UCS4,
-    ),
-    minver="3.3",
-)
+_register('PyUnicode_WriteChar', ctypes.c_int, (ctypes.py_object,ctypes.c_ssize_t,Py_UCS4,), minver="3.3",)
 # PyObject* PyWeakref_GetObject(PyObject* ref)
-_register("PyWeakref_GetObject", ctypes.py_object, (ctypes.py_object,))
+_register('PyWeakref_GetObject', ctypes.py_object, (ctypes.py_object,))
 # PyObject* PyWeakref_NewProxy(PyObject* ob, PyObject* callback)
-_register(
-    "PyWeakref_NewProxy",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyWeakref_NewProxy', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # PyObject* PyWeakref_NewRef(PyObject* ob, PyObject* callback)
-_register(
-    "PyWeakref_NewRef",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('PyWeakref_NewRef', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # int Py_AddPendingCall(int (*func)(void*), void* arg)
-_register(
-    "Py_AddPendingCall",
-    ctypes.c_int,
-    (
-        ctypes.c_int,
-        ctypes.c_void_p,
-    ),
-    minver="3.1",
-)
+_register('Py_AddPendingCall', ctypes.c_int, (ctypes.c_int,ctypes.c_void_p,), minver="3.1",)
 # PyObject* Py_BuildValue(const char* format, ...)
-_register("Py_BuildValue", ctypes.py_object)
+_register('Py_BuildValue', ctypes.py_object)
 # int Py_BytesMain(int argc, char** argv)
-_register(
-    "Py_BytesMain",
-    ctypes.c_int,
-    (
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_char_p),
-    ),
-    minver="3.8",
-)
+_register('Py_BytesMain', ctypes.c_int, (ctypes.c_int,ctypes.POINTER(ctypes.c_char_p),), minver="3.8",)
 # PyObject* Py_CompileString(const char* str, const char* filename, int start)
-_register(
-    "Py_CompileString",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-        ctypes.c_int,
-    ),
-)
+_register('Py_CompileString', ctypes.py_object, (ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int,))
 # void Py_DecRef(PyObject* o)
-_register("Py_DecRef", None, (ctypes.py_object,))
+_register('Py_DecRef', None, (ctypes.py_object,))
 # wchar_t* Py_DecodeLocale(const char* arg, size_t* size)
-_register(
-    "Py_DecodeLocale",
-    ctypes.c_wchar_p,
-    (
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_size_t),
-    ),
-    minver="3.5",
-)
+_register('Py_DecodeLocale', ctypes.c_wchar_p, (ctypes.c_char_p,ctypes.POINTER(ctypes.c_size_t),), minver="3.5",)
 # char* Py_EncodeLocale(const wchar_t* text, size_t* error_pos)
-_register(
-    "Py_EncodeLocale",
-    ctypes.c_char_p,
-    (
-        ctypes.c_wchar_p,
-        ctypes.POINTER(ctypes.c_size_t),
-    ),
-    minver="3.5",
-)
+_register('Py_EncodeLocale', ctypes.c_char_p, (ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_size_t),), minver="3.5",)
 # void Py_EndInterpreter(PyThreadState* tstate)
-_register("Py_EndInterpreter", None, (ctypes.POINTER(PyThreadState),))
+_register('Py_EndInterpreter', None, (ctypes.POINTER(PyThreadState),))
 # int Py_EnterRecursiveCall(const char* where)
-_register("Py_EnterRecursiveCall", ctypes.c_int, (ctypes.c_char_p,))
+_register('Py_EnterRecursiveCall', ctypes.c_int, (ctypes.c_char_p,))
 # void Py_Exit(int status)
-_register("Py_Exit", None, (ctypes.c_int,))
+_register('Py_Exit', None, (ctypes.c_int,))
 # void Py_FatalError(const char* message)
-_register("Py_FatalError", None, (ctypes.c_char_p,))
+_register('Py_FatalError', None, (ctypes.c_char_p,))
 # void Py_Finalize()
-_register("Py_Finalize", None, ())
+_register('Py_Finalize', None, ())
 # int Py_FinalizeEx()
-_register(
-    "Py_FinalizeEx",
-    ctypes.c_int,
-    (),
-    minver="3.6",
-)
+_register('Py_FinalizeEx', ctypes.c_int, (), minver="3.6",)
 # PyObject* Py_GenericAlias(PyObject* origin, PyObject* args)
-_register(
-    "Py_GenericAlias",
-    ctypes.py_object,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.9",
-)
+_register('Py_GenericAlias', ctypes.py_object, (ctypes.py_object,ctypes.py_object,), minver="3.9",)
 # const char* Py_GetBuildInfo()
-_register("Py_GetBuildInfo", ctypes.c_char_p, ())
+_register('Py_GetBuildInfo', ctypes.c_char_p, ())
 # const char* Py_GetCompiler()
-_register("Py_GetCompiler", ctypes.c_char_p, ())
+_register('Py_GetCompiler', ctypes.c_char_p, ())
 # const char* Py_GetCopyright()
-_register("Py_GetCopyright", ctypes.c_char_p, ())
+_register('Py_GetCopyright', ctypes.c_char_p, ())
 # wchar_t* Py_GetExecPrefix()
-_register("Py_GetExecPrefix", ctypes.c_wchar_p, ())
+_register('Py_GetExecPrefix', ctypes.c_wchar_p, ())
 # wchar_t* Py_GetPath()
-_register("Py_GetPath", ctypes.c_wchar_p, ())
+_register('Py_GetPath', ctypes.c_wchar_p, ())
 # const char* Py_GetPlatform()
-_register("Py_GetPlatform", ctypes.c_char_p, ())
+_register('Py_GetPlatform', ctypes.c_char_p, ())
 # wchar_t* Py_GetPrefix()
-_register("Py_GetPrefix", ctypes.c_wchar_p, ())
+_register('Py_GetPrefix', ctypes.c_wchar_p, ())
 # wchar_t* Py_GetProgramFullPath()
-_register("Py_GetProgramFullPath", ctypes.c_wchar_p, ())
+_register('Py_GetProgramFullPath', ctypes.c_wchar_p, ())
 # wchar* Py_GetProgramName()
-_register("Py_GetProgramName", ctypes.c_wchar_p, ())
+_register('Py_GetProgramName', ctypes.c_wchar_p, ())
 # w_char* Py_GetPythonHome()
-_register("Py_GetPythonHome", ctypes.c_wchar_p, ())
+_register('Py_GetPythonHome', ctypes.c_wchar_p, ())
 # const char* Py_GetVersion()
-_register("Py_GetVersion", ctypes.c_char_p, ())
+_register('Py_GetVersion', ctypes.c_char_p, ())
 # void Py_IncRef(PyObject* o)
-_register("Py_IncRef", None, (ctypes.py_object,))
+_register('Py_IncRef', None, (ctypes.py_object,))
 # void Py_Initialize()
-_register("Py_Initialize", None, ())
+_register('Py_Initialize', None, ())
 # void Py_InitializeEx(int initsigs)
-_register("Py_InitializeEx", None, (ctypes.c_int,))
+_register('Py_InitializeEx', None, (ctypes.c_int,))
 # int Py_Is(PyObject* x, PyObject* y)
-_register(
-    "Py_Is",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-    minver="3.10",
-)
+_register('Py_Is', ctypes.c_int, (ctypes.py_object,ctypes.py_object,), minver="3.10",)
 # int Py_IsFalse(PyObject* x)
-_register(
-    "Py_IsFalse",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('Py_IsFalse', ctypes.c_int, (ctypes.py_object,), minver="3.10",)
 # int Py_IsInitialized()
-_register("Py_IsInitialized", ctypes.c_int, ())
+_register('Py_IsInitialized', ctypes.c_int, ())
 # int Py_IsNone(PyObject* x)
-_register(
-    "Py_IsNone",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('Py_IsNone', ctypes.c_int, (ctypes.py_object,), minver="3.10",)
 # int Py_IsTrue(PyObject* x)
-_register(
-    "Py_IsTrue",
-    ctypes.c_int,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('Py_IsTrue', ctypes.c_int, (ctypes.py_object,), minver="3.10",)
 # void Py_LeaveRecursiveCall(void)
-_register("Py_LeaveRecursiveCall", None, ())
+_register('Py_LeaveRecursiveCall', None, ())
 # int Py_Main(int argc, wchar_t** argv)
-_register(
-    "Py_Main",
-    ctypes.c_int,
-    (
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_wchar_p),
-    ),
-)
+_register('Py_Main', ctypes.c_int, (ctypes.c_int,ctypes.POINTER(ctypes.c_wchar_p),))
 # PyThreadState* Py_NewInterpreter()
-_register("Py_NewInterpreter", ctypes.POINTER(PyThreadState), ())
+_register('Py_NewInterpreter', ctypes.POINTER(PyThreadState), ())
 # PyObject* Py_NewRef(PyObject* o)
-_register(
-    "Py_NewRef",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.10",
-)
+_register('Py_NewRef', ctypes.py_object, (ctypes.py_object,), minver="3.10",)
 # int Py_ReprEnter(PyObject* object)
-_register("Py_ReprEnter", ctypes.c_int, (ctypes.py_object,))
+_register('Py_ReprEnter', ctypes.c_int, (ctypes.py_object,))
 # void Py_ReprLeave(PyObject* object)
-_register("Py_ReprLeave", None, (ctypes.py_object,))
+_register('Py_ReprLeave', None, (ctypes.py_object,))
 # void Py_SetProgramName(const wchar_t* name)
-_register("Py_SetProgramName", None, (ctypes.c_wchar_p,))
+_register('Py_SetProgramName', None, (ctypes.c_wchar_p,))
 # void Py_SetPythonHome(const wchar_t* home)
-_register("Py_SetPythonHome", None, (ctypes.c_wchar_p,))
+_register('Py_SetPythonHome', None, (ctypes.c_wchar_p,))
 # PyObject* Py_VaBuildValue(const char* format, va_list vargs)
-_register(
-    "Py_VaBuildValue",
-    ctypes.py_object,
-    (
-        ctypes.c_char_p,
-        ctypes.c_void_p,
-    ),
-)
+_register('Py_VaBuildValue', ctypes.py_object, (ctypes.c_char_p,ctypes.c_void_p,))
 # PyObject* Py_XNewRef(PyObject* o)
-_register(
-    "Py_XNewRef",
-    ctypes.py_object,
-    (ctypes.py_object,),
-    minver="3.10",
-)
-# int PyOS_mystrnicmp(const char* , const char* , Py_ssize_t)
-_register(
-    "PyOS_mystrnicmp",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('Py_XNewRef', ctypes.py_object, (ctypes.py_object,), minver="3.10",)
+# int PyOS_mystrnicmp(const char*, const char*, Py_ssize_t)
+_register('PyOS_mystrnicmp', ctypes.c_int, ())
+# PyObject* PyContext_New(void)
+_register('PyContext_New', ctypes.py_object, ())
+# PyObject* PyContext_CopyCurrent(void)
+_register('PyContext_CopyCurrent', ctypes.py_object, ())
 # int PyOS_InterruptOccurred(void)
-_register("PyOS_InterruptOccurred", ctypes.c_int, ())
+_register('PyOS_InterruptOccurred', ctypes.c_int, ())
 # PyObject* _PyWarnings_Init(void)
-_register("_PyWarnings_Init", ctypes.py_object, ())
-# void PyFrame_LocalsToFast(PyFrameObject* , int)
-_register("PyFrame_LocalsToFast", None, (ctypes.POINTER(PyFrameObject),))
+_register('_PyWarnings_Init', ctypes.py_object, ())
+# void PyFrame_LocalsToFast(PyFrameObject*, int)
+_register('PyFrame_LocalsToFast', None, ())
 # int PyFrame_FastToLocalsWithError(PyFrameObject* f)
-_register(
-    "PyFrame_FastToLocalsWithError", ctypes.c_int, (ctypes.POINTER(PyFrameObject),)
-)
+_register('PyFrame_FastToLocalsWithError', ctypes.c_int, (ctypes.POINTER(PyFrameObject),))
 # void _PyFrame_DebugMallocStats(FILE* out)
-_register("_PyFrame_DebugMallocStats", None, ())
+_register('_PyFrame_DebugMallocStats', None, (ctypes.c_void_p,))
+# PyFrameObject* PyFrame_GetBack(PyFrameObject* frame)
+_register('PyFrame_GetBack', ctypes.POINTER(PyFrameObject), (ctypes.POINTER(PyFrameObject),))
 # void _Py_NewReference(PyObject* op)
-_register("_Py_NewReference", None, (ctypes.py_object,))
+_register('_Py_NewReference', None, (ctypes.py_object,))
 # int _Py_CoerceLegacyLocale(int warn)
-_register("_Py_CoerceLegacyLocale", ctypes.c_int, (ctypes.c_int,))
+_register('_Py_CoerceLegacyLocale', ctypes.c_int, (ctypes.c_int,))
 # int _Py_LegacyLocaleDetected(int warn)
-_register("_Py_LegacyLocaleDetected", ctypes.c_int, (ctypes.c_int,))
+_register('_Py_LegacyLocaleDetected', ctypes.c_int, (ctypes.c_int,))
+# char* _Py_SetLocaleFromEnv(int category)
+_register('_Py_SetLocaleFromEnv', ctypes.c_char_p, (ctypes.c_int,))
+# PyThreadState* _Py_NewInterpreter(int isolated_subinterpreter)
+_register('_Py_NewInterpreter', ctypes.POINTER(PyThreadState), (ctypes.c_int,))
 # int PyCompile_OpcodeStackEffect(int opcode, int oparg)
-_register(
-    "PyCompile_OpcodeStackEffect",
-    ctypes.c_int,
-    (
-        ctypes.c_int,
-        ctypes.c_int,
-    ),
-)
+_register('PyCompile_OpcodeStackEffect', ctypes.c_int, (ctypes.c_int,ctypes.c_int,))
 # int PyCompile_OpcodeStackEffectWithJump(int opcode, int oparg, int jump)
-_register(
-    "PyCompile_OpcodeStackEffectWithJump",
-    ctypes.c_int,
-    (
-        ctypes.c_int,
-        ctypes.c_int,
-        ctypes.c_int,
-    ),
-)
-# int _Py_DisplaySourceLine(PyObject* , PyObject* , int, int)
-_register(
-    "_Py_DisplaySourceLine",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
-# void _PyTraceback_Add(const char* , const char* , int)
-_register(
-    "_PyTraceback_Add",
-    None,
-    (
-        ctypes.c_char_p,
-        ctypes.c_char_p,
-    ),
-)
+_register('PyCompile_OpcodeStackEffectWithJump', ctypes.c_int, (ctypes.c_int,ctypes.c_int,ctypes.c_int,))
+# int _Py_DisplaySourceLine(PyObject*, PyObject*, int, int)
+_register('_Py_DisplaySourceLine', ctypes.c_int, ())
+# void _PyTraceback_Add(const char*, const char*, int)
+_register('_PyTraceback_Add', None, ())
+# PyObject* _PyImport_GetModuleId(_Py_Identifier* name)
+_register('_PyImport_GetModuleId', ctypes.py_object, ())
 # int _PyImport_SetModule(PyObject* name, PyObject* module)
-_register(
-    "_PyImport_SetModule",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('_PyImport_SetModule', ctypes.c_int, (ctypes.py_object,ctypes.py_object,))
 # int _PyImport_SetModuleString(const char* name, PyObject* module)
-_register(
-    "_PyImport_SetModuleString",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
+_register('_PyImport_SetModuleString', ctypes.c_int, (ctypes.c_char_p,ctypes.py_object,))
 # void _PyImport_AcquireLock(void)
-_register("_PyImport_AcquireLock", None, ())
+_register('_PyImport_AcquireLock', None, ())
 # int _PyImport_ReleaseLock(void)
-_register("_PyImport_ReleaseLock", ctypes.c_int, ())
+_register('_PyImport_ReleaseLock', ctypes.c_int, ())
 # void _PyErr_WriteUnraisableMsg(const char* err_msg, PyObject* obj)
-_register(
-    "_PyErr_WriteUnraisableMsg",
-    None,
-    (
-        ctypes.c_char_p,
-        ctypes.py_object,
-    ),
-)
-# void _PyInterpreterState_RequireIDRef(PyInterpreterState* , int)
-_register(
-    "_PyInterpreterState_RequireIDRef", None, (ctypes.POINTER(PyInterpreterState),)
-)
-# int _PyCrossInterpreterData_RegisterClass(PyTypeObject* , crossinterpdatafunc)
-_register(
-    "_PyCrossInterpreterData_RegisterClass",
-    ctypes.c_int,
-    (ctypes.POINTER(PyTypeObject),),
-)
+_register('_PyErr_WriteUnraisableMsg', None, (ctypes.c_char_p,ctypes.py_object,))
+# void _PyInterpreterState_RequireIDRef(PyInterpreterState*, int)
+_register('_PyInterpreterState_RequireIDRef', None, ())
+# int _PyCrossInterpreterData_RegisterClass(PyTypeObject*, crossinterpdatafunc)
+_register('_PyCrossInterpreterData_RegisterClass', ctypes.c_int, ())
 # void* _PyBytesWriter_WriteBytes(_PyBytesWriter* writer, void* str, const void* bytes, Py_ssize_t size)
-_register(
-    "_PyBytesWriter_WriteBytes",
-    ctypes.c_void_p,
-    (
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('_PyBytesWriter_WriteBytes', ctypes.c_void_p, (ctypes.c_void_p,ctypes.c_void_p,ctypes.c_ssize_t,))
 # int _PyEval_SetTrace(PyThreadState* tstate, Py_tracefunc func, PyObject* arg)
-_register(
-    "_PyEval_SetTrace",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.py_object,
-    ),
-)
+_register('_PyEval_SetTrace', ctypes.c_int, (ctypes.POINTER(PyThreadState),ctypes.py_object,))
 # int _PyEval_GetCoroutineOriginTrackingDepth(void)
-_register("_PyEval_GetCoroutineOriginTrackingDepth", ctypes.c_int, ())
+_register('_PyEval_GetCoroutineOriginTrackingDepth', ctypes.c_int, ())
+# PyObject* _PyEval_GetAsyncGenFirstiter(void)
+_register('_PyEval_GetAsyncGenFirstiter', ctypes.py_object, ())
+# PyObject* _PyEval_GetAsyncGenFinalizer(void)
+_register('_PyEval_GetAsyncGenFinalizer', ctypes.py_object, ())
 # int PyEval_MergeCompilerFlags(PyCompilerFlags* cf)
-_register("PyEval_MergeCompilerFlags", ctypes.c_int, ())
+_register('PyEval_MergeCompilerFlags', ctypes.c_int, ())
+# PyObject* _PyEval_EvalFrameDefault(PyThreadState* tstate, PyFrameObject* f, int exc)
+_register('_PyEval_EvalFrameDefault', ctypes.py_object, (ctypes.POINTER(PyThreadState),ctypes.POINTER(PyFrameObject),ctypes.c_int,))
 # void _PyEval_SetSwitchInterval(unsigned long microseconds)
-_register("_PyEval_SetSwitchInterval", None, (ctypes.c_ulong,))
+_register('_PyEval_SetSwitchInterval', None, (ctypes.c_ulong,))
 # unsigned long _PyEval_GetSwitchInterval(void)
-_register("_PyEval_GetSwitchInterval", ctypes.c_ulong, ())
+_register('_PyEval_GetSwitchInterval', ctypes.c_ulong, ())
+# PyObject* _PyDictView_Intersect(PyObject* self, PyObject* other)
+_register('_PyDictView_Intersect', ctypes.py_object, (ctypes.py_object,ctypes.py_object,))
 # int _PyRun_SimpleFileObject(FILE* fp, PyObject* filename, int closeit, PyCompilerFlags* flags)
-_register(
-    "_PyRun_SimpleFileObject",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('_PyRun_SimpleFileObject', ctypes.c_int, (ctypes.c_void_p,ctypes.py_object,ctypes.c_int,))
+# PyObject* _PySys_GetObjectId(_Py_Identifier* key)
+_register('_PySys_GetObjectId', ctypes.py_object, ())
 # int PySys_Audit(const char* event, const char* argFormat, ...)
-_register("PySys_Audit", ctypes.c_int)
+_register('PySys_Audit', ctypes.c_int)
 # void _PyTuple_DebugMallocStats(FILE* out)
-_register("_PyTuple_DebugMallocStats", None, ())
+_register('_PyTuple_DebugMallocStats', None, (ctypes.c_void_p,))
+# PyObject** PyObject_GET_WEAKREFS_LISTPTR(PyObject* op)
+_register('PyObject_GET_WEAKREFS_LISTPTR', ctypes.POINTER(ctypes.py_object), (ctypes.py_object,))
+# PyObject* _PyNumber_Index(PyObject* o)
+_register('_PyNumber_Index', ctypes.py_object, (ctypes.py_object,))
+# PyObject* PyFile_OpenCode(const char* utf8path)
+_register('PyFile_OpenCode', ctypes.py_object, (ctypes.c_char_p,))
+# PyObject* PyFile_OpenCodeObject(PyObject* path)
+_register('PyFile_OpenCodeObject', ctypes.py_object, (ctypes.py_object,))
 # int PyFile_SetOpenCodeHook(Py_OpenCodeHookFunction hook, void* userData)
-_register("PyFile_SetOpenCodeHook", ctypes.c_int, (ctypes.c_void_p,))
+_register('PyFile_SetOpenCodeHook', ctypes.c_int, (ctypes.c_void_p,))
+# void* PyMem_RawMalloc(size_t size)
+_register('PyMem_RawMalloc', ctypes.c_void_p, (ctypes.c_size_t,))
+# void* PyMem_RawCalloc(size_t nelem, size_t elsize)
+_register('PyMem_RawCalloc', ctypes.c_void_p, (ctypes.c_size_t,ctypes.c_size_t,))
+# void* PyMem_RawRealloc(void* ptr, size_t new_size)
+_register('PyMem_RawRealloc', ctypes.c_void_p, (ctypes.c_void_p,ctypes.c_size_t,))
 # void PyMem_RawFree(void* ptr)
-_register("PyMem_RawFree", None, (ctypes.c_void_p,))
+_register('PyMem_RawFree', None, (ctypes.c_void_p,))
 # void PyMem_SetupDebugHooks(void)
-_register("PyMem_SetupDebugHooks", None, ())
+_register('PyMem_SetupDebugHooks', None, ())
 # int _Py_DecodeLocaleEx(const char* arg, wchar_t** wstr, size_t* wlen, const char** reason, int current_locale, _Py_error_handler errors)
-_register(
-    "_Py_DecodeLocaleEx",
-    ctypes.c_int,
-    (
-        ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_wchar_p),
-        ctypes.POINTER(ctypes.c_size_t),
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.c_int,
-    ),
-)
+_register('_Py_DecodeLocaleEx', ctypes.c_int, (ctypes.c_char_p,ctypes.POINTER(ctypes.c_wchar_p),ctypes.POINTER(ctypes.c_size_t),ctypes.POINTER(ctypes.c_char_p),ctypes.c_int,))
 # int _Py_EncodeLocaleEx(const wchar_t* text, char** str, size_t* error_pos, const char** reason, int current_locale, _Py_error_handler errors)
-_register(
-    "_Py_EncodeLocaleEx",
-    ctypes.c_int,
-    (
-        ctypes.c_wchar_p,
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.POINTER(ctypes.c_size_t),
-        ctypes.POINTER(ctypes.c_char_p),
-        ctypes.c_int,
-    ),
-)
+_register('_Py_EncodeLocaleEx', ctypes.c_int, (ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_char_p),ctypes.POINTER(ctypes.c_size_t),ctypes.POINTER(ctypes.c_char_p),ctypes.c_int,))
 # char* _Py_EncodeLocaleRaw(const wchar_t* text, size_t* error_pos)
-_register(
-    "_Py_EncodeLocaleRaw",
-    ctypes.c_char_p,
-    (
-        ctypes.c_wchar_p,
-        ctypes.POINTER(ctypes.c_size_t),
-    ),
-)
-# PyCodeObject* _PyAST_Compile(struct _mod* mod, PyObject* filename, PyCompilerFlags* flags, int optimize, struct _arena* arena)
-_register(
-    "_PyAST_Compile",
-    ctypes.POINTER(PyCodeObject),
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('_Py_EncodeLocaleRaw', ctypes.c_char_p, (ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_size_t),))
+# PyCodeObject* _PyAST_Compile(_mod* mod, PyObject* filename, PyCompilerFlags* flags, int optimize, _arena* arena)
+_register('_PyAST_Compile', ctypes.POINTER(PyCodeObject), (ctypes.py_object,ctypes.c_int,))
 # int _PyStructSequence_InitType(PyTypeObject* type, PyStructSequence_Desc* desc, unsigned long tp_flags)
-_register(
-    "_PyStructSequence_InitType",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(PyTypeObject),
-        ctypes.c_ulong,
-    ),
-)
+_register('_PyStructSequence_InitType', ctypes.c_int, (ctypes.POINTER(PyTypeObject),ctypes.c_ulong,))
 # int _PySys_Audit(PyThreadState* tstate, const char* event, const char* argFormat, ...)
-_register("_PySys_Audit", ctypes.c_int)
+_register('_PySys_Audit', ctypes.c_int)
+# PyObject* _PyObject_Call_Prepend(PyThreadState* tstate, PyObject* callable, PyObject* obj, PyObject* args, PyObject* kwargs)
+_register('_PyObject_Call_Prepend', ctypes.py_object, (ctypes.POINTER(PyThreadState),ctypes.py_object,ctypes.py_object,ctypes.py_object,ctypes.py_object,))
+# PyObject* _PyObject_FastCallDictTstate(PyThreadState* tstate, PyObject* callable, PyObject* const* args, size_t nargsf, PyObject* kwargs)
+_register('_PyObject_FastCallDictTstate', ctypes.py_object, (ctypes.POINTER(PyThreadState),ctypes.py_object,ctypes.POINTER(ctypes.py_object),ctypes.c_size_t,ctypes.py_object,))
+# PyObject* _PyObject_Call(PyThreadState* tstate, PyObject* callable, PyObject* args, PyObject* kwargs)
+_register('_PyObject_Call', ctypes.py_object, (ctypes.POINTER(PyThreadState),ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # int _PyType_CheckConsistency(PyTypeObject* type)
-_register("_PyType_CheckConsistency", ctypes.c_int, (ctypes.POINTER(PyTypeObject),))
+_register('_PyType_CheckConsistency', ctypes.c_int, (ctypes.POINTER(PyTypeObject),))
 # int _PyDict_CheckConsistency(PyObject* mp, int check_content)
-_register(
-    "_PyDict_CheckConsistency",
-    ctypes.c_int,
-    (
-        ctypes.py_object,
-        ctypes.c_int,
-    ),
-)
+_register('_PyDict_CheckConsistency', ctypes.c_int, (ctypes.py_object,ctypes.c_int,))
 # void _PyErr_Fetch(PyThreadState* tstate, PyObject** type, PyObject** value, PyObject** traceback)
-_register(
-    "_PyErr_Fetch",
-    None,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-    ),
-)
+_register('_PyErr_Fetch', None, (ctypes.POINTER(PyThreadState),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),))
 # int _PyErr_ExceptionMatches(PyThreadState* tstate, PyObject* exc)
-_register(
-    "_PyErr_ExceptionMatches",
-    ctypes.c_int,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.py_object,
-    ),
-)
+_register('_PyErr_ExceptionMatches', ctypes.c_int, (ctypes.POINTER(PyThreadState),ctypes.py_object,))
 # void _PyErr_Restore(PyThreadState* tstate, PyObject* type, PyObject* value, PyObject* traceback)
-_register(
-    "_PyErr_Restore",
-    None,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('_PyErr_Restore', None, (ctypes.POINTER(PyThreadState),ctypes.py_object,ctypes.py_object,ctypes.py_object,))
 # void _PyErr_SetObject(PyThreadState* tstate, PyObject* type, PyObject* value)
-_register(
-    "_PyErr_SetObject",
-    None,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.py_object,
-        ctypes.py_object,
-    ),
-)
+_register('_PyErr_SetObject', None, (ctypes.POINTER(PyThreadState),ctypes.py_object,ctypes.py_object,))
 # void _PyErr_ChainStackItem(_PyErr_StackItem* exc_info)
-_register("_PyErr_ChainStackItem", None, ())
+_register('_PyErr_ChainStackItem', None, ())
 # void _PyErr_Clear(PyThreadState* tstate)
-_register("_PyErr_Clear", None, (ctypes.POINTER(PyThreadState),))
+_register('_PyErr_Clear', None, (ctypes.POINTER(PyThreadState),))
 # void _PyErr_SetNone(PyThreadState* tstate, PyObject* exception)
-_register(
-    "_PyErr_SetNone",
-    None,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.py_object,
-    ),
-)
+_register('_PyErr_SetNone', None, (ctypes.POINTER(PyThreadState),ctypes.py_object,))
+# PyObject* _PyErr_NoMemory(PyThreadState* tstate)
+_register('_PyErr_NoMemory', ctypes.py_object, (ctypes.POINTER(PyThreadState),))
 # void _PyErr_SetString(PyThreadState* tstate, PyObject* exception, const char* string)
-_register(
-    "_PyErr_SetString",
-    None,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.py_object,
-        ctypes.c_char_p,
-    ),
-)
+_register('_PyErr_SetString', None, (ctypes.POINTER(PyThreadState),ctypes.py_object,ctypes.c_char_p,))
+# PyObject* _PyErr_Format(PyThreadState* tstate, PyObject* exception, const char* format, ...)
+_register('_PyErr_Format', ctypes.py_object)
 # void _PyErr_NormalizeException(PyThreadState* tstate, PyObject** exc, PyObject** val, PyObject** tb)
-_register(
-    "_PyErr_NormalizeException",
-    None,
-    (
-        ctypes.POINTER(PyThreadState),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-        ctypes.POINTER(ctypes.py_object),
-    ),
-)
+_register('_PyErr_NormalizeException', None, (ctypes.POINTER(PyThreadState),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),ctypes.POINTER(ctypes.py_object),))
+# PyObject* _PyErr_FormatFromCauseTstate(PyThreadState* tstate, PyObject* exception, const char* format, ...)
+_register('_PyErr_FormatFromCauseTstate', ctypes.py_object)
 # int _PyErr_CheckSignalsTstate(PyThreadState* tstate)
-_register("_PyErr_CheckSignalsTstate", ctypes.c_int, (ctypes.POINTER(PyThreadState),))
+_register('_PyErr_CheckSignalsTstate', ctypes.c_int, (ctypes.POINTER(PyThreadState),))
 # void _Py_DumpExtensionModules(int fd, PyInterpreterState* interp)
-_register(
-    "_Py_DumpExtensionModules",
-    None,
-    (
-        ctypes.c_int,
-        ctypes.POINTER(PyInterpreterState),
-    ),
-)
+_register('_Py_DumpExtensionModules', None, (ctypes.c_int,ctypes.POINTER(PyInterpreterState),))
 # Py_ssize_t _Py_UTF8_Edit_Cost(PyObject* str_a, PyObject* str_b, Py_ssize_t max_cost)
-_register(
-    "_Py_UTF8_Edit_Cost",
-    ctypes.c_ssize_t,
-    (
-        ctypes.py_object,
-        ctypes.py_object,
-        ctypes.c_ssize_t,
-    ),
-)
+_register('_Py_UTF8_Edit_Cost', ctypes.c_ssize_t, (ctypes.py_object,ctypes.py_object,ctypes.c_ssize_t,))

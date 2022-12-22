@@ -348,9 +348,11 @@ async def _gen_ct_bindings() -> dict[str, list[str]]:
                                 if line[index + 1] != " ":
                                     patched_line += " "
 
+
+                    patched_line = patched_line.replace(" *", "* ").replace("* *", "** ").replace("  ", " ").replace(" )", ")").replace(" ,", ",")
                     result = await _gen_str(
                         None,
-                        patched_line.replace(" *", "* ").replace("* *", "** "),
+                        patched_line,
                         params,
                         None,
                     )

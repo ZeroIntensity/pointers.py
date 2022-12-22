@@ -1,6 +1,6 @@
 # CPython ABI Bindings
 
-There is currently limited support for most of the CPython ABI.
+Pointers.py provides bindings out of the box for most of the CPython ABI.
 
 The ABI follows the naming convention of `Py<namespace>_<method>`, so you may use one by importing the namespace from pointers.py:
 
@@ -44,3 +44,15 @@ from pointers import PyEval, struct_cast
 frame = struct_cast(PyEval.get_frame())
 # frame is now a valid frame object!
 ```
+
+## Limitations
+
+I did say above that there is support for _most_ of the ABI, so what isn't available right now?
+
+-   Any function using a format string
+-   Any function defined in the header file without parameter names
+-   Anything using a macro (such as `_Py_NO_RETURN`) in its signature
+
+However, there are a few other functions that are unsupported due to arbitrary reasons.
+
+**These will all be supported in the future.**
