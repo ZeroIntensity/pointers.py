@@ -3,8 +3,15 @@ import sys
 from ward import raises, test
 
 from pointers import (
-    DereferenceError, FreedMemoryError, InvalidSizeError,
-    StackAllocatedPointer, acquire_stack_alloc, calloc, free, malloc, realloc
+    DereferenceError,
+    FreedMemoryError,
+    InvalidSizeError,
+    StackAllocatedPointer,
+    acquire_stack_alloc,
+    calloc,
+    free,
+    malloc,
+    realloc,
 )
 
 
@@ -113,6 +120,7 @@ def _():
     assert (~ptr).value == "hello"
     free(ptr)
     assert obj.value == "hello"
+
 
 @test("stack allocation")
 def _():

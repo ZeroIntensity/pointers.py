@@ -1,8 +1,6 @@
 import ctypes
 from abc import ABC, abstractmethod
-from typing import (
-    TYPE_CHECKING, Any, Callable, Iterator, List, Optional, Type, TypeVar
-)
+from typing import TYPE_CHECKING, Any, Callable, Iterator, List, Optional, Type, TypeVar
 
 from typing_extensions import ParamSpec
 
