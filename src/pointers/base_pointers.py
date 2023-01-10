@@ -4,9 +4,7 @@ import warnings
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from typing import (
-    Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
-)
+from typing import Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
 
 from typing_extensions import final
 

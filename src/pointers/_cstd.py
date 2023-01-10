@@ -24,9 +24,11 @@ else:
     _c_library_name = find_library("c") or "libc.so.6"
 
 dll = ctypes.CDLL(_c_library_name)
-mdll = dll if platform in ("win32", "cygwin") else ctypes.CDLL(
-    find_library("m") or (
-        "libm.dylib" if platform == "darwin" else "libm.so.6"
+mdll = (
+    dll
+    if platform in ("win32", "cygwin")
+    else ctypes.CDLL(
+        find_library("m") or ("libm.dylib" if platform == "darwin" else "libm.so.6")
     )
 )
 
