@@ -26,6 +26,8 @@ class CustomBuildHook(BuildHookInterface):
         ext = os.path.join(self.root, "ext")
         lib = os.path.join(ext, "./ext/lib")
 
+        compiler.add_library_dir(sysconfig.get_path("stdlib"))
+        compiler.add_library_dir(sysconfig.get_path("platstdlib"))
         compiler.add_include_dir(sysconfig.get_path("include"))
         compiler.define_macro("PY_SSIZE_T_CLEAN")
 
