@@ -154,7 +154,7 @@ static PyObject* force_update_locals(PyObject* self, PyObject* args) {
     Py_INCREF(target);
 
     for (int i = 0; i < PyDict_GET_SIZE(f->f_locals); i++) {
-        if (Py_Is(f->f_localsplus[i], target)) {
+        if (f->f_localsplus[i] == target) {
             Py_DECREF(f->f_localsplus[i]);
             f->f_localsplus[i] = value;
             Py_INCREF(value);
