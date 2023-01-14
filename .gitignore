@@ -14,3 +14,5 @@ _pointers.cpython*
 *.egg-info/
 wheelhouse/
 gen.py
+ext/
+*.o

@@ -162,7 +162,8 @@ However, this **does not** change the original value. To do that, see the sectio
 Movement is somewhat complicated. In low level languages with pointers, you can use dereferencing assignment, like so:
 
 ```c
-int* a = &1;
+int b = 1;
+int* a = &b;
 *a = 2;
 ```
 
@@ -189,6 +190,16 @@ print("hello world")  # prints out "world hello", since we overwrote it
 While pointers.py does its best to try and prevent segmentation faults, data movement can cause several problems, mainly with garbage collection and reference counting. If you don't know what those are, I highly recommend staying away from data movement.
 
 In fact, unless you are familiar with the CPython internal machinery, I wouldn't touch movement at all.
+
+### For C/C++ developers
+
+Data movement would be like the following C code:
+
+```c
+int* ptr = &1; // lets pretend this is allowed (which it is in python)
+*ptr = 2;
+assert(1 == 2);
+```
 
 ### Bypassing size limits
 

@@ -141,13 +141,41 @@ static PyObject* run_stack_callback(PyObject* self, PyObject* args) {
     return result;
 }
 
+static PyObject* force_update_locals(PyObject* self, PyObject* args) {
+    PyFrameObject* f;
+    PyObject* key;
+    PyObject* value;
+
+    if (!PyArg_ParseTuple(args, "O!UO", &PyFrame_Type, &f, &key, &value))
+        return NULL;
+
+    Py_INCREF(f->f_locals);
+    PyObject* target = PyDict_GetItem(f->f_locals, key);
+    Py_INCREF(target);
+
+    for (int i = 0; i < PyDict_GET_SIZE(f->f_locals); i++) {
+        if (Py_Is(f->f_localsplus[i], target)) {
+            Py_DECREF(f->f_localsplus[i]);
+            f->f_localsplus[i] = value;
+            Py_INCREF(value);
+            break;
+        }
+    }
+
+    Py_DECREF(f->f_locals);
+    Py_DECREF(target);
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef methods[] = {
     {"add_ref", add_ref, METH_VARARGS, "Increment the reference count on the target object."},
     {"remove_ref", remove_ref, METH_VARARGS, "Decrement the reference count on the target object."},
     {"force_set_attr", force_set_attr, METH_VARARGS, "Force setting an attribute on the target type."},
     {"set_ref", set_ref, METH_VARARGS, "Set the reference count on the target object."},
     {"handle", handle, METH_VARARGS, "Enable the SIGSEGV handler."},
-    {"run_stack_callback", run_stack_callback, METH_VARARGS, "."},
+    {"run_stack_callback", run_stack_callback, METH_VARARGS, "Run a callback with a stack allocated pointer."},
+    {"force_update_locals", force_update_locals, METH_VARARGS, "Force update the locals of the target frame."},
     {NULL, NULL, 0, NULL}
 };
 

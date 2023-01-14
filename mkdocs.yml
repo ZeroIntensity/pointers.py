@@ -4,6 +4,7 @@ nav:
     - Home: index.md
     - Getting Started: getting_started.md
     - Using Pointers: using_pointers.md
+    - Variable Pointers: variable_pointers.md
     - Allocation: allocation.md
     - C Bindings: bindings.md
     - CPython ABI Bindings: cpython_bindings.md

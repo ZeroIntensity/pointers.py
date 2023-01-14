@@ -21,7 +21,7 @@ from .decay import decay, decay_annotated, decay_wrapped
 from .exceptions import (
     AllocationError, DereferenceError, FreedMemoryError,
     InvalidBindingParameter, InvalidSizeError, NullPointerError,
-    SegmentViolation
+    SegmentViolation, VariableLifetimeError
 )
 from .magic import _
 from .malloc import AllocatedPointer, free, malloc, realloc
@@ -32,6 +32,7 @@ from .stack_pointer import (
 from .std_structs import DivT, Lconv, LDivT, Tm
 from .structure import Struct, StructPointer
 from .util import NULL, Nullable, handle, raw_type, struct_cast
+from .var_pointer import VarPointer, to_var_ptr
 
-__version__ = "2.5.0"
+__version__ = "2.6.0"
 __license__ = "MIT"

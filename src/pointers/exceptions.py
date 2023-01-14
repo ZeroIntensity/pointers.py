@@ -7,6 +7,7 @@ __all__ = (
     "NullPointerError",
     "InvalidVersionError",
     "SegmentViolation",
+    "VariableLifetimeError",
 )
 
 
@@ -40,3 +41,7 @@ class InvalidVersionError(Exception):
 
 class SegmentViolation(Exception):
     """SIGSEGV was sent to Python."""
+
+
+class VariableLifetimeError(Exception):
+    """Variable is no longer available."""

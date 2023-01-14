@@ -138,12 +138,6 @@ class BasePointer(
 ):
     """Base class representing a pointer."""
 
-    @property
-    @abstractmethod
-    def address(self) -> Optional[int]:
-        """Address that the pointer is looking at."""
-        ...
-
     @abstractmethod
     def __repr__(self) -> str:
         ...

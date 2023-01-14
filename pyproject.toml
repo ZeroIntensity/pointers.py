@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "setuptools"]
+build-backend = "hatchling.build"
 
 [project]
 name = "pointers.py"
@@ -23,9 +23,17 @@ classifiers = [
 dependencies = [
     "typing_extensions",
 ]
-version = "2.5.0"
+dynamic = ["version"]
 
 [project.urls]
 Documentation = "https://pointers.zintensity.dev"
 Issues = "https://github.com/ZeroIntensity/pointers.py/issues"
 Source = "https://github.com/ZeroIntensity/pointers.py"
+
+[tool.ward]
+path = ["tests"]
+capture-output = true
+order = "standard"
+test-output-style = "test-per-line"
+fail-limit = 5
+progress-style = ["bar"]
