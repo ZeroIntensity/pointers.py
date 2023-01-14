@@ -26,8 +26,13 @@ class CustomBuildHook(BuildHookInterface):
         ext = os.path.join(self.root, "ext")
         lib = os.path.join(ext, "./ext/lib")
 
-        compiler.add_library_dir(sysconfig.get_path("stdlib"))
-        compiler.add_library_dir(sysconfig.get_path("platstdlib"))
+        # logic taken from distutils
+        if sysconfig.get_config_var('Py_ENABLE_SHARED'):
+            if not sysconfig.is_python_build():
+                compiler.add_library_dir(sysconfig.get_config_var('LIBDIR'))
+            else:
+                compiler.add_library_dir.append('.')
+
         compiler.add_include_dir(sysconfig.get_path("include"))
         compiler.define_macro("PY_SSIZE_T_CLEAN")
 
