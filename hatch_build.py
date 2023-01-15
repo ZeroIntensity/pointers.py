@@ -32,11 +32,12 @@ class CustomBuildHook(BuildHookInterface):
             if not sysconfig.is_python_build():
                 compiler.add_library_dir(sysconfig.get_config_var('LIBDIR'))
             else:
-                compiler.add_library_dir.append('.')
+                compiler.add_library_dir('.')
 
         compiler.add_include_dir(
             os.path.join(sysconfig.get_path("platstdlib"), "lib")
         )
+        compiler.add_library("libpython")
         compiler.add_include_dir(sysconfig.get_path("include"))
         compiler.define_macro("PY_SSIZE_T_CLEAN")
 
