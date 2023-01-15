@@ -1,6 +1,7 @@
 import os
 import shutil
 import sysconfig
+from contextlib import suppress
 from distutils.extension import Extension
 from glob import glob
 
@@ -33,6 +34,9 @@ class CustomBuildHook(BuildHookInterface):
             else:
                 compiler.add_library_dir.append('.')
 
+        compiler.add_include_dir(
+            os.path.join(sysconfig.get_path("platstdlib"), "lib")
+        )
         compiler.add_include_dir(sysconfig.get_path("include"))
         compiler.define_macro("PY_SSIZE_T_CLEAN")
 
@@ -61,11 +65,17 @@ class CustomBuildHook(BuildHookInterface):
             self.app.abort("failed to link _pointers")
 
         self.app.display_success("successfully linked _pointers")
-        data["force_include"][
-            os.path.join(lib, "lib_pointers.so")
-        ] = "src/_pointers.so"
-        data["infer_tag"] = True
-        data["pure_python"] = False
+
+        with suppress(KeyError):
+            data["force_include"][
+                os.path.join(lib, "lib_pointers.so")
+            ] = "src/_pointers.so"
+
+        with suppress(KeyError):
+            data["infer_tag"] = True
+
+        with suppress(KeyError):
+            data["pure_python"] = False
 
     def clean(self, *_):
         path = os.path.join(self.root, "ext")
