@@ -30,7 +30,7 @@ class CustomBuildHook(BuildHookInterface):
         # logic taken from distutils
         if sysconfig.get_config_var('Py_ENABLE_SHARED'):
             if not sysconfig.is_python_build():
-                self.app.display_always(sysconfig.get_config_var('LIBDIR'))
+                self.app.display_info(sysconfig.get_config_var('LIBDIR'))
                 compiler.add_library_dir(sysconfig.get_config_var('LIBDIR'))
             else:
                 compiler.add_library_dir('.')
@@ -38,7 +38,7 @@ class CustomBuildHook(BuildHookInterface):
         compiler.add_include_dir(
             os.path.join(sysconfig.get_path("platstdlib"), "lib")
         )
-        self.app.display_always(
+        self.app.display_info(
             os.path.join(sysconfig.get_path("platstdlib"), "lib")
         )
         compiler.add_include_dir(sysconfig.get_path("include"))
