@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "setuptools"]
+requires = ["hatchling", "setuptools", "find-libpython"]
 build-backend = "hatchling.build"
 
 [project]

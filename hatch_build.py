@@ -4,7 +4,9 @@ import sysconfig
 from contextlib import suppress
 from distutils.extension import Extension
 from glob import glob
+from pathlib import Path
 
+from find_libpython import find_libpython
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 from hatchling.plugin import hookimpl
 from setuptools._distutils.ccompiler import new_compiler
@@ -30,17 +32,20 @@ class CustomBuildHook(BuildHookInterface):
         # logic taken from distutils
         if sysconfig.get_config_var('Py_ENABLE_SHARED'):
             if not sysconfig.is_python_build():
-                self.app.display_info(sysconfig.get_config_var('LIBDIR'))
                 compiler.add_library_dir(sysconfig.get_config_var('LIBDIR'))
             else:
                 compiler.add_library_dir('.')
 
+        libpython_path = find_libpython()
+        if not libpython_path:
+            self.app.abort("failed to find libpython")
+
+        compiler.add_library_dir(str(Path(libpython_path).parent.absolute()))
+
         compiler.add_include_dir(
             os.path.join(sysconfig.get_path("platstdlib"), "lib")
         )
-        self.app.display_info(
-            os.path.join(sysconfig.get_path("platstdlib"), "lib")
-        )
+
         compiler.add_include_dir(sysconfig.get_path("include"))
         compiler.define_macro("PY_SSIZE_T_CLEAN")
 
