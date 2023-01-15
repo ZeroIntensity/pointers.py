@@ -38,7 +38,7 @@ class CustomBuildHook(BuildHookInterface):
 
         libpython_path = find_libpython()
         if not libpython_path:
-            self.app.abort("failed to find libpython")
+            self.app.display_warning("failed to find libpython")
 
         compiler.add_library_dir(str(Path(libpython_path).parent.absolute()))
 
@@ -55,7 +55,7 @@ class CustomBuildHook(BuildHookInterface):
             compiler.compile(
                 glob("./src/mod.c"),
                 output_dir=ext,
-                extra_preargs=["-fPIC", "-v"]
+                extra_preargs=["-fPIC", "-v"] if os.name != "nt" else [],
             )
         except Exception:
             self.app.abort("failed to compile _pointers")
@@ -71,7 +71,12 @@ class CustomBuildHook(BuildHookInterface):
                     files.append(os.path.join(root, i))
 
         try:
-            compiler.link_shared_lib(files, "_pointers", output_dir=lib)
+            compiler.link_shared_lib(
+                files,
+                "_pointers",
+                output_dir=lib,
+                debug=True
+            )
         except Exception:
             self.app.abort("failed to link _pointers")
 
