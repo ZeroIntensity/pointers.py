@@ -30,6 +30,7 @@ class CustomBuildHook(BuildHookInterface):
         # logic taken from distutils
         if sysconfig.get_config_var('Py_ENABLE_SHARED'):
             if not sysconfig.is_python_build():
+                self.app.display_always(sysconfig.get_config_var('LIBDIR'))
                 compiler.add_library_dir(sysconfig.get_config_var('LIBDIR'))
             else:
                 compiler.add_library_dir('.')
@@ -37,7 +38,9 @@ class CustomBuildHook(BuildHookInterface):
         compiler.add_include_dir(
             os.path.join(sysconfig.get_path("platstdlib"), "lib")
         )
-        compiler.add_library("libpython")
+        self.app.display_always(
+            os.path.join(sysconfig.get_path("platstdlib"), "lib")
+        )
         compiler.add_include_dir(sysconfig.get_path("include"))
         compiler.define_macro("PY_SSIZE_T_CLEAN")
 
@@ -45,7 +48,9 @@ class CustomBuildHook(BuildHookInterface):
 
         try:
             compiler.compile(
-                glob("./src/mod.c"), output_dir=ext, extra_preargs=["-fPIC"]
+                glob("./src/mod.c"),
+                output_dir=ext,
+                extra_preargs=["-fPIC", "-v"]
             )
         except Exception:
             self.app.abort("failed to compile _pointers")
