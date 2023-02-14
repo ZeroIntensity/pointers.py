@@ -22,5 +22,5 @@ serve = "mkdocs serve --dev-addr localhost:8000"
 packages = ["src/pointers"]
 include = ["src/pointers/*.py", "src/pointers/_pointers.pyi"]
 
-[build.hooks.custom]
-enable-by-default = true
+#[build.hooks.custom]
+#enable-by-default = true

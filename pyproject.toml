@@ -1,6 +1,8 @@
 [build-system]
-requires = ["hatchling", "setuptools", "find-libpython"]
-build-backend = "hatchling.build"
+#requires = ["hatchling", "setuptools", "find-libpython"]
+#build-backend = "hatchling.build"
+requires = ["setuptools", "hatchling"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pointers.py"
@@ -23,7 +25,7 @@ classifiers = [
 dependencies = [
     "typing_extensions",
 ]
-dynamic = ["version"]
+version = "2.6.0"
 
 [project.urls]
 Documentation = "https://pointers.zintensity.dev"
