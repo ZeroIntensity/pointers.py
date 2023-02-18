@@ -6,7 +6,6 @@ from distutils.extension import Extension
 from glob import glob
 from pathlib import Path
 
-from find_libpython import find_libpython
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 from hatchling.plugin import hookimpl
 from setuptools._distutils.ccompiler import new_compiler
@@ -35,12 +34,6 @@ class CustomBuildHook(BuildHookInterface):
                 compiler.add_library_dir(sysconfig.get_config_var('LIBDIR'))
             else:
                 compiler.add_library_dir('.')
-
-        libpython_path = find_libpython()
-        if not libpython_path:
-            self.app.display_warning("failed to find libpython")
-
-        compiler.add_library_dir(str(Path(libpython_path).parent.absolute()))
 
         compiler.add_include_dir(
             os.path.join(sysconfig.get_path("platstdlib"), "lib")

@@ -6,7 +6,7 @@ with open("./README.md") as f:
 if __name__ == "__main__":
     setup(
         name="pointers.py",
-        version="2.6.0",
+        version="3.0.0",
         packages=["pointers"],
         license="MIT",
         project_urls={
