@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterator, TypeVar
 
-from typing_extensions import final
+from typing_extensions import Self, final
+
+from .util import Nullable
 
 __all__ = "BasePointer", "Assignable", "Movable"
 
 T = TypeVar("T")
 A = TypeVar("A")
+
 
 class BasePointer(Generic[T], ABC):
     address: int
@@ -40,24 +43,26 @@ class BasePointer(Generic[T], ABC):
         if self.is_null:
             raise TypeError(f"{self} is a null pointer")
 
+
 class Assignable(Generic[T, A], BasePointer[T], ABC):
     def __irshift__(
         self,
-        value: A,
+        value: A | Self,
     ):
         self.assign(value)
         return self
 
     @abstractmethod
-    def assign(self, value: A) -> None:
+    def assign(self, value: Nullable[A] | Self) -> None:
         ...
+
 
 class Movable(BasePointer[T], ABC):
     @final
-    def __ilshift__(self, data: T):
+    def __ilshift__(self, data: T | Self):
         self.move(data)
         return self
 
     @abstractmethod
-    def move(self, target: T) -> None:
+    def move(self, target: T | Self) -> None:
         ...
