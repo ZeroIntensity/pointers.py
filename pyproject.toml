@@ -8,14 +8,13 @@ build-backend = "setuptools.build_meta"
 name = "pointers.py"
 description = 'Bringing the hell of pointers to Python.'
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 keywords = ["python", "pointers"]
 authors = [
     { name = "ZeroIntensity", email = "zintensitydev@gmail.com" },
 ]
 classifiers = [
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -25,7 +24,7 @@ classifiers = [
 dependencies = [
     "typing_extensions",
 ]
-version = "2.6.0"
+version = "3.0.0"
 
 [project.urls]
 Documentation = "https://pointers.zintensity.dev"
