@@ -16,3 +16,5 @@ wheelhouse/
 gen.py
 ext/
 *.o
+compile_flags.txt
+a.py
