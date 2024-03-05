@@ -1,6 +1,5 @@
 import ctypes
 import sys
-import warnings
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
@@ -25,8 +24,6 @@ __all__ = (
     "Dereferencable",
     "IterDereferencable",
 )
-
-warnings.simplefilter("always", DeprecationWarning)
 
 T = TypeVar("T")
 A = TypeVar("A", bound="BasicPointer")
@@ -147,16 +144,6 @@ class BasePointer(
         ...
 
 
-class Typed(ABC, Generic[T]):
-    """Base class for a pointer that has a type attribute."""
-
-    @property
-    @abstractmethod
-    def type(self) -> T:
-        """Type of the value at the address."""
-        ...
-
-
 class Sized(ABC):
     """Base class for a pointer that has a size attribute."""
 
@@ -193,7 +180,6 @@ class Sized(ABC):
 
 
 class BaseObjectPointer(
-    Typed[Type[T]],
     IterDereferencable[T],
     BasePointer[T],
     ABC,
@@ -217,15 +203,6 @@ class BaseObjectPointer(
 
         self._origin_size = sys.getsizeof(~self if address else None)
         weakref.finalize(self, self._cleanup)
-
-    @property
-    def type(self) -> Type[T]:
-        warnings.warn(
-            "BaseObjectPointer.type is deprecated, please use type(~ptr) instead",  # noqa
-            DeprecationWarning,
-        )
-
-        return type(~self)
 
     @handle
     def set_attr(self, key: str, value: Any) -> None:
@@ -389,9 +366,9 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         ...
 
     @property
+    @abstractmethod
     def freed(self) -> bool:
-        """Whether the allocated memory has been freed."""
-        return self._freed
+        ...
 
     @freed.setter
     def freed(self, value: bool) -> None:
@@ -457,6 +434,8 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         size: int,
         address: int,
     ) -> Tuple["ctypes._PointerLike", bytes]:
+
+
         if self.freed:
             raise FreedMemoryError("memory has been freed")
 

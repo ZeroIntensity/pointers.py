@@ -1,3 +1,4 @@
+from __future__ import annotations
 import ctypes
 import faulthandler
 from contextlib import suppress
@@ -6,10 +7,8 @@ from io import UnsupportedOperation
 from typing import (
     TYPE_CHECKING, Any, Callable, NamedTuple, Type, TypeVar, Union
 )
-
 from _pointers import handle as _handle
 from typing_extensions import ParamSpec
-
 from .exceptions import SegmentViolation
 
 if TYPE_CHECKING:

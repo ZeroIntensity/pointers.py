@@ -23,6 +23,8 @@ _C_TYPES: Dict[Type[Any], Type["ctypes._CData"]] = {
     int: ctypes.c_int,
     float: ctypes.c_float,
     bool: ctypes.c_bool,
+    object: ctypes.py_object,
+    type: ctypes.py_object
 }
 
 _PY_TYPES: Dict[Type["ctypes._CData"], type] = {

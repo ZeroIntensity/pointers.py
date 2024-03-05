@@ -1,18 +1,29 @@
 #include <Python.h>
+
+#if PY_MINOR_VERSION < 10
+static inline PyObject* Py_NewRef(PyObject* ob) {
+    Py_INCREF(ob);
+    return ob;
+}
+#endif
+
 #if PY_MAJOR_VERSION != 3
 #error "Python 3 is needed to build"
 #endif
 #if PY_MINOR_VERSION == 11
 #define GET_CODE(frame) PyFrame_GetCode(frame);
+#define GET_LOCALS(frame) PyFrame_GetLocals(frame);
 #else
 #define GET_CODE(frame) frame->f_code;
+#define GET_LOCALS(frame) Py_NewRef(frame->f_locals);
 #endif
 #include <signal.h>
 #include <setjmp.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <frameobject.h> // needed to get members of PyFrameObject
-#define GETOBJ() PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
+#include <frameobject.h>
+#define GETOBJ() \
+    PyObject* obj; if (!PyArg_ParseTuple(args, "O", &obj)) return NULL
 
 #ifdef _WIN32
 #include <malloc.h>
@@ -23,7 +34,9 @@
 #elif defined(_WIN32)
 #define ALLOCA(size) _alloca(size)
 #else
-#define ALLOCA(size) NULL; PyErr_SetString(PyExc_RuntimeError, "stack allocations are not supported on this system!"); return NULL;
+#define ALLOCA( \
+    size) \
+    NULL; PyErr_SetString(PyExc_RuntimeError, "stack allocations are not supported on this system!"); return NULL;
 #endif
 
 static jmp_buf buf;
@@ -43,7 +56,12 @@ static PyObject* remove_ref(PyObject* self, PyObject* args) {
 static PyObject* set_ref(PyObject* self, PyObject* args) {
     PyObject* obj;
     Py_ssize_t count;
-    if (!PyArg_ParseTuple(args, "On", &obj, &count)) return NULL;
+    if (!PyArg_ParseTuple(
+        args,
+        "On",
+        &obj,
+        &count
+        )) return NULL;
     obj->ob_refcnt = count; // i dont care
     Py_RETURN_NONE;
 }
@@ -53,16 +71,29 @@ static PyObject* force_set_attr(PyObject* self, PyObject* args) {
     PyObject* value;
     char* key;
 
-    if (!PyArg_ParseTuple(args, "OsO", &type, &key, &value)) return NULL;
+    if (!PyArg_ParseTuple(
+        args,
+        "OsO",
+        &type,
+        &key,
+        &value
+        )) return NULL;
 
-    PyDict_SetItemString(type->tp_dict, key, value);
+    PyDict_SetItemString(
+        type->tp_dict,
+        key,
+        value
+    );
     PyType_Modified(type);
 
     Py_RETURN_NONE;
 }
 
 static void sigsegv_handler(int signum) {
-    longjmp(buf, 1);
+    longjmp(
+        buf,
+        1
+    );
 }
 
 
@@ -72,14 +103,14 @@ static PyObject* handle(PyObject* self, PyObject* args) {
     PyObject* kwargs = NULL;
 
     if (!PyArg_ParseTuple(
-            args,
-            "O|O!O!",
-            &func,
-            &PyTuple_Type,
-            &params,
-            &PyDict_Type,
-            &kwargs
-        )
+        args,
+        "O|O!O!",
+        &func,
+        &PyTuple_Type,
+        &params,
+        &PyDict_Type,
+        &kwargs
+    )
     ) return NULL;
 
     if (!params) params = PyTuple_New(0);
@@ -96,7 +127,10 @@ static PyObject* handle(PyObject* self, PyObject* args) {
             Py_INCREF(code);
             name = code->co_name;
         } else {
-            name = PyObject_GetAttrString(func, "__name__");
+            name = PyObject_GetAttrString(
+                func,
+                "__name__"
+            );
         }
 
         // this is basically a copy of PyFrame_GetCode, which is only available on 3.9+
@@ -111,7 +145,11 @@ static PyObject* handle(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    PyObject* result = PyObject_Call(func, params, kwargs);
+    PyObject* result = PyObject_Call(
+        func,
+        params,
+        kwargs
+    );
     if (!result) return NULL;
     return result;
 }
@@ -121,20 +159,51 @@ static PyObject* run_stack_callback(PyObject* self, PyObject* args) {
     PyObject* tp;
     PyObject* func;
 
-    if (!PyArg_ParseTuple(args, "iO!O", &size, &PyType_Type, &tp, &func)) return NULL;
+    if (!PyArg_ParseTuple(
+        args,
+        "iO!O",
+        &size,
+        &PyType_Type,
+        &tp,
+        &func
+        )) return NULL;
 
     void* ptr = ALLOCA(size);
     PyObject* tp_args = PyTuple_New(2);
-    PyTuple_SetItem(tp_args, 0, PyLong_FromVoidPtr(ptr));
-    PyTuple_SetItem(tp_args, 1, PyLong_FromLong(size));
-    PyObject* obj = PyObject_Call(tp, tp_args, NULL);
+    PyTuple_SetItem(
+        tp_args,
+        0,
+        PyLong_FromVoidPtr(ptr)
+    );
+    PyTuple_SetItem(
+        tp_args,
+        1,
+        PyLong_FromLong(size)
+    );
+    PyObject* obj = PyObject_Call(
+        tp,
+        tp_args,
+        NULL
+    );
     if (!obj) return NULL;
 
     PyObject* tup = PyTuple_New(1);
-    PyTuple_SetItem(tup, 0, obj);
-    PyObject* result = PyObject_Call(func, tup, NULL);
+    PyTuple_SetItem(
+        tup,
+        0,
+        obj
+    );
+    PyObject* result = PyObject_Call(
+        func,
+        tup,
+        NULL
+    );
     if (!result) return NULL;
-    PyObject_SetAttrString(obj, "freed", Py_True);
+    PyObject_SetAttrString(
+        obj,
+        "freed",
+        Py_True
+    );
 
     Py_INCREF(result);
     return result;
@@ -145,36 +214,45 @@ static PyObject* force_update_locals(PyObject* self, PyObject* args) {
     PyObject* key;
     PyObject* value;
 
-    if (!PyArg_ParseTuple(args, "O!UO", &PyFrame_Type, &f, &key, &value))
+    if (!PyArg_ParseTuple(
+        args,
+        "O!UO",
+        &PyFrame_Type,
+        &f,
+        &key,
+        &value
+        ))
         return NULL;
 
-    Py_INCREF(f->f_locals);
-    PyObject* target = PyDict_GetItem(f->f_locals, key);
-    Py_INCREF(target);
+    PyObject* locals = GET_LOCALS(f);
+    if (PyDict_SetItem(
+        locals,
+        key,
+        value
+        ) < 0)
+        return NULL;
 
-    for (int i = 0; i < PyDict_GET_SIZE(f->f_locals); i++) {
-        if (f->f_localsplus[i] == target) {
-            Py_DECREF(f->f_localsplus[i]);
-            f->f_localsplus[i] = value;
-            Py_INCREF(value);
-            break;
-        }
-    }
-
-    Py_DECREF(f->f_locals);
-    Py_DECREF(target);
-
+    PyFrame_LocalsToFast(
+        f,
+        1
+    );
     Py_RETURN_NONE;
 }
 
 static PyMethodDef methods[] = {
-    {"add_ref", add_ref, METH_VARARGS, "Increment the reference count on the target object."},
-    {"remove_ref", remove_ref, METH_VARARGS, "Decrement the reference count on the target object."},
-    {"force_set_attr", force_set_attr, METH_VARARGS, "Force setting an attribute on the target type."},
-    {"set_ref", set_ref, METH_VARARGS, "Set the reference count on the target object."},
+    {"add_ref", add_ref, METH_VARARGS,
+     "Increment the reference count on the target object."},
+    {"remove_ref", remove_ref, METH_VARARGS,
+     "Decrement the reference count on the target object."},
+    {"force_set_attr", force_set_attr, METH_VARARGS,
+     "Force setting an attribute on the target type."},
+    {"set_ref", set_ref, METH_VARARGS,
+     "Set the reference count on the target object."},
     {"handle", handle, METH_VARARGS, "Enable the SIGSEGV handler."},
-    {"run_stack_callback", run_stack_callback, METH_VARARGS, "Run a callback with a stack allocated pointer."},
-    {"force_update_locals", force_update_locals, METH_VARARGS, "Force update the locals of the target frame."},
+    {"run_stack_callback", run_stack_callback, METH_VARARGS,
+     "Run a callback with a stack allocated pointer."},
+    {"force_update_locals", force_update_locals, METH_VARARGS,
+     "Force update the locals of the target frame."},
     {NULL, NULL, 0, NULL}
 };
 
@@ -186,8 +264,27 @@ static struct PyModuleDef module = {
     methods
 };
 
+void sigabrt_handler(int signum) {
+    Py_FatalError(
+        "python aborted! this means you have a memory error somewhere!"
+    );
+}
+
 PyMODINIT_FUNC PyInit__pointers(void) {
-    if (signal(SIGSEGV, sigsegv_handler) == SIG_ERR) {
+    if (signal(
+        SIGABRT,
+        sigabrt_handler
+        ) == SIG_ERR) {
+        PyErr_SetString(
+            PyExc_ImportError,
+            "cant load _pointers: failed to setup SIGABRT handler"
+        );
+        return NULL;
+    };
+    if (signal(
+        SIGSEGV,
+        sigsegv_handler
+        ) == SIG_ERR) {
         PyErr_SetString(
             PyExc_ImportError,
             "cant load _pointers: failed to setup SIGSEGV handler"

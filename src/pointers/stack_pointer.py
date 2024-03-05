@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, Any
 
 from _pointers import run_stack_callback
 
@@ -83,7 +83,7 @@ def stack_alloc(size: int):
 def acquire_stack_alloc(size: int):
     """Execute a callback with a pointer to stack allocated memory."""
 
-    def decorator(func: Callable[[StackAllocatedPointer], T]) -> T:
+    def decorator(func: Callable[[StackAllocatedPointer[Any]], T]) -> T:
         def wrapper():
             return run_stack_callback(size, StackAllocatedPointer, func)
 

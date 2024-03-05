@@ -1,9 +1,9 @@
 from typing import Dict, Iterator, Optional, TypeVar
 
 from ._cstd import c_calloc, c_free
-from .base_pointers import BaseAllocatedPointer
-from .exceptions import AllocationError
+from .exceptions import AllocationError, DereferenceError
 from .util import handle
+from .base_pointers import BaseAllocatedPointer
 
 __all__ = ("AllocatedArrayPointer", "calloc")
 
@@ -106,6 +106,10 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
         chunk = self._get_chunk_at(index)
         chunk <<= value
 
+    @property
+    def freed(self) -> bool:
+        return self._freed
+
     @handle
     def free(self) -> None:
         first = self[0]
@@ -113,7 +117,7 @@ class AllocatedArrayPointer(BaseAllocatedPointer[T]):
 
         for i in range(self._chunks):  # using __iter__ breaks here
             chunk = self._get_chunk_at(i)
-            chunk.freed = True
+            chunk._freed = True
 
         c_free(first.make_ct_pointer())
 
