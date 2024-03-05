@@ -13,7 +13,6 @@ vgcore.*
 _pointers.cpython*
 *.egg-info/
 wheelhouse/
-gen.py
 ext/
 *.o
 compile_flags.txt
