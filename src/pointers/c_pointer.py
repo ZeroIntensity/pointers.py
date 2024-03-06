@@ -254,6 +254,7 @@ def to_voidp(ptr: TypedCPointer[Any]) -> VoidPointer:
 def to_c_ptr(data: T) -> TypedCPointer[T]:
     """Convert a python type to a pointer to a C type."""
     ct = map_type(data)
+    print(ct)
 
     add_ref(ct)
     address = ctypes.addressof(ct)

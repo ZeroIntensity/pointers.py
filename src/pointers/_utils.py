@@ -82,8 +82,11 @@ def attempt_decode(data: bytes) -> Union[str, bytes]:
 def map_type(data: Any) -> "ctypes._CData":
     """Map the specified data to a C type."""
     typ = get_mapped(type(data))
-    return typ(data)  # type: ignore
 
+    try:
+        return typ(data)  # type: ignore
+    except TypeError:
+        return ctypes.py_object(data)
 
 def get_mapped(typ: Any) -> "Type[ctypes._CData]":
     """Get the C mapped value of the given type."""

@@ -33,6 +33,10 @@ class StackAllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         self._assigned = assigned
 
     @property
+    def freed(self) -> bool:
+        return self._freed
+
+    @property
     def address(self) -> Optional[int]:
         return self._address
 
