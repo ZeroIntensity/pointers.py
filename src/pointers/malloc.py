@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import sys
 from typing import Any, Optional, TypeVar
 
@@ -23,7 +24,7 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         address: int,
         size: int,
         assigned: bool = False,
-        parent: AllocatedPointer[T] | None = None
+        parent: AllocatedPointer[T] | None = None,
     ) -> None:
         """
         Args:
@@ -52,7 +53,7 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
             parent = parent._parent
 
         return parent
-    
+
     @property
     def freed(self) -> bool:
         return self._get_parent()._freed
@@ -87,14 +88,18 @@ class AllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
     @handle
     def __getitem__(self, index: int) -> AllocatedPointer[T]:
         if not isinstance(index, int):
-            raise ValueError(f"memory indices must be int, not {type(index).__name__}")
+            raise ValueError(
+                f"memory indices must be int, not {type(index).__name__}",
+            )
 
         return self._indexed(index)
 
     @handle
     def __setitem__(self, index: int, value: T) -> None:
         if not isinstance(index, int):
-            raise ValueError(f"memory indices must be int, not {type(index).__name__}")
+            raise ValueError(
+                f"memory indices must be int, not {type(index).__name__}",
+            )
 
         ptr = self._indexed(index)
         ptr <<= value

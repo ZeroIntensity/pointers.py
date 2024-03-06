@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 import ctypes
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, Iterator, List, Optional, Type, TypeVar
-
-from typing_extensions import ParamSpec
+from typing import (TYPE_CHECKING, Any, Callable, Iterator, List, Optional,
+                    Type, TypeVar)
 
 from _pointers import add_ref, remove_ref
+from typing_extensions import ParamSpec
 
 from ._utils import deref, get_mapped, map_type
 from .base_pointers import BaseCPointer, IterDereferencable
@@ -156,7 +157,13 @@ class TypedCPointer(_CDeref[T], BaseCPointer[T]):
     @handle
     def _as_parameter_(self) -> ctypes._CData:
         ctype = get_mapped(self.type)
-        deref = ctype.from_address(self.ensure())
+
+        if (ctype is ctypes.c_char_p) and (self.alt):
+            deref = ctype(self.ensure())
+            return deref
+        else:
+            deref = ctype.from_address(self.ensure())
+
         value = deref.value  # type: ignore
 
         if isinstance(value, (TypedCPointer, VoidPointer)):
@@ -254,7 +261,6 @@ def to_voidp(ptr: TypedCPointer[Any]) -> VoidPointer:
 def to_c_ptr(data: T) -> TypedCPointer[T]:
     """Convert a python type to a pointer to a C type."""
     ct = map_type(data)
-    print(ct)
 
     add_ref(ct)
     address = ctypes.addressof(ct)

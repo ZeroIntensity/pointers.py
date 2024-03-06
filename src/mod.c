@@ -134,7 +134,6 @@ static PyObject* handle(PyObject* self, PyObject* args) {
         }
 
         // this is basically a copy of PyFrame_GetCode, which is only available on 3.9+
-
         PyErr_Format(
             PyExc_RuntimeError,
             "segment violation occured during execution of %S",
