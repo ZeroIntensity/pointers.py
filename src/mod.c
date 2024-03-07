@@ -10,7 +10,7 @@ static inline PyObject* Py_NewRef(PyObject* ob) {
 #if PY_MAJOR_VERSION != 3
 #error "Python 3 is needed to build"
 #endif
-#if PY_MINOR_VERSION == 11
+#if PY_MINOR_VERSION >= 11
 #define GET_CODE(frame) PyFrame_GetCode(frame);
 #define GET_LOCALS(frame) PyFrame_GetLocals(frame);
 #else
