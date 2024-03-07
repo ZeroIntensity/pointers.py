@@ -12,3 +12,4 @@
 ::: pointers.exceptions
 ::: pointers.magic
 ::: pointers._utils
+::: pointers.var_pointer

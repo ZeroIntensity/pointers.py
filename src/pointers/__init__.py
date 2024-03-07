@@ -8,7 +8,7 @@ from ._utils import force_set_attr
 from .api_bindings import *
 from .base_pointers import (
     BaseAllocatedPointer, BaseCPointer, BaseObjectPointer, BasePointer,
-    BasicPointer, Dereferencable, IterDereferencable, Sized, Typed
+    BasicPointer, Dereferencable, IterDereferencable, Sized
 )
 from .bindings import *
 from .c_pointer import (
@@ -34,5 +34,5 @@ from .structure import Struct, StructPointer
 from .util import NULL, Nullable, handle, raw_type, struct_cast
 from .var_pointer import VarPointer, to_var_ptr
 
-__version__ = "2.6.0"
+__version__ = "3.0.0"
 __license__ = "MIT"

@@ -23,6 +23,8 @@ _C_TYPES: Dict[Type[Any], Type["ctypes._CData"]] = {
     int: ctypes.c_int,
     float: ctypes.c_float,
     bool: ctypes.c_bool,
+    object: ctypes.py_object,
+    type: ctypes.py_object
 }
 
 _PY_TYPES: Dict[Type["ctypes._CData"], type] = {
@@ -80,8 +82,11 @@ def attempt_decode(data: bytes) -> Union[str, bytes]:
 def map_type(data: Any) -> "ctypes._CData":
     """Map the specified data to a C type."""
     typ = get_mapped(type(data))
-    return typ(data)  # type: ignore
 
+    try:
+        return typ(data)  # type: ignore
+    except TypeError:
+        return ctypes.py_object(data)
 
 def get_mapped(typ: Any) -> "Type[ctypes._CData]":
     """Get the C mapped value of the given type."""

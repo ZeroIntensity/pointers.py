@@ -36,19 +36,11 @@ fprintf(file, "hello world")
 fclose(file)
 ```
 
-### What's new in 2.0.0?
-
--   Reworked documentation
--   Several bug fixes
--   Optimized internal API
--   Better and fixed type safety
--   New memory safety features
-
 ### Features
 
 -   Fully type safe
 -   Pythonic pointer API
--   Bindings for the entire C standard library
+-   Bindings for the entire C standard library and CPython ABI
 -   Segfaults
 
 ### Why does this exist?

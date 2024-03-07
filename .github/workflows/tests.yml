@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - master
-            - new-ci
     pull_request:
         branches:
             - master
@@ -16,6 +15,7 @@ concurrency:
 env:
     PYTHONUNBUFFERED: "1"
     FORCE_COLOR: "1"
+    PYTHONIOENCODING: "utf8"
 
 jobs:
     run:
@@ -25,7 +25,7 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest, windows-latest, macos-latest]
-                python-version: ["3.7", "3.8", "3.9", "3.10"]
+                python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
         steps:
             - uses: actions/checkout@v2
@@ -35,8 +35,11 @@ jobs:
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - name: Install Hatch
-              run: pip install --upgrade --pre hatch
+            - name: Install Ward
+              run: pip install --upgrade --pre ward
+
+            - name: Install project
+              run: pip install .
 
             - name: Run tests
-              run: hatch run tests
+              run: ward
