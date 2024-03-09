@@ -10,11 +10,11 @@ static inline PyObject* Py_NewRef(PyObject* ob) {
 #if PY_MAJOR_VERSION != 3
 #error "Python 3 is needed to build"
 #endif
-#if PY_MINOR_VERSION == 11
+#if PY_MINOR_VERSION >= 11
 #define GET_CODE(frame) PyFrame_GetCode(frame);
 #define GET_LOCALS(frame) PyFrame_GetLocals(frame);
 #else
-#define GET_CODE(frame) frame->f_code;
+#define GET_CODE(frame) Py_NewRef(frame->f_code);
 #define GET_LOCALS(frame) Py_NewRef(frame->f_locals);
 #endif
 #include <signal.h>
@@ -124,14 +124,15 @@ static PyObject* handle(PyObject* self, PyObject* args) {
 
         if (frame) {
             code = GET_CODE(frame);
-            Py_INCREF(code);
-            name = code->co_name;
+            name = Py_NewRef(code->co_name);
         } else {
             name = PyObject_GetAttrString(
                 func,
                 "__name__"
             );
         }
+
+        Py_DECREF(frame);
 
         // this is basically a copy of PyFrame_GetCode, which is only available on 3.9+
         PyErr_Format(
