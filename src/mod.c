@@ -115,13 +115,13 @@ static PyObject* handle(PyObject* self, PyObject* args) {
 
     if (!params) params = PyTuple_New(0);
     if (!kwargs) kwargs = PyDict_New();
-    int val = setjmp(buf);
+    int val = getenv("POINTERSPY_ALLOW_SEGV") ? 0 : setjmp(buf);
 
     if (val) {
         PyFrameObject* frame = PyEval_GetFrame();
         PyObject* name;
         PyCodeObject* code = NULL;
-
+        puts("1");
         if (frame) {
             code = GET_CODE(frame);
             name = Py_NewRef(code->co_name);
@@ -131,10 +131,10 @@ static PyObject* handle(PyObject* self, PyObject* args) {
                 "__name__"
             );
         }
+        puts("2");
 
         Py_DECREF(frame);
 
-        // this is basically a copy of PyFrame_GetCode, which is only available on 3.9+
         PyErr_Format(
             PyExc_RuntimeError,
             "segment violation occured during execution of %S",

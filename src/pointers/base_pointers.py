@@ -1,15 +1,14 @@
 import ctypes
+import gc
 import sys
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from typing import (
-    Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
-)
-
-from typing_extensions import final
+from typing import (Any, Generic, Iterator, Optional, Tuple, Type, TypeVar,
+                    Union)
 
 from _pointers import add_ref, remove_ref
+from typing_extensions import final
 
 from ._utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
@@ -390,6 +389,11 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         from .object_pointer import to_ptr
 
         data_ptr = data if isinstance(data, BasePointer) else to_ptr(data)
+        
+        if (sys.version_info.minor >= 11) and (gc.is_tracked(~data_ptr)):
+            remove_ref(data)
+            raise RuntimeError("allocation on tracked types is not supported on 3.11+")
+
 
         ptr, byte_stream = self._make_stream_and_ptr(
             sys.getsizeof(~data_ptr),
@@ -430,10 +434,9 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         size: int,
         address: int,
     ) -> Tuple["ctypes._PointerLike", bytes]:
-
         if self.freed:
             raise FreedMemoryError("memory has been freed")
-
+        
         bytes_a = (ctypes.c_ubyte * size).from_address(address)  # fmt: off
         return self.make_ct_pointer(), bytes(bytes_a)
 

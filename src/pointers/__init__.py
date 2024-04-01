@@ -31,7 +31,7 @@ from .stack_pointer import (
 )
 from .std_structs import DivT, Lconv, LDivT, Tm
 from .structure import Struct, StructPointer
-from .util import NULL, Nullable, handle, raw_type, struct_cast
+from .util import NULL, Nullable, handle, raw_type, struct_cast, stop_handler
 from .var_pointer import VarPointer, to_var_ptr
 
 __version__ = "3.0.0"
