@@ -22,20 +22,31 @@ print(text)  # world hello
 ```
 
 ```py
-from pointers import c_malloc as malloc, c_free as free, strcpy, printf
+from pointers import c_malloc, c_free, strcpy, printf
 
-ptr = malloc(3)
+ptr = c_malloc(3)
 strcpy(ptr, "hi")
-printf("%s\n", ptr)
-free(ptr)
+printf("%s\n", ptr)  # hi
+c_free(ptr)
+```
+
+```py
+from pointers import malloc, free
+
+my_str = malloc(103)
+my_str <<= "hi"
+second_str = my_str[51]
+second_str <<= "bye"
+print(*my_str, *second_str)  # hi bye
+free(my_str)
 ```
 
 ### Features
 
 -   Fully type safe
 -   Pythonic pointer API
--   Bindings for the entire C standard library
--   Segfaults 
+-   Bindings for the entire C standard library and CPython ABI
+-   Segfaults
 
 ### Why does this exist?
 

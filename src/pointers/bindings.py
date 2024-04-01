@@ -393,7 +393,7 @@ def binding_base(
         fn,
     )
 
-
+@handle
 def make_string(data: StringLike) -> Union[bytes, ctypes.c_char_p]:
     if (type(data) not in {VoidPointer, str, bytes, TypedCPointer}) and data:
         raise InvalidBindingParameter(

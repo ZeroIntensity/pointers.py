@@ -1,3 +1,4 @@
+from __future__ import annotations
 import ctypes
 import faulthandler
 from contextlib import suppress
@@ -6,10 +7,9 @@ from io import UnsupportedOperation
 from typing import (
     TYPE_CHECKING, Any, Callable, NamedTuple, Type, TypeVar, Union
 )
-
+import os
 from _pointers import handle as _handle
 from typing_extensions import ParamSpec
-
 from .exceptions import SegmentViolation
 
 if TYPE_CHECKING:
@@ -26,6 +26,7 @@ __all__ = (
     "raw_type",
     "handle",
     "struct_cast",
+    "stop_handler"
 )
 
 T = TypeVar("T")
@@ -50,6 +51,10 @@ def raw_type(ct: Type["ctypes._CData"]) -> Any:
     """Set a raw ctypes type for a struct."""
     return RawType(ct)
 
+
+def stop_handler() -> None:
+    """Shutoff the SIGSEGV handler."""
+    os.environ["POINTERSPY_ALLOW_SEGV"] = "1"
 
 def handle(func: Callable[P, T]) -> Callable[P, T]:
     """Handle segment violation errors when called."""
