@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "toml"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -23,7 +23,7 @@ dependencies = [
     "typing_extensions",
     "varname"
 ]
-version = "3.0.0"
+version = "3.0.1"
 
 [project.urls]
 Documentation = "https://pointers.zintensity.dev"
