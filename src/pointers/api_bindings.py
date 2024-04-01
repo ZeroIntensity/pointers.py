@@ -36,7 +36,7 @@ class DumbassError(Exception):
 
 class _CallBase:
     def __init__(self):
-        raise DumbassError
+        raise DumbassError("this is a namespace")
 
 
 T = TypeVar("T")
@@ -2492,14 +2492,14 @@ class PyOS(_CallBase):
 
     # PyOS_AfterFork_Child
     @staticmethod
-    def after_fork__child() -> None:
+    def after_fork_child() -> None:
         return api_binding_base(
             API_FUNCS["PyOS_AfterFork_Child"],
         )
 
     # PyOS_AfterFork_Parent
     @staticmethod
-    def after_fork__parent() -> None:
+    def after_fork_parent() -> None:
         return api_binding_base(
             API_FUNCS["PyOS_AfterFork_Parent"],
         )
@@ -2513,7 +2513,7 @@ class PyOS(_CallBase):
 
     # PyOS_FSPath
     @staticmethod
-    def fs__path(path: PyObjectLike) -> PyObjectLike:
+    def fs_path(path: PyObjectLike) -> PyObjectLike:
         return api_binding_base(API_FUNCS["PyOS_FSPath"], _deref_maybe(path))
 
     # PyOS_double_to_string
@@ -2933,7 +2933,7 @@ class PyObject(_CallBase):
 
     # PyObject_GET_WEAKREFS_LISTPTR
     @staticmethod
-    def g_e_t__w_e_a_k_r_e_fs___l_i_s_t_p_t_r(op: PyObjectLike) -> PointerLike:
+    def get_weakrefs_listptr(op: PyObjectLike) -> PointerLike:
         return api_binding_base(
             API_FUNCS["PyObject_GET_WEAKREFS_LISTPTR"], _deref_maybe(op)
         )
@@ -3759,7 +3759,7 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_AsASCIIString
     @staticmethod
-    def as_ascii__string(unicode: PyObjectLike) -> PyObjectLike:
+    def as_ascii_string(unicode: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
             API_FUNCS["PyUnicode_AsASCIIString"], _deref_maybe(unicode)
         )
@@ -3871,7 +3871,7 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_CompareWithASCIIString
     @staticmethod
-    def compare_with_ascii__string(uni: PyObjectLike, string: StringLike) -> int:
+    def compare_with_ascii_string(uni: PyObjectLike, string: StringLike) -> int:
         return api_binding_base(
             API_FUNCS["PyUnicode_CompareWithASCIIString"],
             _deref_maybe(uni),
@@ -3943,12 +3943,12 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_DecodeFSDefault
     @staticmethod
-    def decode_fs__default(s: StringLike) -> PyObjectLike:
+    def decode_fsdefault(s: StringLike) -> PyObjectLike:
         return api_binding_base(API_FUNCS["PyUnicode_DecodeFSDefault"], make_string(s))
 
     # PyUnicode_DecodeFSDefaultAndSize
     @staticmethod
-    def decode_fs__default_and_size(s: StringLike, size: int) -> PyObjectLike:
+    def decode_fs_default_and_size(s: StringLike, size: int) -> PyObjectLike:
         return api_binding_base(
             API_FUNCS["PyUnicode_DecodeFSDefaultAndSize"], make_string(s), size
         )
@@ -4110,7 +4110,7 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_EncodeFSDefault
     @staticmethod
-    def encode_fs__default(unicode: PyObjectLike) -> PyObjectLike:
+    def encode_fs_default(unicode: PyObjectLike) -> PyObjectLike:
         return api_binding_base(
             API_FUNCS["PyUnicode_EncodeFSDefault"], _deref_maybe(unicode)
         )
@@ -4126,14 +4126,14 @@ class PyUnicode(_CallBase):
 
     # PyUnicode_FSConverter
     @staticmethod
-    def fs__converter(obj: PyObjectLike, result: PointerLike) -> int:
+    def fs_converter(obj: PyObjectLike, result: PointerLike) -> int:
         return api_binding_base(
             API_FUNCS["PyUnicode_FSConverter"], _deref_maybe(obj), result
         )
 
     # PyUnicode_FSDecoder
     @staticmethod
-    def fs__decoder(obj: PyObjectLike, result: PointerLike) -> int:
+    def fs_decoder(obj: PyObjectLike, result: PointerLike) -> int:
         return api_binding_base(
             API_FUNCS["PyUnicode_FSDecoder"], _deref_maybe(obj), result
         )
@@ -4744,7 +4744,7 @@ class _Py(_CallBase):
 
     # _Py_UTF8_Edit_Cost
     @staticmethod
-    def utf_8__edit__cost(
+    def utf_8_edit_cost(
         str_a: PyObjectLike, str_b: PyObjectLike, max_cost: int
     ) -> int:
         return api_binding_base(
@@ -5087,7 +5087,7 @@ class _PyObject(_CallBase):
 
     # _PyObject_Call_Prepend
     @staticmethod
-    def call__prepend(
+    def call_prepend(
         tstate: StructPointer[ThreadState],
         callable: PyObjectLike,
         obj: PyObjectLike,

@@ -1,16 +1,14 @@
 import ctypes
+import gc
 import sys
-import warnings
 import weakref
 from abc import ABC, abstractmethod
 from contextlib import suppress
-from typing import (
-    Any, Generic, Iterator, Optional, Tuple, Type, TypeVar, Union
-)
-
-from typing_extensions import final
+from typing import (Any, Generic, Iterator, Optional, Tuple, Type, TypeVar,
+                    Union)
 
 from _pointers import add_ref, remove_ref
+from typing_extensions import final
 
 from ._utils import deref, force_set_attr, move_to_mem
 from .exceptions import DereferenceError, FreedMemoryError, NullPointerError
@@ -25,8 +23,6 @@ __all__ = (
     "Dereferencable",
     "IterDereferencable",
 )
-
-warnings.simplefilter("always", DeprecationWarning)
 
 T = TypeVar("T")
 A = TypeVar("A", bound="BasicPointer")
@@ -91,6 +87,7 @@ class Movable(ABC, Generic[T, A]):
         *,
         unsafe: bool = False,
     ) -> None:
+        """Move/copy a value into the memory at the pointers address."""
         ...
 
     def __ilshift__(self, data: Union[A, T]):
@@ -115,7 +112,6 @@ class Dereferencable(ABC, Generic[T]):
 
     @final
     def __invert__(self) -> T:
-        """Dereference the pointer."""
         return self.dereference()
 
 
@@ -125,7 +121,6 @@ class IterDereferencable(Dereferencable[T], Generic[T]):
     """
 
     def __iter__(self) -> Iterator[T]:
-        """Dereference the pointer."""
         return iter({self.dereference()})
 
 
@@ -147,22 +142,8 @@ class BasePointer(
         ...
 
 
-class Typed(ABC, Generic[T]):
-    """Base class for a pointer that has a type attribute."""
-
-    @property
-    @abstractmethod
-    def type(self) -> T:
-        """Type of the value at the address."""
-        ...
-
-
-class Sized(ABC):
+class Sized(BasicPointer, ABC):
     """Base class for a pointer that has a size attribute."""
-
-    @abstractmethod
-    def ensure(self) -> int:
-        ...
 
     @property
     @abstractmethod
@@ -193,7 +174,6 @@ class Sized(ABC):
 
 
 class BaseObjectPointer(
-    Typed[Type[T]],
     IterDereferencable[T],
     BasePointer[T],
     ABC,
@@ -218,17 +198,9 @@ class BaseObjectPointer(
         self._origin_size = sys.getsizeof(~self if address else None)
         weakref.finalize(self, self._cleanup)
 
-    @property
-    def type(self) -> Type[T]:
-        warnings.warn(
-            "BaseObjectPointer.type is deprecated, please use type(~ptr) instead",  # noqa
-            DeprecationWarning,
-        )
-
-        return type(~self)
-
     @handle
     def set_attr(self, key: str, value: Any) -> None:
+        """Force setting an attribute on the object the pointer is looking at."""  # noqa
         v: Any = ~self  # mypy gets angry if this isnt any
         if not isinstance(~self, type):
             v = type(v)
@@ -311,9 +283,8 @@ class BaseObjectPointer(
 
 
 class BaseCPointer(
-    IterDereferencable[T],
     Movable[T, "BaseCPointer[T]"],
-    BasicPointer,
+    IterDereferencable[T],
     Sized,
     ABC,
 ):
@@ -363,6 +334,7 @@ class BaseCPointer(
 
     @handle
     def make_ct_pointer(self):
+        """Turn the pointer into a ctypes pointer."""
         return ctypes.cast(
             self.ensure(),
             ctypes.POINTER(ctypes.c_char * self.size),
@@ -370,7 +342,7 @@ class BaseCPointer(
 
     @abstractmethod
     def _as_parameter_(self) -> "ctypes._CData":
-        """Convert the pointer to a ctypes pointer."""
+        """Convert the data into something that ctypes understands."""
         ...
 
     @abstractmethod
@@ -389,9 +361,9 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         ...
 
     @property
+    @abstractmethod
     def freed(self) -> bool:
-        """Whether the allocated memory has been freed."""
-        return self._freed
+        ...
 
     @freed.setter
     def freed(self, value: bool) -> None:
@@ -417,6 +389,11 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
         from .object_pointer import to_ptr
 
         data_ptr = data if isinstance(data, BasePointer) else to_ptr(data)
+        
+        if (sys.version_info.minor >= 11) and (gc.is_tracked(~data_ptr)):
+            remove_ref(data)
+            raise RuntimeError("allocation on tracked types is not supported on 3.11+")
+
 
         ptr, byte_stream = self._make_stream_and_ptr(
             sys.getsizeof(~data_ptr),
@@ -459,7 +436,7 @@ class BaseAllocatedPointer(BasePointer[T], Sized, ABC):
     ) -> Tuple["ctypes._PointerLike", bytes]:
         if self.freed:
             raise FreedMemoryError("memory has been freed")
-
+        
         bytes_a = (ctypes.c_ubyte * size).from_address(address)  # fmt: off
         return self.make_ct_pointer(), bytes(bytes_a)
 

@@ -1,3 +1,3 @@
 [build]
-command = "hatch run docs:build"
+command = "pip install mkdocs mkdocstrings[python] && mkdocs build"
 publish = "site"

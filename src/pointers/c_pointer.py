@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import ctypes
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, Iterator, List, Optional, Type, TypeVar
-
-from typing_extensions import ParamSpec
+from typing import (TYPE_CHECKING, Any, Callable, Iterator, List, Optional,
+                    Type, TypeVar)
 
 from _pointers import add_ref, remove_ref
+from typing_extensions import ParamSpec
 
 from ._utils import deref, get_mapped, map_type
-from .base_pointers import BaseCPointer, IterDereferencable, Typed
+from .base_pointers import BaseCPointer, IterDereferencable
 from .util import handle
 
 if TYPE_CHECKING:
@@ -53,7 +55,7 @@ class VoidPointer(BaseCPointer[Any]):
         pass
 
 
-class _CDeref(Typed[T], IterDereferencable[T], ABC):
+class _CDeref(IterDereferencable[T], ABC):
     @abstractmethod
     def address(self) -> Optional[int]:
         ...
@@ -117,7 +119,7 @@ class FunctionPointer(BaseCPointer[Callable[P, T]]):  # type: ignore
         return f"FunctionPointer(address={self.address})"
 
 
-class TypedCPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
+class TypedCPointer(_CDeref[T], BaseCPointer[T]):
     """Class representing a pointer with a known type."""
 
     def __init__(
@@ -153,9 +155,15 @@ class TypedCPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
 
     @property  # type: ignore
     @handle
-    def _as_parameter_(self):
+    def _as_parameter_(self) -> ctypes._CData:
         ctype = get_mapped(self.type)
-        deref = ctype.from_address(self.ensure())
+
+        if (ctype is ctypes.c_char_p) and (self.alt):
+            deref = ctype(self.ensure())
+            return deref
+        else:
+            deref = ctype.from_address(self.ensure())
+
         value = deref.value  # type: ignore
 
         if isinstance(value, (TypedCPointer, VoidPointer)):
@@ -189,7 +197,7 @@ class TypedCPointer(_CDeref[T], Typed[T], BaseCPointer[T]):
         return f"TypedCPointer(address={self.address}, size={self.size})"
 
 
-class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
+class CArrayPointer(_CDeref[List[T]], BaseCPointer[List[T]]):
     """Class representing a pointer to a C array."""
 
     def __init__(
@@ -209,13 +217,9 @@ class CArrayPointer(_CDeref[List[T]], Typed[Type[T]], BaseCPointer[List[T]]):
         return self._decref
 
     @property
-    def type(self) -> Type[T]:  # type: ignore
-        return self._type
-
-    @property  # type: ignore
     @handle
     def _as_parameter_(self) -> "ctypes.Array[ctypes._CData]":
-        ctype = get_mapped(self.type)
+        ctype = get_mapped(self._type)
 
         deref = (ctype * self._length).from_address(self.ensure())
         return deref

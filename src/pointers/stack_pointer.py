@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
 from _pointers import run_stack_callback
 
@@ -13,7 +13,7 @@ A = TypeVar("A", bound=BaseAllocatedPointer)
 
 
 class StackAllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
-    """Pointer to allocated memory."""
+    """Pointer to memory allocated on the stack."""
 
     def __init__(
         self,
@@ -33,6 +33,14 @@ class StackAllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         self._assigned = assigned
 
     @property
+    def freed(self) -> bool:
+        return self._freed
+
+    @freed.setter
+    def freed(self, value: bool) -> None:
+        self._freed = value
+
+    @property
     def address(self) -> Optional[int]:
         return self._address
 
@@ -41,9 +49,7 @@ class StackAllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
         self._address = value
 
     def __repr__(self) -> str:
-        return (
-            f"StackAllocatedPointer(address={self.address}, size={self.size})"  # noqa
-        )
+        return f"StackAllocatedPointer(address={self.address}, size={self.size})"  # noqa
 
     def __add__(self, amount: int):
         return StackAllocatedPointer(
@@ -66,11 +72,21 @@ class StackAllocatedPointer(IterDereferencable[T], BaseAllocatedPointer[T]):
 
 
 @handle
-def stack_alloc(size: int):
-    """Get a callback with a pointer to stack allocated memory."""
+def stack_alloc(
+    size: int,
+) -> Callable[
+    [Callable[[StackAllocatedPointer[Any]], T]], Callable[[], T]
+]:  # noqa
+    """Get a callback with a pointer to stack allocated memory.
+    This function **is not** run automatically.
+    For that purpose, use `acquire_stack_alloc`.
+
+    Args:
+        size: Size of the allocation
+    """
 
     def decorator(
-        func: Callable[[StackAllocatedPointer], T],
+        func: Callable[[StackAllocatedPointer[Any]], T],
     ) -> Callable[[], T]:
         def wrapper():
             return run_stack_callback(size, StackAllocatedPointer, func)
@@ -80,10 +96,16 @@ def stack_alloc(size: int):
     return decorator
 
 
-def acquire_stack_alloc(size: int):
-    """Execute a callback with a pointer to stack allocated memory."""
+def acquire_stack_alloc(
+    size: int,
+) -> Callable[[Callable[[StackAllocatedPointer[Any]], T]], T]:
+    """Execute a callback with a pointer to stack allocated memory.
 
-    def decorator(func: Callable[[StackAllocatedPointer], T]) -> T:
+    Args:
+        size: Size of the allocation
+    """
+
+    def decorator(func: Callable[[StackAllocatedPointer[Any]], T]) -> T:
         def wrapper():
             return run_stack_callback(size, StackAllocatedPointer, func)
 
