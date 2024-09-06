@@ -1,0 +1,14 @@
+[targets.sdist]
+only-include = ["src/pointers"]
+
+[build.targets.wheel]
+packages = ["src/pointers"]
+
+[build.targets.wheel.hooks.scikit-build]
+experimental = true
+
+[build.targets.wheel.hooks.scikit-build.cmake]
+source-dir = "."
+build-type = "Debug"
+verbose = true
+strip = false
