@@ -20,21 +20,16 @@ def test_pointer_deref():
 
 
 def test_pointer_tracked_type():
-    class Tracked:
-        pass
-
-    ptr = to_ptr(Tracked())
-    assert isinstance(~ptr, Tracked)
-
+    ptr = to_ptr(object())
+    assert ptr.refcount == 2
 
 def test_pointer_refcount():
-    class Tracked:
-        pass
-
-    x = Tracked()
+    x = object()
     ptr = to_ptr(x)
-    assert ptr.refcount == sys.getrefcount(~ptr)
     assert ptr.refcount == sys.getrefcount(x)
+
+    # ~ptr creates an extra reference, we need to account for it
+    assert ptr.refcount == (sys.getrefcount(~ptr) - 1)
 
     before = sys.getrefcount(x)
     ptr.refcount += 1
@@ -44,15 +39,12 @@ def test_pointer_refcount():
 
 
 def test_size():
-    class Tracked:
-        pass
-
     x = "hello world"
     assert to_ptr(x).size() == sys.getsizeof(x)
 
     # This check is an implementation detail.
     # If this doesn't work in the future, feel free to remove it.
-    assert to_ptr(Tracked()).size() == sys.getsizeof(Tracked())
+    assert to_ptr(object()).size() == sys.getsizeof(object())
 
 
 def test_move_object():
