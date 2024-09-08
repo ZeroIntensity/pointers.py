@@ -48,8 +48,11 @@ def test_size():
         pass
 
     x = "hello world"
-    assert to_ptr(x).size == sys.getsizeof(x)
-    assert to_ptr(Tracked()).size == sys.getsizeof(Tracked())
+    assert to_ptr(x).size() == sys.getsizeof(x)
+
+    # This check is an implementation detail.
+    # If this doesn't work in the future, feel free to remove it.
+    assert to_ptr(Tracked()).size() == sys.getsizeof(Tracked())
 
 
 def test_move_object():
