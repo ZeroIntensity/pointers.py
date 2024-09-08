@@ -28,3 +28,6 @@ version = "4.0.0"
 Documentation = "https://pointers.zintensity.dev"
 Issues = "https://github.com/ZeroIntensity/pointers.py/issues"
 Source = "https://github.com/ZeroIntensity/pointers.py"
+
+[tool.scikit-build.install]
+strip = false

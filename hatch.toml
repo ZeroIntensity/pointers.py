@@ -11,4 +11,3 @@ experimental = true
 source-dir = "."
 build-type = "Debug"
 verbose = true
-strip = false

@@ -53,7 +53,7 @@ getref(PyObject *self, PyObject *ob)
 }
 
 static PyObject *
-immortalize(PyObject *self, PyObject *ob)
+setimmortal(PyObject *self, PyObject *ob)
 {
     #if Py_MINOR_VERSION >= 12
     _Py_SetImmortal(ob);
